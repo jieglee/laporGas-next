@@ -5,7 +5,9 @@
       "howItWorks": "How It Works",
       "stats": "Statistics",
       "about": "About",
-      "cta": "Report Now"
+      "cta": "Report Now",
+      "masuk": "Sign In",
+      "daftar": "Create Account"
     },
     "hero": {
       "badge": "Official Complaint Platform",

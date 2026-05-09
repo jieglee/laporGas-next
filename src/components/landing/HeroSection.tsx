@@ -63,30 +63,6 @@
                     style={{ y, opacity }}
                     className="relative z-10 max-w-4xl mx-auto px-6 text-center pt-28 pb-20"
                 >
-                    {/* Badge */}
-                    <motion.div {...fadeUp(0.15)} className="mb-7">
-                        <span
-                            style={{
-                                background: "rgba(232,32,26,0.08)",
-                                border: "1px solid rgba(232,32,26,0.18)",
-                                color: "#C41A15",
-                                fontSize: "0.68rem",
-                                letterSpacing: "0.11em",
-                                fontWeight: 700,
-                                textTransform: "uppercase",
-                                padding: "5px 14px",
-                                borderRadius: "100px",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                gap: 7,
-                            }}
-                        >
-                            <span
-                                style={{ width: 6, height: 6, borderRadius: "50%", background: "#E8201A", animation: "pulse 2s infinite" }}
-                            />
-                            {t("badge")}
-                        </span>
-                    </motion.div>
 
                     {/* Title */}
                     <motion.h1
