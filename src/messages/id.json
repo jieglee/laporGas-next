@@ -1,12 +1,53 @@
 {
-  "HomePage": {
-    "title": "LaporGas"
-  },
-  "navbar": {
-    "login": "Masuk",
-    "cta": "Buat Laporan",
-    "links": [
-      { "label": "Beranda", "href": "#home" }
-    ]
+  "landing": {
+    "nav": {
+      "home": "Beranda",
+      "howItWorks": "Cara Kerja",
+      "stats": "Statistik",
+      "about": "Tentang",
+      "cta": "Laporkan Sekarang"
+    },
+    "hero": {
+      "badge": "Platform Pengaduan Resmi",
+      "title1": "Suara Warga,",
+      "title2": "Aksi Nyata.",
+      "desc": "Laporkan masalah di sekitar Anda — jalan rusak, sampah menumpuk, fasilitas umum bermasalah — langsung ke instansi terkait. Transparan, cepat, terukur.",
+      "cta1": "Mulai Lapor",
+      "cta2": "Lihat Cara Kerja"
+    },
+    "stats": {
+      "reports": "Laporan Masuk",
+      "resolved": "Laporan Diselesaikan",
+      "agencies": "Instansi Terhubung",
+      "rate": "Tingkat Penyelesaian"
+    },
+    "how": {
+      "title": "Cara Kerja LaporGas",
+      "subtitle": "Pengaduan Anda diproses secara transparan dan terukur",
+      "step1Title": "Tulis Laporan",
+      "step1Desc": "Laporkan keluhan atau aspirasi Anda dengan jelas dan lengkap",
+      "step2Title": "Proses Verifikasi",
+      "step2Desc": "Dalam 3 hari, laporan Anda diverifikasi dan diteruskan kepada instansi berwenang",
+      "step3Title": "Proses Tindak Lanjut",
+      "step3Desc": "Dalam 5 hari, instansi akan menindaklanjuti dan membalas laporan Anda",
+      "step4Title": "Beri Tanggapan",
+      "step4Desc": "Anda dapat menanggapi kembali balasan yang diberikan instansi dalam waktu 10 hari",
+      "step5Title": "Selesai",
+      "step5Desc": "Laporan Anda akan terus ditindaklanjuti hingga terselesaikan",
+      "cta": "Pelajari Lebih Lanjut"
+    },
+    "footer": {
+      "about": "Platform pengaduan publik resmi yang dikelola untuk mewujudkan layanan publik yang lebih baik di seluruh Indonesia.",
+      "helpBanner": "Perlu bantuan lebih lanjut? Konsultasikan masalah Anda.",
+      "helpCta": "Pusat Panduan & FAQ",
+      "scope": "Ruang Lingkup",
+      "statsLink": "Statistik Penyelesaian",
+      "agenciesLink": "Daftar Instansi",
+      "privacyLink": "Kebijakan Privasi Data",
+      "termsLink": "Syarat & Ketentuan",
+      "contact": "Kontak Resmi",
+      "copy": "© 2025 LaporGas Indonesia.",
+      "tagline": "#KamiAdalahIndonesiaMaju"
+    }
   }
 }

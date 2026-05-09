@@ -1,10 +1,17 @@
-import { useTranslations } from "next-intl";
+import Navbar from "@/components/landing/Navbar";
+import HeroSection from "@/components/landing/HeroSection";
+import StatsBar from "@/components/landing/StatsBar";
+import HowItWorks from "@/components/landing/HowItWorks";
+import Footer from "@/components/landing/Footer";
 
-export default function Home() {
-  const t = useTranslations("HomePage");
+export default function LandingPage() {
   return (
     <main>
-      <h1>{t("title")}</h1>
+      <Navbar />
+      <HeroSection />
+      <StatsBar />
+      <HowItWorks />
+      <Footer />
     </main>
   );
 }
