@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "title": "LaporGas"
+  },
+  "navbar": {
+    "login": "Masuk",
+    "cta": "Buat Laporan",
+    "links": [
+      { "label": "Beranda", "href": "#home" }
+    ]
+  }
+}

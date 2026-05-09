@@ -1,0 +1,12 @@
+{
+  "HomePage": {
+    "title": "LaporGas"
+  },
+  "navbar": {
+    "login": "Login",
+    "cta": "Submit Report",
+    "links": [
+      { "label": "Home", "href": "#home" }
+    ]
+  }
+}
