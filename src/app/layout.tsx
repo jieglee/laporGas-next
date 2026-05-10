@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
+import SplashWrapper from "../components/Splashwrapper";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -21,7 +22,9 @@ export default function RootLayout({
   return (
     <html lang="id" className={poppins.variable}>
       <body>
-        {children}
+        <SplashWrapper>
+          {children}
+        </SplashWrapper>
       </body>
     </html>
   );
