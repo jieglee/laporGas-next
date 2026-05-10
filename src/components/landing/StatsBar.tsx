@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { useTranslations } from "next-intl";
 
 function Counter({ value }: { value: string }) {
     const ref = useRef(null);
@@ -26,17 +25,16 @@ function Counter({ value }: { value: string }) {
     return <span ref={ref}>{display}</span>;
 }
 
+const stats = [
+    { value: "12400+", label: "Laporan Masuk" },
+    { value: "9800+", label: "Laporan Diselesaikan" },
+    { value: "340+", label: "Instansi Terhubung" },
+    { value: "78%", label: "Tingkat Penyelesaian" },
+];
+
 export default function StatsBar() {
-    const t = useTranslations("landing.stats");
     const ref = useRef(null);
     const inView = useInView(ref, { once: true, margin: "-60px" });
-
-    const stats = [
-        { key: "reports", value: "12400+" },
-        { key: "resolved", value: "9800+" },
-        { key: "agencies", value: "340+" },
-        { key: "rate", value: "78%" },
-    ];
 
     return (
         <section
@@ -51,16 +49,12 @@ export default function StatsBar() {
         >
             <div style={{ maxWidth: 960, margin: "0 auto" }}>
                 <div
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(4, 1fr)",
-                        gap: 16,
-                    }}
-                    className="grid-cols-2 md:grid-cols-4"
+                    className="grid grid-cols-2 md:grid-cols-4"
+                    style={{ display: "grid", gap: 16 }}
                 >
                     {stats.map((s, i) => (
                         <motion.div
-                            key={s.key}
+                            key={i}
                             initial={{ opacity: 0, y: 24 }}
                             animate={inView ? { opacity: 1, y: 0 } : {}}
                             transition={{ delay: i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -86,15 +80,8 @@ export default function StatsBar() {
                             >
                                 {inView ? <Counter value={s.value} /> : "0"}
                             </div>
-                            <div
-                                style={{
-                                    color: "rgba(30,30,30,0.45)",
-                                    fontSize: "0.78rem",
-                                    marginTop: 6,
-                                    fontWeight: 500,
-                                }}
-                            >
-                                {t(s.key)}
+                            <div style={{ color: "rgba(30,30,30,0.45)", fontSize: "0.78rem", marginTop: 6, fontWeight: 500 }}>
+                                {s.label}
                             </div>
                         </motion.div>
                     ))}

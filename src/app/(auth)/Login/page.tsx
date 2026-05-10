@@ -3,14 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-    const t = useTranslations("auth.login");
-    const locale = useLocale();
     const router = useRouter();
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPass, setShowPass] = useState(false);
@@ -22,7 +18,6 @@ export default function LoginPage() {
         setError("");
         setLoading(true);
         try {
-            // TODO: ganti dengan actual login API call
             const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -30,7 +25,7 @@ export default function LoginPage() {
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || "Login gagal");
-            router.push(`/${locale}/user/dashboard`);
+            router.push("/user/dashboard");
         } catch (err: unknown) {
             setError(err instanceof Error ? err.message : "Terjadi kesalahan");
         } finally {
@@ -50,7 +45,6 @@ export default function LoginPage() {
         >
             <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@800&display=swap');
-
         .input-field {
           width: 100%;
           padding: 13px 16px;
@@ -81,17 +75,16 @@ export default function LoginPage() {
           cursor: pointer;
           transition: all 0.25s;
           box-shadow: 0 6px 20px rgba(232,32,26,0.28);
-          position: relative;
-          overflow: hidden;
         }
         .submit-btn:hover:not(:disabled) {
           transform: translateY(-1px);
           box-shadow: 0 10px 28px rgba(232,32,26,0.36);
         }
         .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
 
-            {/* ── LEFT PANEL: decorative wave ── */}
+            {/* ── LEFT: wave panel ── */}
             <div
                 className="hidden lg:flex"
                 style={{
@@ -103,17 +96,10 @@ export default function LoginPage() {
                     justifyContent: "center",
                 }}
             >
-                {/* S-curve wave shape — same vibe as reference */}
                 <svg
                     viewBox="0 0 520 900"
                     xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                        position: "absolute",
-                        right: 0,
-                        top: 0,
-                        height: "100%",
-                        width: "auto",
-                    }}
+                    style={{ position: "absolute", right: 0, top: 0, height: "100%", width: "auto" }}
                     preserveAspectRatio="xMaxYMid slice"
                 >
                     <defs>
@@ -124,17 +110,12 @@ export default function LoginPage() {
                         </linearGradient>
                     </defs>
                     <path
-                        d="M520,0 L220,0 
-               C320,150 420,200 300,450 
-               C180,700 320,750 220,900 
-               L520,900 Z"
+                        d="M520,0 L220,0 C320,150 420,200 300,450 C180,700 320,750 220,900 L520,900 Z"
                         fill="url(#waveGrad)"
                     />
                 </svg>
 
-                {/* Brand overlay on wave */}
                 <div style={{ position: "relative", zIndex: 10, textAlign: "center", padding: "0 48px" }}>
-                    {/* Logo */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -180,7 +161,6 @@ export default function LoginPage() {
                         </p>
                     </motion.div>
 
-                    {/* Floating stats cards */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -212,7 +192,7 @@ export default function LoginPage() {
                 </div>
             </div>
 
-            {/* ── RIGHT PANEL: form ── */}
+            {/* ── RIGHT: form ── */}
             <div
                 style={{
                     flex: 1,
@@ -224,7 +204,6 @@ export default function LoginPage() {
                     position: "relative",
                 }}
             >
-                {/* Subtle glow */}
                 <div
                     style={{
                         position: "absolute",
@@ -278,10 +257,10 @@ export default function LoginPage() {
                                 marginBottom: 6,
                             }}
                         >
-                            {t("title")}
+                            Masuk
                         </h1>
                         <p style={{ color: "rgba(0,0,0,0.42)", fontSize: "0.875rem" }}>
-                            {t("subtitle")}
+                            Selamat datang kembali — masukkan akun Anda
                         </p>
                     </div>
 
@@ -314,15 +293,14 @@ export default function LoginPage() {
 
                     {/* Form */}
                     <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                        {/* Email */}
                         <div>
                             <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "#111", marginBottom: 7 }}>
-                                {t("emailLabel")}
+                                Email
                             </label>
                             <input
                                 type="email"
                                 className="input-field"
-                                placeholder={t("emailPlaceholder")}
+                                placeholder="nama@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -330,24 +308,21 @@ export default function LoginPage() {
                             />
                         </div>
 
-                        {/* Password */}
                         <div>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-                                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#111" }}>
-                                    {t("passwordLabel")}
-                                </label>
+                                <label style={{ fontSize: "0.8rem", fontWeight: 600, color: "#111" }}>Password</label>
                                 <Link
-                                    href={`/${locale}/forgot-password`}
+                                    href="/lupa-password"
                                     style={{ fontSize: "0.75rem", color: "#E8201A", textDecoration: "none", fontWeight: 500 }}
                                 >
-                                    {t("forgotPassword")}
+                                    Lupa password?
                                 </Link>
                             </div>
                             <div style={{ position: "relative" }}>
                                 <input
                                     type={showPass ? "text" : "password"}
                                     className="input-field"
-                                    placeholder={t("passwordPlaceholder")}
+                                    placeholder="Masukkan password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
@@ -386,7 +361,6 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Submit */}
                         <button type="submit" className="submit-btn" disabled={loading} style={{ marginTop: 4 }}>
                             {loading ? (
                                 <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
@@ -394,33 +368,25 @@ export default function LoginPage() {
                                         style={{ animation: "spin 0.8s linear infinite" }}>
                                         <path d="M21 12a9 9 0 11-6.219-8.56" />
                                     </svg>
-                                    {t("loading")}
+                                    Memproses...
                                 </span>
-                            ) : t("submit")}
+                            ) : "Masuk"}
                         </button>
                     </form>
 
-                    {/* Register link */}
                     <p style={{ textAlign: "center", marginTop: 22, fontSize: "0.82rem", color: "rgba(0,0,0,0.42)" }}>
-                        {t("noAccount")}{" "}
-                        <Link
-                            href={`/${locale}/register`}
-                            style={{ color: "#E8201A", fontWeight: 600, textDecoration: "none" }}
-                        >
-                            {t("registerLink")}
+                        Belum punya akun?{" "}
+                        <Link href="/daftar" style={{ color: "#E8201A", fontWeight: 600, textDecoration: "none" }}>
+                            Daftar Sekarang
                         </Link>
                     </p>
 
-                    {/* Divider */}
                     <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "20px 0" }}>
                         <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
-                        <span style={{ fontSize: "0.75rem", color: "rgba(0,0,0,0.3)", whiteSpace: "nowrap" }}>
-                            {t("orSignWith")}
-                        </span>
+                        <span style={{ fontSize: "0.75rem", color: "rgba(0,0,0,0.3)", whiteSpace: "nowrap" }}>atau masuk dengan</span>
                         <div style={{ flex: 1, height: 1, background: "rgba(0,0,0,0.08)" }} />
                     </div>
 
-                    {/* Social buttons */}
                     <div style={{ display: "flex", gap: 12 }}>
                         {[
                             {
@@ -479,8 +445,6 @@ export default function LoginPage() {
                     </div>
                 </motion.div>
             </div>
-
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 }

@@ -3,20 +3,10 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useTranslations, useLocale } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
-import LoginModal from "@/components/";
 
 export default function Navbar() {
-    const t = useTranslations("landing.nav");
-    const locale = useLocale();
-    const router = useRouter();
-    const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
-    
-    // State untuk mengontrol Modal Login
-    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     useEffect(() => {
         const handler = () => setScrolled(window.scrollY > 40);
@@ -24,17 +14,11 @@ export default function Navbar() {
         return () => window.removeEventListener("scroll", handler);
     }, []);
 
-    const toggleLang = () => {
-        const next = locale === "id" ? "en" : "id";
-        const newPath = pathname.replace(`/${locale}`, `/${next}`);
-        router.push(newPath);
-    };
-
     const links = [
-        { key: "home", href: "#" },
-        { key: "howItWorks", href: "#how-it-works" },
-        { key: "stats", href: "#stats" },
-        { key: "about", href: "#about" },
+        { label: "Beranda", href: "#" },
+        { label: "Cara Kerja", href: "#how-it-works" },
+        { label: "Statistik", href: "#stats" },
+        { label: "Tentang", href: "#about" },
     ];
 
     return (
@@ -66,9 +50,8 @@ export default function Navbar() {
                 >
                     {/* Brand */}
                     <Link
-                        href={`/${locale}`}
-                        style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", marginRight: 16 }}
-                    >
+                        href="/"
+                        style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none", marginRight: 16 }}>
                         <span
                             style={{
                                 fontFamily: "'Syne', sans-serif",
@@ -89,7 +72,7 @@ export default function Navbar() {
                     <div style={{ display: "flex", alignItems: "center", gap: 20, marginRight: 16 }}>
                         {links.map((l) => (
                             <a
-                                key={l.key}
+                                key={l.label}
                                 href={l.href}
                                 style={{
                                     color: "rgba(0,0,0,0.42)",
@@ -102,7 +85,7 @@ export default function Navbar() {
                                 onMouseEnter={(e) => (e.currentTarget.style.color = "#111")}
                                 onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(0,0,0,0.42)")}
                             >
-                                {t(l.key)}
+                                {l.label}
                             </a>
                         ))}
                     </div>
@@ -110,37 +93,9 @@ export default function Navbar() {
                     {/* Divider */}
                     <div style={{ width: 1, height: 18, background: "rgba(0,0,0,0.07)", marginRight: 10, flexShrink: 0 }} />
 
-                    {/* Lang toggle */}
-                    <button
-                        onClick={toggleLang}
-                        style={{
-                            fontSize: "0.65rem",
-                            fontWeight: 700,
-                            letterSpacing: "0.08em",
-                            padding: "5px 9px",
-                            borderRadius: 7,
-                            border: "1px solid rgba(0,0,0,0.10)",
-                            color: "rgba(0,0,0,0.38)",
-                            background: "transparent",
-                            cursor: "pointer",
-                            marginRight: 8,
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#111";
-                            e.currentTarget.style.borderColor = "rgba(0,0,0,0.2)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color = "rgba(0,0,0,0.38)";
-                            e.currentTarget.style.borderColor = "rgba(0,0,0,0.10)";
-                        }}
-                    >
-                        {locale === "id" ? "EN" : "ID"}
-                    </button>
-
-                    {/* Masuk button (Trigger Modal) */}
-                    <button
-                        onClick={() => setIsLoginModalOpen(true)}
+                    {/* Masuk */}
+                    <Link
+                        href="/Login"
                         style={{
                             color: "rgba(0,0,0,0.6)",
                             fontWeight: 600,
@@ -156,7 +111,6 @@ export default function Navbar() {
                             marginRight: 6,
                             transition: "all 0.2s",
                             whiteSpace: "nowrap",
-                            cursor: "pointer"
                         }}
                         onMouseEnter={(e) => {
                             e.currentTarget.style.color = "#111";
@@ -169,12 +123,17 @@ export default function Navbar() {
                             e.currentTarget.style.background = "transparent";
                         }}
                     >
-                        {t("masuk")}
-                    </button>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                            <polyline points="10 17 15 12 10 7" />
+                            <line x1="15" y1="12" x2="3" y2="12" />
+                        </svg>
+                        Masuk
+                    </Link>
 
-                    {/* Buat Akun button */}
+                    {/* Daftar */}
                     <Link
-                        href={`/${locale}/auth/daftar`}
+                        href="/daftar"
                         style={{
                             background: "linear-gradient(135deg, #E8201A, #FF6B35)",
                             color: "white",
@@ -191,15 +150,21 @@ export default function Navbar() {
                             whiteSpace: "nowrap",
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow = "0 6px 20px rgba(232,32,26,0.35)";
-                            e.currentTarget.style.transform = "translateY(-1px)";
+                            (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(232,32,26,0.35)";
+                            (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow = "0 3px 12px rgba(232,32,26,0.22)";
-                            e.currentTarget.style.transform = "translateY(0)";
+                            (e.currentTarget as HTMLElement).style.boxShadow = "0 3px 12px rgba(232,32,26,0.22)";
+                            (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
                         }}
                     >
-                        {t("daftar")}
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <line x1="19" y1="8" x2="19" y2="14" />
+                            <line x1="22" y1="11" x2="16" y2="11" />
+                        </svg>
+                        Daftar
                     </Link>
                 </motion.nav>
             </div>
@@ -226,24 +191,20 @@ export default function Navbar() {
                         height: 56,
                     }}
                 >
-                    <Link href={`/${locale}`} style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+                    <Link href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
                         <div
                             style={{
                                 width: 28,
                                 height: 28,
-                                borderRadius: 7,
+                                borderRadius: 8,
                                 background: "linear-gradient(135deg, #E8201A, #FF6B35)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                             }}
                         >
-                            <svg width="15" height="15" viewBox="0 0 36 36" fill="none">
-                                <path d="M22 7 L9 13 L9 23 L22 29 Z" fill="white" opacity="0.95" />
-                                <rect x="4" y="14" width="5" height="8" rx="2" fill="white" opacity="0.95" />
-                                <path d="M24 11 Q29 18 24 25" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.9" />
-                                <path d="M27 7 Q35 18 27 29" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-                                <circle cx="6.5" cy="26" r="2.5" fill="#FFD166" />
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="white">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26C17.81 13.47 19 11.38 19 9c0-3.87-3.13-7-7-7zm-1 14v-1h2v1h-2zm3-2.54V15h-4v-1.54C8.21 12.6 7 10.9 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.9-1.21 3.6-3 4.46z" />
                             </svg>
                         </div>
                         <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "0.95rem", letterSpacing: "-0.02em", color: "#111" }}>
@@ -251,34 +212,16 @@ export default function Navbar() {
                         </span>
                     </Link>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <button
-                            onClick={toggleLang}
-                            style={{
-                                fontSize: "0.62rem",
-                                fontWeight: 700,
-                                letterSpacing: "0.08em",
-                                padding: "4px 8px",
-                                borderRadius: 6,
-                                border: "1px solid rgba(0,0,0,0.10)",
-                                color: "rgba(0,0,0,0.38)",
-                                background: "transparent",
-                                cursor: "pointer",
-                            }}
-                        >
-                            {locale === "id" ? "EN" : "ID"}
-                        </button>
-                        <button
-                            onClick={() => setMenuOpen(!menuOpen)}
-                            style={{ padding: 6, background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.5)" }}
-                        >
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                {menuOpen
-                                    ? <><path d="M18 6L6 18" /><path d="M6 6l12 12" /></>
-                                    : <><path d="M3 12h18" /><path d="M3 6h18" /><path d="M3 18h18" /></>}
-                            </svg>
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => setMenuOpen(!menuOpen)}
+                        style={{ padding: 6, background: "none", border: "none", cursor: "pointer", color: "rgba(0,0,0,0.5)" }}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            {menuOpen
+                                ? <><path d="M18 6L6 18" /><path d="M6 6l12 12" /></>
+                                : <><path d="M3 12h18" /><path d="M3 6h18" /><path d="M3 18h18" /></>}
+                        </svg>
+                    </button>
                 </div>
 
                 <AnimatePresence>
@@ -298,22 +241,19 @@ export default function Navbar() {
                         >
                             {links.map((l) => (
                                 <a
-                                    key={l.key}
+                                    key={l.label}
                                     href={l.href}
                                     onClick={() => setMenuOpen(false)}
                                     style={{ color: "rgba(0,0,0,0.5)", fontSize: "0.9rem", fontWeight: 500, textDecoration: "none" }}
                                 >
-                                    {t(l.key)}
+                                    {l.label}
                                 </a>
                             ))}
 
-                            {/* Mobile: Masuk + Daftar side by side */}
                             <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                                <button
-                                    onClick={() => {
-                                        setMenuOpen(false);
-                                        setIsLoginModalOpen(true);
-                                    }}
+                                <Link
+                                    href="/Login"
+                                    onClick={() => setMenuOpen(false)}
                                     style={{
                                         flex: 1,
                                         color: "rgba(0,0,0,0.65)",
@@ -328,7 +268,7 @@ export default function Navbar() {
                                         alignItems: "center",
                                         justifyContent: "center",
                                         gap: 6,
-                                        cursor: "pointer"
+                                        textDecoration: "none",
                                     }}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -336,10 +276,11 @@ export default function Navbar() {
                                         <polyline points="10 17 15 12 10 7" />
                                         <line x1="15" y1="12" x2="3" y2="12" />
                                     </svg>
-                                    {t("masuk")}
-                                </button>
+                                    Masuk
+                                </Link>
                                 <Link
-                                    href={`/${locale}/auth/daftar`}
+                                    href="/daftar"
+                                    onClick={() => setMenuOpen(false)}
                                     style={{
                                         flex: 1,
                                         background: "linear-gradient(135deg, #E8201A, #FF6B35)",
@@ -362,7 +303,7 @@ export default function Navbar() {
                                         <line x1="19" y1="8" x2="19" y2="14" />
                                         <line x1="22" y1="11" x2="16" y2="11" />
                                     </svg>
-                                    {t("daftar")}
+                                    Daftar
                                 </Link>
                             </div>
                         </motion.div>
@@ -370,14 +311,8 @@ export default function Navbar() {
                 </AnimatePresence>
             </motion.div>
 
-            {/* Spacer buat konten di bawah navbar mobile */}
+            {/* Spacer mobile */}
             <div className="md:hidden" style={{ height: 56 }} />
-
-            {/* Render Komponen Modal Login */}
-            <LoginModal 
-                isOpen={isLoginModalOpen} 
-                onClose={() => setIsLoginModalOpen(false)} 
-            />
         </>
     );
 }
