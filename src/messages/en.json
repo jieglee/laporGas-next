@@ -49,7 +49,23 @@
       "termsLink": "Terms & Conditions",
       "contact": "Official Contact",
       "copy": "© 2025 LaporGas Indonesia.",
-      "tagline": "#WeAreProgressiveIndonesia"
+      "tagline": "#WeAreProgressiveIndonesia",
+      "cta1": "Start Reporting"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Login to continue your report",
+      "emailLabel": "Email",
+      "emailPlaceholder": "name@email.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Login",
+      "loading": "Processing...",
+      "or": "or",
+      "noAccount": "Don't have an account?",
+      "register": "Register now"
     }
   }
 }

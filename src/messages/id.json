@@ -49,7 +49,24 @@
       "termsLink": "Syarat & Ketentuan",
       "contact": "Kontak Resmi",
       "copy": "© 2025 LaporGas Indonesia.",
-      "tagline": "#KamiAdalahIndonesiaMaju"
+      "tagline": "#KamiAdalahIndonesiaMaju",
+      "cta1": "Mulai Lapor"
     }
+  },
+  "auth": {
+  "login": {
+    "title": "Masuk",
+    "subtitle": "Selamat datang kembali — masukkan akun Anda",
+    "emailLabel": "Email",
+    "emailPlaceholder": "nama@email.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Masukkan password",
+    "forgotPassword": "Lupa password?",
+    "submit": "Masuk",
+    "loading": "Memproses...",
+    "noAccount": "Belum punya akun?",
+    "registerLink": "Daftar Sekarang",
+    "orSignWith": "atau masuk dengan"
   }
+}
 }

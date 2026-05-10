@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname, useRouter } from "next/navigation";
+import LoginModal from "@/components/";
 
 export default function Navbar() {
     const t = useTranslations("landing.nav");
@@ -13,6 +14,9 @@ export default function Navbar() {
     const pathname = usePathname();
     const [scrolled, setScrolled] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
+    
+    // State untuk mengontrol Modal Login
+    const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
     useEffect(() => {
         const handler = () => setScrolled(window.scrollY > 40);
@@ -134,9 +138,9 @@ export default function Navbar() {
                         {locale === "id" ? "EN" : "ID"}
                     </button>
 
-                    {/* Masuk button */}
-                    <Link
-                        href={`/${locale}/auth/masuk`}
+                    {/* Masuk button (Trigger Modal) */}
+                    <button
+                        onClick={() => setIsLoginModalOpen(true)}
                         style={{
                             color: "rgba(0,0,0,0.6)",
                             fontWeight: 600,
@@ -152,20 +156,21 @@ export default function Navbar() {
                             marginRight: 6,
                             transition: "all 0.2s",
                             whiteSpace: "nowrap",
+                            cursor: "pointer"
                         }}
                         onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLElement).style.color = "#111";
-                            (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.22)";
-                            (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.03)";
+                            e.currentTarget.style.color = "#111";
+                            e.currentTarget.style.borderColor = "rgba(0,0,0,0.22)";
+                            e.currentTarget.style.background = "rgba(0,0,0,0.03)";
                         }}
                         onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLElement).style.color = "rgba(0,0,0,0.6)";
-                            (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,0,0,0.10)";
-                            (e.currentTarget as HTMLElement).style.background = "transparent";
+                            e.currentTarget.style.color = "rgba(0,0,0,0.6)";
+                            e.currentTarget.style.borderColor = "rgba(0,0,0,0.10)";
+                            e.currentTarget.style.background = "transparent";
                         }}
                     >
                         {t("masuk")}
-                    </Link>
+                    </button>
 
                     {/* Buat Akun button */}
                     <Link
@@ -186,12 +191,12 @@ export default function Navbar() {
                             whiteSpace: "nowrap",
                         }}
                         onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(232,32,26,0.35)";
-                            (e.currentTarget as HTMLElement).style.transform = "translateY(-1px)";
+                            e.currentTarget.style.boxShadow = "0 6px 20px rgba(232,32,26,0.35)";
+                            e.currentTarget.style.transform = "translateY(-1px)";
                         }}
                         onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLElement).style.boxShadow = "0 3px 12px rgba(232,32,26,0.22)";
-                            (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = "0 3px 12px rgba(232,32,26,0.22)";
+                            e.currentTarget.style.transform = "translateY(0)";
                         }}
                     >
                         {t("daftar")}
@@ -304,8 +309,11 @@ export default function Navbar() {
 
                             {/* Mobile: Masuk + Daftar side by side */}
                             <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                                <Link
-                                    href={`/${locale}/auth/masuk`}
+                                <button
+                                    onClick={() => {
+                                        setMenuOpen(false);
+                                        setIsLoginModalOpen(true);
+                                    }}
                                     style={{
                                         flex: 1,
                                         color: "rgba(0,0,0,0.65)",
@@ -314,12 +322,13 @@ export default function Navbar() {
                                         padding: "10px 0",
                                         borderRadius: 10,
                                         textAlign: "center",
-                                        textDecoration: "none",
                                         border: "1px solid rgba(0,0,0,0.12)",
+                                        background: "transparent",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
                                         gap: 6,
+                                        cursor: "pointer"
                                     }}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -328,7 +337,7 @@ export default function Navbar() {
                                         <line x1="15" y1="12" x2="3" y2="12" />
                                     </svg>
                                     {t("masuk")}
-                                </Link>
+                                </button>
                                 <Link
                                     href={`/${locale}/auth/daftar`}
                                     style={{
@@ -363,6 +372,12 @@ export default function Navbar() {
 
             {/* Spacer buat konten di bawah navbar mobile */}
             <div className="md:hidden" style={{ height: 56 }} />
+
+            {/* Render Komponen Modal Login */}
+            <LoginModal 
+                isOpen={isLoginModalOpen} 
+                onClose={() => setIsLoginModalOpen(false)} 
+            />
         </>
     );
 }

@@ -16,144 +16,102 @@ export default function Footer() {
 
     const kontak = [
         {
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-                </svg>
-            ),
+            icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.1 1.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.45-.45a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" /></svg>,
             text: "Hotline: 1-400-LAPOR",
         },
         {
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                    <polyline points="22,6 12,13 2,6" />
-                </svg>
-            ),
+            icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>,
             text: "halo@laporgas.go.id",
-        },
-        {
-            icon: (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
-                    <circle cx="12" cy="10" r="3" />
-                </svg>
-            ),
-            text: "Jl. Jenderal Sudirman No.1, Jakarta Pusat",
         },
     ];
 
     return (
-        <footer style={{ background: "#1A2238", color: "white" }}>
-            {/* Help banner */}
-            <div
-                style={{
-                    borderBottom: "1px solid rgba(255,255,255,0.08)",
-                    padding: "20px 32px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: 12,
-                    maxWidth: 1080,
-                    margin: "0 auto",
-                }}
-            >
-                <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>
-                    {t("helpBanner")}
-                </span>
-                <Link
-                    href="#"
-                    style={{
-                        border: "1px solid rgba(255,255,255,0.25)",
-                        color: "rgba(255,255,255,0.75)",
-                        fontSize: "0.78rem",
-                        fontWeight: 600,
-                        padding: "8px 18px",
-                        borderRadius: 8,
-                        textDecoration: "none",
-                        whiteSpace: "nowrap",
-                        transition: "all 0.2s",
-                    }}
-                >
-                    {t("helpCta")}
-                </Link>
-            </div>
+        <footer style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
 
-            {/* Main footer */}
+            {/* Main section */}
             <div
                 style={{
                     maxWidth: 1080,
                     margin: "0 auto",
-                    padding: "48px 32px 36px",
+                    padding: "52px 32px 40px",
                     display: "grid",
-                    gridTemplateColumns: "2fr 1.2fr 1.5fr",
-                    gap: "40px 32px",
+                    gridTemplateColumns: "2fr 1fr 1fr",
+                    gap: "32px 48px",
                 }}
                 className="footer-grid"
             >
-                {/* Brand column */}
+                {/* Brand */}
                 <div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                    <Link
+                        href={`/${locale}`}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 8, textDecoration: "none", marginBottom: 14 }}
+                    >
                         <div
                             style={{
-                                width: 36,
-                                height: 36,
+                                width: 30,
+                                height: 30,
                                 borderRadius: 8,
                                 background: "linear-gradient(135deg, #E8201A, #FF6B35)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                flexShrink: 0,
                             }}
                         >
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                                <path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26C17.81 13.47 19 11.38 19 9c0-3.87-3.13-7-7-7zm-1 14v-1h2v1h-2zm3-2.54V15h-4v-1.54C8.21 12.6 7 10.9 7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.9-1.21 3.6-3 4.46z" />
+                            <svg width="16" height="16" viewBox="0 0 36 36" fill="none">
+                                <path d="M22 7 L9 13 L9 23 L22 29 Z" fill="white" opacity="0.95" />
+                                <rect x="4" y="14" width="5" height="8" rx="2" fill="white" opacity="0.95" />
+                                <path d="M24 11 Q29 18 24 25" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" opacity="0.9" />
+                                <path d="M27 7 Q35 18 27 29" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
+                                <circle cx="6.5" cy="26" r="2.5" fill="#FFD166" />
                             </svg>
                         </div>
-                        <span
-                            style={{
-                                fontFamily: "'Syne', sans-serif",
-                                fontWeight: 800,
-                                fontSize: "1.2rem",
-                                letterSpacing: "-0.02em",
-                                color: "white",
-                            }}
-                        >
-                            Lapor<span style={{ color: "#FF6B35" }}>Gas</span>
+                        <span style={{ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: "1rem", letterSpacing: "-0.02em", color: "#111" }}>
+                            Lapor<span style={{ color: "#E8201A" }}>Gas</span>
                         </span>
-                    </div>
-                    <p style={{ fontSize: "0.82rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.75, maxWidth: 280 }}>
+                    </Link>
+
+                    <p style={{ fontSize: "0.82rem", color: "rgba(0,0,0,0.42)", lineHeight: 1.8, maxWidth: 280, margin: "0 0 20px" }}>
                         {t("about")}
                     </p>
-                </div>
 
-                {/* Ruang Lingkup */}
-                <div>
-                    <div
+                    {/* CTA kecil */}
+                    <Link
+                        href={`/${locale}/user/pengaduan/buat`}
                         style={{
-                            fontSize: "0.68rem",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                            background: "linear-gradient(135deg, #E8201A, #FF6B35)",
+                            color: "white",
+                            fontSize: "0.75rem",
                             fontWeight: 700,
-                            letterSpacing: "0.1em",
-                            textTransform: "uppercase",
-                            color: "rgba(255,255,255,0.35)",
-                            marginBottom: 16,
+                            padding: "9px 16px",
+                            borderRadius: 9,
+                            textDecoration: "none",
+                            boxShadow: "0 3px 12px rgba(232,32,26,0.22)",
                         }}
                     >
+                        {t("cta1")}
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </Link>
+                </div>
+
+                {/* Tautan */}
+                <div>
+                    <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "rgba(0,0,0,0.28)", margin: "0 0 16px" }}>
                         {t("scope")}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    </p>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 11 }}>
                         {ruangLingkup.map((l) => (
                             <Link
                                 key={l.key}
                                 href={l.href}
-                                style={{
-                                    color: "rgba(255,255,255,0.55)",
-                                    fontSize: "0.83rem",
-                                    textDecoration: "none",
-                                    transition: "color 0.2s",
-                                }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.55)")}
+                                style={{ color: "rgba(0,0,0,0.48)", fontSize: "0.82rem", fontWeight: 500, textDecoration: "none", transition: "color 0.2s" }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = "#E8201A")}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(0,0,0,0.48)")}
                             >
                                 {t(l.key)}
                             </Link>
@@ -161,27 +119,16 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Kontak Resmi */}
+                {/* Kontak */}
                 <div>
-                    <div
-                        style={{
-                            fontSize: "0.68rem",
-                            fontWeight: 700,
-                            letterSpacing: "0.1em",
-                            textTransform: "uppercase",
-                            color: "rgba(255,255,255,0.35)",
-                            marginBottom: 16,
-                        }}
-                    >
+                    <p style={{ fontSize: "0.7rem", fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "rgba(0,0,0,0.28)", margin: "0 0 16px" }}>
                         {t("contact")}
-                    </div>
+                    </p>
                     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                         {kontak.map((k, i) => (
                             <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
-                                <span style={{ color: "#FF6B35", marginTop: 2, flexShrink: 0 }}>{k.icon}</span>
-                                <span style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", lineHeight: 1.5 }}>
-                                    {k.text}
-                                </span>
+                                <span style={{ color: "#E8201A", marginTop: 1, flexShrink: 0 }}>{k.icon}</span>
+                                <span style={{ color: "rgba(0,0,0,0.48)", fontSize: "0.8rem", lineHeight: 1.55 }}>{k.text}</span>
                             </div>
                         ))}
                     </div>
@@ -189,32 +136,33 @@ export default function Footer() {
             </div>
 
             {/* Bottom bar */}
-            <div
-                style={{
-                    borderTop: "1px solid rgba(255,255,255,0.07)",
-                    padding: "16px 32px",
-                    maxWidth: 1080,
-                    margin: "0 auto",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    gap: 8,
-                }}
-            >
-                <span style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.72rem" }}>
-                    {t("copy")}
-                </span>
-                <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "0.68rem", fontStyle: "italic" }}>
-                    {t("tagline")}
-                </span>
+            <div style={{ borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+                <div
+                    style={{
+                        maxWidth: 1080,
+                        margin: "0 auto",
+                        padding: "16px 32px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                        gap: 8,
+                    }}
+                >
+                    <span style={{ color: "rgba(0,0,0,0.25)", fontSize: "0.72rem" }}>
+                        {t("copy")}
+                    </span>
+                    <span style={{ color: "rgba(0,0,0,0.2)", fontSize: "0.7rem", fontStyle: "italic" }}>
+                        {t("tagline")}
+                    </span>
+                </div>
             </div>
 
             <style>{`
-        @media (max-width: 768px) {
-            .footer-grid { grid-template-columns: 1fr !important; }
-        }
-        `}</style>
+                @media (max-width: 768px) {
+                    .footer-grid { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
         </footer>
     );
 }
