@@ -133,7 +133,7 @@ export default function Navbar() {
 
                     {/* Daftar */}
                     <Link
-                        href="/daftar"
+                        href="/Register"
                         style={{
                             background: "linear-gradient(135deg, #E8201A, #FF6B35)",
                             color: "white",
