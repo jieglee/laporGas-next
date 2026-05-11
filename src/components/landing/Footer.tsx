@@ -30,7 +30,7 @@ const kontak = [
 
 export default function Footer() {
     return (
-        <footer style={{ background: "#fff", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
+        <footer style={{ background: "#FAFAFA", borderTop: "1px solid rgba(0,0,0,0.06)" }}>
             <div
                 className="footer-grid"
                 style={{
