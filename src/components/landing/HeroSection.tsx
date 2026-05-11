@@ -78,7 +78,7 @@ export default function HeroSection() {
                 {/* CTAs */}
                 <motion.div {...fadeUp(0.6)} style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
                     <Link
-                        href="/user/pengaduan/buat"
+                        href="/Login"
                         style={{
                             background: "linear-gradient(135deg, #E8201A, #FF6B35)", color: "white",
                             fontWeight: 700, fontSize: "0.92rem", padding: "14px 32px", borderRadius: "14px",
