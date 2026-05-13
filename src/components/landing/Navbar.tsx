@@ -17,8 +17,7 @@ export default function Navbar() {
     const links = [
         { label: "Beranda", href: "#" },
         { label: "Cara Kerja", href: "#how-it-works" },
-        { label: "Statistik", href: "#stats" },
-        { label: "Tentang", href: "#about" },
+        { label: "Kontak", href: "#kontak" },
     ];
 
     return (
@@ -95,7 +94,7 @@ export default function Navbar() {
 
                     {/* Masuk */}
                     <Link
-                        href="/Login"
+                        href="/auth/login"
                         style={{
                             color: "rgba(0,0,0,0.6)",
                             fontWeight: 600,
@@ -133,7 +132,7 @@ export default function Navbar() {
 
                     {/* Daftar */}
                     <Link
-                        href="/Register"
+                        href="/auth/register"
                         style={{
                             background: "linear-gradient(135deg, #E8201A, #FF6B35)",
                             color: "white",
@@ -252,7 +251,7 @@ export default function Navbar() {
 
                             <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
                                 <Link
-                                    href="/Login"
+                                    href="/auth/login"
                                     onClick={() => setMenuOpen(false)}
                                     style={{
                                         flex: 1,
