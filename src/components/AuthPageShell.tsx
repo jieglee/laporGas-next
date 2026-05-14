@@ -1,7 +1,9 @@
 ﻿"use client";
 
 import { ChangeEvent, FormEvent, useState } from "react";
-import { loginUser, registerUser } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+import { registerUser } from "@/lib/auth-api";
+import { signIn } from "next-auth/react";
 
 interface Props {
   defaultMode?: "login" | "register";
@@ -25,6 +27,8 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
     setStatus(null);
   };
 
+  const router = useRouter();
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
@@ -35,12 +39,39 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
         if (registerPassword !== registerConfirm) {
           throw new Error("Konfirmasi kata sandi tidak cocok.");
         }
+        const res = await registerUser({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        });
 
-        await registerUser(registerName, registerEmail, registerPassword);
         setStatus({ type: "success", message: "Registrasi berhasil. Silakan login." });
+        setRegisterName("");
+        setRegisterEmail("");
+        setRegisterPassword("");
+        setRegisterConfirm("");
+        setTimeout(() => switchTo("login"), 700);
       } else {
-        await loginUser(loginEmail, loginPassword);
+        const res = await signIn("credentials", {
+          email: loginEmail,
+          password: loginPassword
+        });
+
+        // if backend returns token, save it
+        try {
+          if (res && typeof res === "object" && (res as any).token) {
+            localStorage.setItem("token", (res as any).token);
+          }
+        } catch (e) {
+          // ignore storage errors
+        }
+
         setStatus({ type: "success", message: "Login berhasil." });
+        setLoginEmail("");
+        setLoginPassword("");
+
+        // redirect to home
+        router.push("/");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -58,13 +89,13 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
       >
         {/* Form wrapper — isi area sebelah kiri atau kanan 50% */}
         <div
-          className="absolute bottom-0 top-0 w-1/2 overflow-hidden transition-all duration-[560ms]"
+          className="absolute bottom-0 top-0 w-1/2 overflow-hidden transition-all duration-560"
           style={{ left: isReg ? "50%" : "0%" }}
         >
 
           {/* Strip lebar 200% berisi dua slot berdampingan */}
           <div
-            className="flex h-full transition-transform duration-[560ms]"
+            className="flex h-full transition-transform duration-560"
             style={{
               transform: isReg ? "translateX(-100%)" : "translateX(0)",
               transitionTimingFunction: "cubic-bezier(.77,0,.18,1)",
@@ -72,7 +103,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
           >
             {/* SLOT LOGIN */}
             <div className="flex h-full shrink-0 items-center justify-start p-8" style={{ width: "100%" }}>
-              <div className="w-full max-w-[260px] space-y-4">
+              <div className="w-full max-w-65 space-y-4">
                 <Tabs mode={mode} switchTo={switchTo} />
                 <div className="space-y-2">
                   <p className="text-[9px] font-bold uppercase tracking-[.2em] text-red-600">Login</p>
@@ -120,7 +151,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
 
             {/* SLOT REGISTER */}
             <div className="flex h-full shrink-0 items-center justify-end p-8" style={{ width: "100%" }}>
-              <div className="w-full max-w-[260px] space-y-4">
+              <div className="w-full max-w-65 space-y-4">
                 <Tabs mode={mode} switchTo={switchTo} />
                 <div className="space-y-2 text-right">
                   <p className="text-[9px] font-bold uppercase tracking-[.2em] text-red-600">Register</p>
@@ -176,7 +207,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
 
         {/* RED SLIDING PANEL */}
         <div
-          className="absolute bottom-0 top-0 z-20 flex w-1/2 flex-col justify-between overflow-hidden bg-red-700 p-10 text-white transition-all duration-[560ms]"
+          className="absolute bottom-0 top-0 z-20 flex w-1/2 flex-col justify-between overflow-hidden bg-red-700 p-10 text-white transition-all duration-560"
           style={{
             left: isReg ? "0%" : "50%",
           }}
@@ -195,7 +226,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
             <h2 className="mb-2 text-lg font-medium leading-snug">
               {isReg ? "Sudah punya akun?" : "Belum punya akun?"}
             </h2>
-            <p className="max-w-[180px] text-[11px] leading-7 text-red-100/60">
+            <p className="max-w-45 text-[11px] leading-7 text-red-100/60">
               {isReg
                 ? "Masuk dan lanjutkan memantau laporan yang kamu kirim."
                 : "Daftar sekarang dan mulai kirim laporan dengan mudah dan aman."}

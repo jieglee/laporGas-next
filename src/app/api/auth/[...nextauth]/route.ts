@@ -1,28 +1,73 @@
-import { NextResponse, type NextRequest } from "next/server";
+import NextAuth from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
+import { apiFetch }from "@/lib/api"
 
-const BASE_URL = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+const handler = NextAuth({
+    providers: [
+        CredentialsProvider({
+            name: "credentials",
 
-export async function POST(request: NextRequest) {
-  const url = new URL(request.url);
-  const backendPath = url.pathname.replace(/^\/api/, "");
-  const backendUrl = `${BASE_URL}${backendPath}`;
-  const body = await request.text();
+            credentials: {
+                email: {},
+                password: {}
+            },
 
-  const response = await fetch(backendUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+            async authorize(credentials) {
+                const data = await apiFetch("/login", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        email: credentials?.email,
+                        password: credentials?.password
+                    })
+                })
+
+                if (!data.token) {
+                    throw new Error(data.message)
+                }
+
+                const payload = JSON.parse(
+                    atob(data.token.split(".")[1])
+                )
+
+                return {
+                    id: payload.id,
+                    name: payload.name,
+                    role: payload.role,
+                    accessToken: data.token
+                }
+            }
+        })
+    ],
+
+    session: {
+        strategy: "jwt"
     },
-    body,
-  });
 
-  const responseText = await response.text();
-  const responseHeaders: Record<string, string> = {
-    "Content-Type": response.headers.get("content-type") || "application/json",
-  };
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id
+                token.role = user.role
+                token.accessToken = user.accessToken
+            }
 
-  return new NextResponse(responseText, {
-    status: response.status,
-    headers: responseHeaders,
-  });
-}
+            return token
+        },
+
+        async session({ session, token }) {
+            session.user.id = token.id as string
+            session.user.role = token.role as string
+            session.accessToken = token.accessToken as string
+
+            return session
+        }
+    },
+
+    pages: {
+        signIn: "/auth/login"
+    },
+
+    secret: process.env.NEXTAUTH_SECRET
+})
+
+export { handler as GET, handler as POST }
