@@ -1,39 +1,45 @@
 import NextAuth from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
-import { apiFetch }from "@/lib/api"
 
 const handler = NextAuth({
     providers: [
         CredentialsProvider({
             name: "credentials",
-
             credentials: {
                 email: {},
                 password: {}
             },
 
             async authorize(credentials) {
-                const data = await apiFetch("/login", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        email: credentials?.email,
-                        password: credentials?.password
-                    })
-                })
+                const res = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/login`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: credentials?.email,
+                            password: credentials?.password,
+                        }),
+                    }
+                )
+                
+                const json = await res.json()
 
-                if (!data.token) {
-                    throw new Error(data.message)
+                // console.log("STATUS:", res.status)
+                // console.log("JSON:", json)
+
+                if (!res.ok || !json.data?.token) {
+                    throw new Error(json.message || "Login failed")
                 }
 
-                const payload = JSON.parse(
-                    atob(data.token.split(".")[1])
-                )
+                const token = json.data.token
+                const payload = JSON.parse(atob(token.split(".")[1]))
 
                 return {
-                    id: payload.id,
+                    id: String(payload.id),
                     name: payload.name,
                     role: payload.role,
-                    accessToken: data.token
+                    accessToken: token,
                 }
             }
         })
@@ -50,7 +56,6 @@ const handler = NextAuth({
                 token.role = user.role
                 token.accessToken = user.accessToken
             }
-
             return token
         },
 
@@ -58,7 +63,6 @@ const handler = NextAuth({
             session.user.id = token.id as string
             session.user.role = token.role as string
             session.accessToken = token.accessToken as string
-
             return session
         }
     },

@@ -1,20 +1,29 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+import axios from "axios"
+import { getSession } from "next-auth/react"
 
-export async function apiFetch(endpoint: string, options?: RequestInit) {
-  const response = await fetch(`${BASE_URL}${endpoint}`, {
+const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
     headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
+        "Content-Type": "application/json",
     },
-    ...options,
-  });
+})
 
-  const text = await response.text();
-  const result = text ? JSON.parse(text) : {};
+api.interceptors.request.use(async (config) => {
+    const session = await getSession()
 
-  if (!response.ok) {
-    throw new Error(result.message || "Something went wrong");
-  }
+    if (session?.accessToken) {
+        config.headers.Authorization = `Bearer ${session.accessToken}`
+    }
 
-  return result;
-}
+    return config
+})
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        const message = error.response?.data?.message || "Something went wrong"
+        return Promise.reject(new Error(message))
+    }
+)
+
+export default api

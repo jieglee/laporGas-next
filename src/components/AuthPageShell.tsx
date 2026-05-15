@@ -54,7 +54,8 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
       } else {
         const res = await signIn("credentials", {
           email: loginEmail,
-          password: loginPassword
+          password: loginPassword,
+          redirect: false
         });
 
         // if backend returns token, save it

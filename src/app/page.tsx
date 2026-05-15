@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import SplashScreen from "../components/SplashScreen";
 import Navbar from "../components/landing/Navbar";
 import HeroSection from "../components/landing/HeroSection";
@@ -11,12 +12,17 @@ import Footer from "../components/landing/Footer";
 export default function Home() {
     const [showSplash, setShowSplash] = useState(true);
     const [showContent, setShowContent] = useState(false);
+    const { data: session } = useSession(); // ← TEST: hapus setelah confirmed
 
     useEffect(() => {
         const timer = setTimeout(() => setShowSplash(false), 2200);
         return () => clearTimeout(timer);
     }, []);
 
+    // TEST: hapus setelah confirmed
+    useEffect(() => {
+        if (session) console.log("[SESSION]", session)
+    }, [session])
 
     return (
         <>
