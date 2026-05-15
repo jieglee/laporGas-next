@@ -15,7 +15,7 @@ api.interceptors.request.use(async (config) => {
         config.headers.Authorization = `Bearer ${session.accessToken}`
     }
 
-    return config
+    return config  // tetap lanjut meskipun ga ada session
 })
 
 api.interceptors.response.use(
