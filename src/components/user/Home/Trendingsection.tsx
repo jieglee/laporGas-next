@@ -1,75 +1,79 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
-import LaporanCard from "@/components/user/Home/LaporanCard";
-import { LAPORAN_TRENDING } from "@/lib/mock-laporan";
+import { ArrowRight, Flame, ThumbsUp, MapPin } from "lucide-react";
+import type { LaporanStatus } from "@/types/laporan";
 
-export default function TrendingSection() {
+export interface TrendingReport {
+    id: string;
+    title: string;
+    category: string;
+    location: string;
+    status: LaporanStatus;
+    upvotes: number;
+}
+
+interface TrendingSectionProps {
+    reports: TrendingReport[];
+}
+
+export default function TrendingSection({ reports }: TrendingSectionProps) {
     return (
-        <section
-            style={{
-                paddingTop: 40,
-                paddingBottom: 96,
-                position: "relative",
-            }}
-        >
-            <div style={{ padding: "0 24px", maxWidth: 1080, margin: "0 auto" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 28 }}>
+        <section className="space-y-4">
+            <header className="flex items-end justify-between">
+                <div className="flex items-center gap-2">
                     <div>
-                        <p style={{ fontSize: "0.62rem", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", color: "#E8541C", marginBottom: 6 }}>
-                            Sedang Ramai
-                        </p>
-                        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "1.5rem", fontWeight: 800, color: "#1a0e08", letterSpacing: "-0.02em" }}>
-                            Laporan Trending
+                        <h2 className="flex items-center gap-2 text-lg font-semibold tracking-tight text-neutral-900 md:text-xl">
+                            Trending minggu ini
+                            <Flame className="h-5 w-5 text-orange-500" />
                         </h2>
+                        <p className="text-sm text-neutral-500">
+                            Laporan yang paling banyak didukung warga
+                        </p>
                     </div>
-                    <Link
-                        href="/user/jelajah"
-                        style={{
-                            fontSize: "0.72rem",
-                            color: "#E8541C",
-                            fontWeight: 600,
-                            textDecoration: "none",
-                            transition: "opacity 0.2s",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-                        onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                    >
-                        Lihat semua →
-                    </Link>
                 </div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                    style={{
-                        display: "grid",
-                        gridTemplateColumns: "repeat(3, 1fr)",
-                        gap: 14,
-                    }}
-                    className="trending-grid"
+                <Link
+                    href="/user/explore?sort=trending"
+                    className="group inline-flex items-center gap-1 text-sm font-medium text-orange-600 hover:text-orange-700"
                 >
-                    {LAPORAN_TRENDING.map((l) => (
-                        <LaporanCard key={l.id} laporan={l} />
-                    ))}
-                </motion.div>
-            </div>
+                    Lihat semua
+                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
+                </Link>
+            </header>
 
-            <style jsx>{`
-                @media (max-width: 900px) {
-                    .trending-grid {
-                        grid-template-columns: repeat(2, 1fr) !important;
-                    }
-                }
-                @media (max-width: 600px) {
-                    .trending-grid {
-                        grid-template-columns: 1fr !important;
-                    }
-                }
-            `}</style>
+            <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
+                {reports.map((report, idx) => (
+                    <Link
+                        key={report.id}
+                        href={`/user/laporan/${report.id}`}
+                        className="group flex items-center gap-4 border-b border-neutral-100 px-4 py-4 transition last:border-b-0 hover:bg-neutral-50 md:px-6"
+                    >
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-sm font-bold text-orange-600">
+                            {idx + 1}
+                        </span>
+
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                                <span className="text-xs font-medium uppercase tracking-wide text-orange-600">
+                                    {report.category}
+                                </span>
+                            </div>
+                            <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-neutral-900 group-hover:text-orange-600">
+                                {report.title}
+                            </h3>
+                            <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-neutral-500">
+                                <MapPin className="h-3 w-3" />
+                                {report.location}
+                            </p>
+                        </div>
+
+                        <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1.5 text-xs font-semibold text-neutral-700">
+                            <ThumbsUp className="h-3.5 w-3.5" />
+                            {report.upvotes}
+                        </div>
+                    </Link>
+                ))}
+            </div>
         </section>
     );
 }

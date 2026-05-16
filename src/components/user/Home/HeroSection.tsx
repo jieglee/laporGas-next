@@ -1,193 +1,67 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
-const fadeUp = (delay: number) => ({
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] as const },
-});
+interface HeroSectionProps {
+    userName?: string;
+}
 
-export default function HeroSection() {
+export default function HeroSection({ userName }: HeroSectionProps) {
+    const greeting = getGreeting();
+    const displayName = userName?.split(" ")[0] ?? "Warga";
+
     return (
-        <section
-            className="relative min-h-screen flex items-center overflow-hidden"
-            style={{
-                background: "linear-gradient(180deg, #FFF8F2 0%, #FFFFFF 100%)",
-                paddingTop: 96,
-                paddingBottom: 64,
-            }}
-        >
-            {/* Subtle orange glow */}
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-50 via-white to-orange-50/40 px-6 py-10 md:px-10 md:py-12">
+            {/* subtle decorative blob */}
             <div
-                className="absolute pointer-events-none"
-                style={{
-                    width: 700,
-                    height: 700,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle, rgba(255,107,53,0.10) 0%, rgba(255,140,66,0.05) 40%, transparent 70%)",
-                    top: -200,
-                    right: -200,
-                    filter: "blur(40px)",
-                }}
+                aria-hidden
+                className="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full bg-orange-200/30 blur-3xl"
             />
             <div
-                className="absolute pointer-events-none"
-                style={{
-                    width: 500,
-                    height: 500,
-                    borderRadius: "50%",
-                    background:
-                        "radial-gradient(circle, rgba(232,90,32,0.08) 0%, transparent 70%)",
-                    bottom: -150,
-                    left: -100,
-                    filter: "blur(40px)",
-                }}
+                aria-hidden
+                className="pointer-events-none absolute -bottom-24 -left-10 h-56 w-56 rounded-full bg-orange-300/20 blur-3xl"
             />
 
-            {/* Main content */}
-            <div
-                className="relative mx-auto w-full"
-                style={{
-                    maxWidth: 1180,
-                    padding: "0 40px",
-                }}
-            >
-                {/* Headline */}
-                <motion.h1
-                    {...fadeUp(0.2)}
-                    style={{
-                        fontFamily: "'Syne', sans-serif",
-                        fontSize: "clamp(2.8rem, 7vw, 5rem)",
-                        fontWeight: 800,
-                        lineHeight: 0.98,
-                        letterSpacing: "-0.045em",
-                        color: "#1a0e08",
-                        marginBottom: 24,
-                    }}
-                >
-                    Suara
-                    <br />
-                    <span
-                        style={{
-                            fontStyle: "italic",
-                            fontWeight: 500,
-                            background: "linear-gradient(90deg, #FF6B35, #E8541C)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                        }}
-                    >
-                        yang biasanya
-                    </span>
-                    <br />
-                    terabaikan.
-                </motion.h1>
-
-                {/* Pull quote */}
-                <motion.div
-                    {...fadeUp(0.32)}
-                    style={{
-                        borderLeft: "2px solid #FF6B35",
-                        paddingLeft: 18,
-                        margin: "32px 0 36px",
-                        maxWidth: 440,
-                    }}
-                >
-                    <p style={{ fontSize: "0.95rem", color: "#6b5546", lineHeight: 1.75 }}>
-                        Setiap hari ribuan masalah di sekitarmu menunggu untuk didengar.{" "}
-                        <span style={{ color: "#1a0e08", fontWeight: 600 }}>LaporGas</span>{" "}
-                        menjembatani warga dengan instansi terkait — transparan, terukur,
-                        tanpa birokrasi.
+            <div className="relative flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                <div className="max-w-xl">
+                    <p className="text-sm font-medium text-orange-600">
+                        {greeting}, {displayName} 👋
                     </p>
-                </motion.div>
+                    <h1 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-neutral-900 md:text-4xl">
+                        Suara yang biasanya{" "}
+                        <span className="italic text-orange-500">terabaikan</span>.
+                    </h1>
+                    <p className="mt-3 text-sm leading-relaxed text-neutral-600 md:text-base">
+                        Lihat laporan di sekitar, dukung yang penting, atau bikin laporan
+                        baru sekarang.
+                    </p>
+                </div>
 
-                {/* CTAs */}
-                <motion.div
-                    {...fadeUp(0.44)}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 22,
-                        flexWrap: "wrap",
-                    }}
-                >
+                <div className="flex flex-wrap items-center gap-3">
                     <Link
-                        href="/Login"
-                        style={{
-                            background: "linear-gradient(135deg, #FF6B35, #E8541C)",
-                            color: "white",
-                            fontWeight: 600,
-                            fontSize: "0.85rem",
-                            padding: "13px 14px 13px 26px",
-                            borderRadius: 999,
-                            textDecoration: "none",
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: 10,
-                            letterSpacing: "0.01em",
-                            boxShadow: "0 6px 20px rgba(255,107,53,0.28)",
-                            transition: "all 0.25s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.boxShadow =
-                                "0 10px 28px rgba(255,107,53,0.4)";
-                            e.currentTarget.style.transform = "translateY(-1px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.boxShadow =
-                                "0 6px 20px rgba(255,107,53,0.28)";
-                            e.currentTarget.style.transform = "translateY(0)";
-                        }}
+                        href="/user/laporan/buat"
+                        className="group inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-orange-500/20 transition hover:bg-orange-600"
                     >
-                        Mulai melapor
-                        <span
-                            style={{
-                                width: 24,
-                                height: 24,
-                                borderRadius: "50%",
-                                background: "rgba(255,255,255,0.2)",
-                                display: "inline-flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                                <path
-                                    d="M1 5h7M5.5 1.5L9 5l-3.5 3.5"
-                                    stroke="white"
-                                    strokeWidth="1.6"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                            </svg>
-                        </span>
+                        Buat laporan
+                        <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
                     </Link>
-                    <a
-                        href="#how-it-works"
-                        style={{
-                            color: "#a8856b",
-                            fontSize: "0.85rem",
-                            fontWeight: 500,
-                            textDecoration: "none",
-                            borderBottom: "1px solid rgba(232,90,32,0.15)",
-                            paddingBottom: 3,
-                            transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.color = "#E8541C";
-                            e.currentTarget.style.borderColor = "#E8541C";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.color = "#a8856b";
-                            e.currentTarget.style.borderColor = "rgba(232,90,32,0.15)";
-                        }}
+                    <Link
+                        href="/user/explore"
+                        className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white/60 px-5 py-3 text-sm font-semibold text-neutral-700 backdrop-blur transition hover:border-neutral-300 hover:bg-white"
                     >
-                        Cara kerja platform →
-                    </a>
-                </motion.div>
+                        Jelajahi laporan
+                    </Link>
+                </div>
             </div>
         </section>
     );
+}
+
+function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 11) return "Selamat pagi";
+    if (hour < 15) return "Selamat siang";
+    if (hour < 18) return "Selamat sore";
+    return "Selamat malam";
 }

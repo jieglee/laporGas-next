@@ -69,7 +69,7 @@ export default function UserSidebar() {
             <div className="flex items-center px-5 py-7 mb-2">
                 <Link href="/user" className="flex items-center gap-2" style={{ textDecoration: "none" }}>
                     <div
-                        className="flex items-center justify-center rounded-lg flex-shrink-0"
+                        className="flex items-center justify-center rounded-lg shrink-0"
                         style={{
                             width: 32, height: 32,
                             background: "linear-gradient(135deg, #FF6B35, #E8541C)",
@@ -163,7 +163,7 @@ export default function UserSidebar() {
                 >
                     {/* Avatar — ukurannya smooth transition */}
                     <div
-                        className="flex items-center justify-center flex-shrink-0"
+                        className="flex items-center justify-center shrink-0"
                         style={{
                             width: expanded ? 36 : 32,
                             height: expanded ? 36 : 32,
