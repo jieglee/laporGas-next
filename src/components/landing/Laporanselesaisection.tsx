@@ -108,7 +108,7 @@ function Card({ laporan, index }: { laporan: Laporan; index: number }) {
 
             {/* Footer */}
             <div className="mt-auto flex items-center gap-2 border-t border-[#f5ede3] pt-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF6B35] to-[#E8541C] text-[9px] font-bold text-white">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[#FF6B35] to-[#E8541C] text-[9px] font-bold text-white">
                     {getInisial(laporan.pelapor)}
                 </div>
                 <div className="flex min-w-0 flex-col">

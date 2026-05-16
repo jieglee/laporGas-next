@@ -12,7 +12,7 @@ export default function HeroSection({ userName }: HeroSectionProps) {
     const displayName = userName?.split(" ")[0] ?? "Warga";
 
     return (
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-50 via-white to-orange-50/40 px-6 py-10 md:px-10 md:py-12">
+        <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-orange-50 via-white to-orange-50/40 px-6 py-10 md:px-10 md:py-12">
             {/* subtle decorative blob */}
             <div
                 aria-hidden
