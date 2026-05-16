@@ -72,7 +72,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
         setLoginPassword("");
 
         // redirect to home
-        router.push("/");
+        router.push("/user");
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

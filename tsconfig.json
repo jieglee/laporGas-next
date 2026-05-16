@@ -34,7 +34,7 @@
     "**/*.mts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/app/user/Trendingsection"  ],
   "exclude": [
     "node_modules"
   ]

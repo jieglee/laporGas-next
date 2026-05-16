@@ -6,7 +6,7 @@ import Navbar from "../components/landing/Navbar";
 import HeroSection from "../components/landing/HeroSection";
 import StatsBar from "../components/landing/StatsBar";
 import HowItWorks from "../components/landing/HowItWorks";
-import { LaporanSelesaiSection } from "../components/landing/Laporanselesaisection";
+import LaporanSelesaiSection from "../components/landing/Laporanselesaisection";
 import Footer from "../components/landing/Footer";
 
 export default function Home() {

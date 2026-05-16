@@ -5,7 +5,6 @@ import SplashScreen from "./SplashScreen";
 
 export default function SplashWrapper({ children }: { children: React.ReactNode }) {
     const [showSplash, setShowSplash] = useState(true);
-    const [renderApp, setRenderApp] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => setShowSplash(false), 2200);
@@ -14,13 +13,8 @@ export default function SplashWrapper({ children }: { children: React.ReactNode 
 
     return (
         <>
-            <SplashScreen
-                isVisible={showSplash}
-                onExitComplete={() => setRenderApp(true)}
-            />
-            <div style={{ opacity: renderApp ? 1 : 0, transition: "opacity 0.3s ease" }}>
-                {children}
-            </div>
+            <SplashScreen isVisible={showSplash} />
+            {children}
         </>
     );
-}
+}   

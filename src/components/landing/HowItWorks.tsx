@@ -122,20 +122,6 @@ export default function HowItWorks() {
                     transition={{ delay: 1.0, duration: 0.5 }}
                     style={{ textAlign: "center", marginTop: 52 }}
                 >
-                    <Link
-                        href="/user/pengaduan/buat"
-                        style={{
-                            display: "inline-flex", alignItems: "center", gap: 8,
-                            border: "1.5px solid #E8201A", color: "#E8201A",
-                            fontWeight: 700, fontSize: "0.82rem", letterSpacing: "0.08em",
-                            textTransform: "uppercase", padding: "13px 32px", borderRadius: 10,
-                            textDecoration: "none", transition: "all 0.25s",
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = "#E8201A"; e.currentTarget.style.color = "white"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#E8201A"; }}
-                    >
-                        Pelajari Lebih Lanjut
-                    </Link>
                 </motion.div>
             </div>
         </section>
