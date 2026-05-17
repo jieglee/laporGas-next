@@ -11,26 +11,21 @@ import Footer from "../components/landing/Footer";
 
 export default function Home() {
     const [showSplash, setShowSplash] = useState(true);
-    const [showContent, setShowContent] = useState(false);
-    const { data: session } = useSession(); // ← TEST: hapus setelah confirmed
+    const { data: session } = useSession();
 
     useEffect(() => {
         const timer = setTimeout(() => setShowSplash(false), 2200);
         return () => clearTimeout(timer);
     }, []);
 
-    // TEST: hapus setelah confirmed
     useEffect(() => {
-        if (session) console.log("[SESSION]", session)
-    }, [session])
+        if (session) console.log("[SESSION]", session);
+    }, [session]);
 
     return (
         <>
-            <SplashScreen
-                isVisible={showSplash}
-                onExitComplete={() => setShowContent(true)}
-            />
-            <main style={{ opacity: showContent ? 1 : 0, transition: "opacity 0.35s ease" }}>
+            <SplashScreen isVisible={showSplash} />
+            <main>
                 <Navbar />
                 <HeroSection />
                 <StatsBar />

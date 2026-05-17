@@ -14,7 +14,7 @@ export default function SplashWrapper({ children }: { children: React.ReactNode 
     return (
         <>
             <SplashScreen isVisible={showSplash} />
-            {children}
+            {children} 
         </>
     );
-}   
+}
