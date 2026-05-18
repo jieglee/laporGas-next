@@ -1,6 +1,9 @@
 "use client";
 
-import AdminSidebar, { AdminSidebarProvider, useAdminSidebar } from "@/layout/admin/sidebar";
+import AdminSidebar, {
+    AdminSidebarProvider,
+    useAdminSidebar,
+} from "@/layout/admin/sidebar";
 
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     const { expanded } = useAdminSidebar();

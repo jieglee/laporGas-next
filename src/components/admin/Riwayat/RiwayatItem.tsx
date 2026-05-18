@@ -2,13 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { Pencil, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Pencil, ChevronDown, FileText, MapPin, Image as ImageIcon,
+  Tag, Type, ExternalLink,
+} from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
+export type FieldType = "Judul" | "Deskripsi" | "Lokasi" | "Kategori" | "Foto";
+
 export interface FieldChange {
-  field: string;          // "Judul", "Deskripsi", "Lokasi", "Foto"
+  field: FieldType;
   before: string;
   after: string;
 }
@@ -18,9 +23,33 @@ export interface RiwayatEdit {
   laporanId: string;
   laporanJudul: string;
   pelapor: { nama: string; inisial: string };
-  timestamp: string;       // "5 menit lalu"
-  tanggalLengkap: string;  // "17 Mei 2026, 14:30 WIB"
+  timestamp: string;
+  tanggalLengkap: string;
   fieldChanges: FieldChange[];
+}
+
+// ── Field icon map ─────────────────────────────────────────────────────────────
+
+const FIELD_ICON: Record<FieldType, React.ElementType> = {
+  "Judul":     Type,
+  "Deskripsi": FileText,
+  "Lokasi":    MapPin,
+  "Kategori":  Tag,
+  "Foto":      ImageIcon,
+};
+
+// Konsisten color buat avatar berdasar hash dari inisial
+function avatarColor(inisial: string): { bg: string; color: string } {
+  const palettes = [
+    { bg: "#FAECE7", color: "#993C1D" }, // coral
+    { bg: "#E1F5EE", color: "#0F6E56" }, // teal
+    { bg: "#EEEDFE", color: "#3C3489" }, // purple
+    { bg: "#FBEAF0", color: "#72243E" }, // pink
+    { bg: "#E6F1FB", color: "#0C447C" }, // blue
+    { bg: "#FAEEDA", color: "#854F0B" }, // amber
+  ];
+  const hash = inisial.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
+  return palettes[hash % palettes.length];
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -33,84 +62,99 @@ interface Props {
 export default function RiwayatItem({ riwayat, index }: Props) {
   const [expanded, setExpanded] = useState(false);
   const fieldCount = riwayat.fieldChanges.length;
+  const avatar = avatarColor(riwayat.pelapor.inisial);
+
+  // Preview = changes pertama (kalau cuma 1, full; kalau banyak, expandable)
+  const preview = riwayat.fieldChanges[0];
+  const restCount = fieldCount - 1;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 6 }}
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.025, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.35, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
       style={{
         background: "white",
         border: "0.5px solid #f0e6dc",
-        borderRadius: 12,
-        padding: "14px 16px",
-        marginBottom: 8,
-        transition: "border-color 0.15s",
+        borderRadius: 14,
+        padding: "16px 18px",
+        marginBottom: 10,
+        transition: "all 0.2s",
       }}
-      whileHover={{ borderColor: "rgba(255,107,53,0.2)" }}
+      whileHover={{
+        borderColor: "rgba(255,107,53,0.25)",
+        boxShadow: "0 4px 16px rgba(255,107,53,0.06)",
+      }}
     >
-      <div style={{ display: "flex", gap: 12 }}>
-        {/* Icon */}
+      {/* Header row */}
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+        {/* Avatar */}
         <div
           style={{
             width: 36,
             height: 36,
             borderRadius: "50%",
-            background: "rgba(255,107,53,0.1)",
-            color: "#E8541C",
+            background: avatar.bg,
+            color: avatar.color,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            fontSize: "0.72rem",
+            fontWeight: 700,
             flexShrink: 0,
           }}
         >
-          <Pencil size={14} strokeWidth={2} />
+          {riwayat.pelapor.inisial}
         </div>
 
-        {/* Content */}
+        {/* Title content */}
         <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Title row */}
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
+              alignItems: "baseline",
               gap: 8,
-              marginBottom: 4,
               flexWrap: "wrap",
+              marginBottom: 3,
             }}
           >
-            <p style={{ fontSize: "0.85rem", fontWeight: 600, color: "#1a0e08", margin: 0, lineHeight: 1.4 }}>
-              <span style={{ fontWeight: 700 }}>{riwayat.pelapor.nama}</span>
-              {" mengedit "}
+            <p style={{ fontSize: "0.85rem", color: "#1a0e08", margin: 0, lineHeight: 1.4 }}>
+              <span style={{ fontWeight: 600 }}>{riwayat.pelapor.nama}</span>
+              <span style={{ color: "#8a6f5e" }}> mengedit </span>
               <Link
                 href={`/admin/laporan/${riwayat.laporanId}`}
                 style={{
+                  fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                  fontSize: "0.72rem",
+                  background: "#FFF5EE",
+                  border: "0.5px solid rgba(255,107,53,0.15)",
+                  padding: "2px 8px",
+                  borderRadius: 6,
                   color: "#E8541C",
+                  fontWeight: 600,
                   textDecoration: "none",
-                  fontWeight: 700,
-                  transition: "opacity 0.15s",
+                  transition: "all 0.15s",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = "rgba(255,107,53,0.15)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = "#FFF5EE";
+                }}
               >
                 {riwayat.laporanId}
+                <ExternalLink size={9} strokeWidth={2.2} />
               </Link>
             </p>
-            <span
-              title={riwayat.tanggalLengkap}
-              style={{ fontSize: "0.65rem", color: "#c9a892", whiteSpace: "nowrap", flexShrink: 0, marginTop: 2 }}
-            >
-              {riwayat.timestamp}
-            </span>
           </div>
-
-          {/* Judul laporan */}
           <p
             style={{
-              fontSize: "0.75rem",
+              fontSize: "0.78rem",
               color: "#8a6f5e",
-              margin: "0 0 8px",
+              margin: 0,
               lineHeight: 1.5,
               overflow: "hidden",
               textOverflow: "ellipsis",
@@ -121,142 +165,191 @@ export default function RiwayatItem({ riwayat, index }: Props) {
           >
             {riwayat.laporanJudul}
           </p>
+        </div>
 
-          {/* Field changes summary (pills) */}
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <span style={{ fontSize: "0.65rem", color: "#a8856b" }}>
-              {fieldCount} {fieldCount > 1 ? "perubahan" : "perubahan"}:
-            </span>
-            {riwayat.fieldChanges.map((fc, i) => (
-              <span
-                key={i}
-                style={{
-                  fontSize: "0.6rem",
-                  fontWeight: 600,
-                  color: "#E8541C",
-                  background: "#FFF5EE",
-                  border: "0.5px solid rgba(255,107,53,0.15)",
-                  padding: "2px 8px",
-                  borderRadius: 99,
-                }}
-              >
-                {fc.field}
-              </span>
-            ))}
-          </div>
+        {/* Timestamp */}
+        <span
+          title={riwayat.tanggalLengkap}
+          style={{
+            fontSize: "0.68rem",
+            color: "#c9a892",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+            paddingTop: 4,
+          }}
+        >
+          {riwayat.timestamp}
+        </span>
+      </div>
 
-          {/* Expand button */}
-          <button
-            onClick={() => setExpanded((p) => !p)}
+      {/* Field changes preview */}
+      <FieldChangeBlock change={preview} />
+
+      {/* Show more if multiple */}
+      {restCount > 0 && (
+        <button
+          onClick={() => setExpanded((p) => !p)}
+          style={{
+            marginTop: 10,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            fontSize: "0.72rem",
+            fontWeight: 600,
+            color: expanded ? "#E8541C" : "#8a6f5e",
+            background: expanded ? "#FFF5EE" : "transparent",
+            border: `0.5px solid ${expanded ? "rgba(255,107,53,0.25)" : "transparent"}`,
+            borderRadius: 8,
+            padding: "5px 10px",
+            cursor: "pointer",
+            transition: "all 0.15s",
+            fontFamily: "inherit",
+          }}
+          onMouseEnter={(e) => {
+            if (!expanded) {
+              e.currentTarget.style.background = "#fafaf8";
+              e.currentTarget.style.color = "#E8541C";
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!expanded) {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#8a6f5e";
+            }
+          }}
+        >
+          {expanded
+            ? "Sembunyikan perubahan lain"
+            : `Lihat ${restCount} perubahan lain`}
+          <ChevronDown
+            size={12}
+            strokeWidth={2}
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 4,
-              fontSize: "0.68rem",
-              fontWeight: 600,
-              color: "#a8856b",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "6px 0 0",
-              transition: "color 0.15s",
+              transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#E8541C")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#a8856b")}
-          >
-            {expanded ? "Sembunyikan" : "Lihat"} detail perubahan
-            <ChevronDown
-              size={11}
-              style={{
-                transform: expanded ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.2s",
-              }}
-            />
-          </button>
+          />
+        </button>
+      )}
 
-          {/* Expandable detail */}
+      {/* Expanded extra changes */}
+      <AnimatePresence>
+        {expanded && restCount > 0 && (
           <motion.div
-            initial={false}
-            animate={{ height: expanded ? "auto" : 0, opacity: expanded ? 1 : 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             style={{ overflow: "hidden" }}
           >
-            <div style={{ paddingTop: 12, display: "flex", flexDirection: "column", gap: 10 }}>
-              {riwayat.fieldChanges.map((fc, i) => (
-                <div
-                  key={i}
-                  style={{
-                    background: "#fafaf8",
-                    border: "0.5px solid #f0e6dc",
-                    borderRadius: 10,
-                    padding: "10px 12px",
-                  }}
-                >
-                  <p
-                    style={{
-                      fontSize: "0.62rem",
-                      fontWeight: 700,
-                      color: "#6b5546",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.06em",
-                      margin: "0 0 8px",
-                    }}
-                  >
-                    {fc.field}
-                  </p>
-
-                  {/* Before */}
-                  <div style={{ marginBottom: 8 }}>
-                    <p
-                      style={{
-                        fontSize: "0.58rem",
-                        fontWeight: 600,
-                        color: "#a8856b",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        margin: "0 0 3px",
-                      }}
-                    >
-                      Sebelum
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "0.75rem",
-                        color: "#8a6f5e",
-                        lineHeight: 1.5,
-                        margin: 0,
-                        textDecoration: "line-through",
-                        textDecorationColor: "rgba(220,38,38,0.4)",
-                      }}
-                    >
-                      {fc.before}
-                    </p>
-                  </div>
-
-                  {/* After */}
-                  <div>
-                    <p
-                      style={{
-                        fontSize: "0.58rem",
-                        fontWeight: 600,
-                        color: "#059669",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.05em",
-                        margin: "0 0 3px",
-                      }}
-                    >
-                      Sesudah
-                    </p>
-                    <p style={{ fontSize: "0.78rem", color: "#1a0e08", lineHeight: 1.5, margin: 0, fontWeight: 500 }}>
-                      {fc.after}
-                    </p>
-                  </div>
-                </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 10 }}>
+              {riwayat.fieldChanges.slice(1).map((fc, i) => (
+                <FieldChangeBlock key={i} change={fc} />
               ))}
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.article>
+  );
+}
+
+// ── FieldChangeBlock — GitHub-style diff card ─────────────────────────────────
+
+function FieldChangeBlock({ change }: { change: FieldChange }) {
+  const Icon = FIELD_ICON[change.field];
+
+  return (
+    <div
+      style={{
+        border: "0.5px solid #f0e6dc",
+        borderRadius: 10,
+        overflow: "hidden",
+        background: "white",
+      }}
+    >
+      {/* Field label header */}
+      <div
+        style={{
+          padding: "8px 12px",
+          background: "#fafaf8",
+          borderBottom: "0.5px solid #f0e6dc",
+          display: "flex",
+          alignItems: "center",
+          gap: 7,
+        }}
+      >
+        <Icon size={12} strokeWidth={2} style={{ color: "#a8856b" }} />
+        <span
+          style={{
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            color: "#6b5546",
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+          }}
+        >
+          {change.field}
+        </span>
+      </div>
+
+      {/* Diff content */}
+      <div style={{ fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", fontSize: "0.75rem" }}>
+        {/* Before (removed) */}
+        <div
+          style={{
+            display: "flex",
+            background: "rgba(220,38,38,0.06)",
+            padding: "8px 12px",
+            gap: 10,
+            alignItems: "flex-start",
+            lineHeight: 1.55,
+          }}
+        >
+          <span
+            style={{
+              color: "#B91C1C",
+              fontWeight: 700,
+              flexShrink: 0,
+              userSelect: "none",
+              minWidth: 10,
+            }}
+          >
+            −
+          </span>
+          <span style={{ color: "#7a2222", flex: 1, wordBreak: "break-word" }}>
+            {change.before}
+          </span>
+        </div>
+
+        {/* After (added) */}
+        <div
+          style={{
+            display: "flex",
+            background: "rgba(16,185,129,0.06)",
+            padding: "8px 12px",
+            gap: 10,
+            alignItems: "flex-start",
+            borderTop: "0.5px solid #f5ede3",
+            lineHeight: 1.55,
+          }}
+        >
+          <span
+            style={{
+              color: "#059669",
+              fontWeight: 700,
+              flexShrink: 0,
+              userSelect: "none",
+              minWidth: 10,
+            }}
+          >
+            +
+          </span>
+          <span style={{ color: "#1a4d3a", flex: 1, wordBreak: "break-word", fontWeight: 500 }}>
+            {change.after}
+          </span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

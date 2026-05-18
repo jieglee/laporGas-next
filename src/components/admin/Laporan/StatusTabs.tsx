@@ -25,8 +25,11 @@ export default function StatusTabs({ active, onChange, counts }: Props) {
       style={{
         display: "flex",
         gap: 4,
-        borderBottom: "0.5px solid #f0e6dc",
-        marginBottom: 18,
+        background: "white",
+        border: "0.5px solid #f0e6dc",
+        borderRadius: 12,
+        padding: 4,
+        marginBottom: 16,
         overflowX: "auto",
         scrollbarWidth: "none",
       }}
@@ -42,18 +45,24 @@ export default function StatusTabs({ active, onChange, counts }: Props) {
               display: "inline-flex",
               alignItems: "center",
               gap: 7,
-              padding: "10px 14px",
-              background: "none",
+              padding: "8px 14px",
+              background: isActive ? "linear-gradient(135deg, #FF6B35, #E8541C)" : "transparent",
               border: "none",
-              borderBottom: `2px solid ${isActive ? "#E8541C" : "transparent"}`,
-              marginBottom: "-1px",
+              borderRadius: 8,
               cursor: "pointer",
               fontSize: "0.78rem",
               fontWeight: isActive ? 700 : 500,
-              color: isActive ? "#1a0e08" : "#8a6f5e",
-              transition: "all 0.15s",
+              color: isActive ? "white" : "#6b5546",
+              transition: "all 0.2s",
               whiteSpace: "nowrap",
               fontFamily: "inherit",
+              boxShadow: isActive ? "0 4px 12px rgba(255,107,53,0.25)" : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) e.currentTarget.style.background = "#fafaf8";
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) e.currentTarget.style.background = "transparent";
             }}
           >
             {t.label}
@@ -63,8 +72,8 @@ export default function StatusTabs({ active, onChange, counts }: Props) {
                 fontWeight: 700,
                 padding: "1px 7px",
                 borderRadius: 99,
-                background: isActive ? "rgba(255,107,53,0.12)" : "#f5ede3",
-                color: isActive ? "#E8541C" : "#a8856b",
+                background: isActive ? "rgba(255,255,255,0.25)" : "#f5ede3",
+                color: isActive ? "white" : "#a8856b",
                 minWidth: 18,
                 textAlign: "center",
               }}

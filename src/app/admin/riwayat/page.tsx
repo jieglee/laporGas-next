@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { History } from "lucide-react";
+import { History, Pencil } from "lucide-react";
 import RiwayatFilters, { type RiwayatFilterState } from "@/components/admin/Riwayat/RiwayatFilters";
 import RiwayatItem, { type RiwayatEdit } from "@/components/admin/Riwayat/RiwayatItem";
 
@@ -189,25 +189,43 @@ export default function RiwayatPage() {
   }, [filter]);
 
   return (
-    <div style={{ padding: "32px 32px 64px", maxWidth: 800, margin: "0 auto" }}>
+    <div style={{ padding: "32px 32px 64px", maxWidth: 760, margin: "0 auto" }}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1
+      <div style={{ marginBottom: 24, display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div
           style={{
-            fontFamily: "'Syne', sans-serif",
-            fontSize: "1.75rem",
-            fontWeight: 800,
-            color: "#1a0e08",
-            letterSpacing: "-0.03em",
-            margin: 0,
-            marginBottom: 6,
+            width: 44,
+            height: 44,
+            borderRadius: 12,
+            background: "linear-gradient(135deg, #FFF5EE 0%, #FFEDE0 100%)",
+            border: "0.5px solid rgba(255,107,53,0.18)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#E8541C",
+            flexShrink: 0,
           }}
         >
-          Riwayat Edit Laporan
-        </h1>
-        <p style={{ fontSize: "0.85rem", color: "#a8856b", margin: 0 }}>
-          Catatan kapan laporan diedit oleh pelapor
-        </p>
+          <Pencil size={19} strokeWidth={1.8} />
+        </div>
+        <div>
+          <h1
+            style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: "1.65rem",
+              fontWeight: 800,
+              color: "#1a0e08",
+              letterSpacing: "-0.03em",
+              margin: 0,
+              marginBottom: 4,
+            }}
+          >
+            Riwayat Edit Laporan
+          </h1>
+          <p style={{ fontSize: "0.82rem", color: "#a8856b", margin: 0 }}>
+            Catatan kapan laporan diedit oleh pelapor
+          </p>
+        </div>
       </div>
 
       {/* Filters */}
@@ -220,28 +238,28 @@ export default function RiwayatPage() {
             background: "white",
             border: "0.5px solid #f0e6dc",
             borderRadius: 14,
-            padding: "64px 24px",
+            padding: "72px 24px",
             textAlign: "center",
           }}
         >
           <div
             style={{
-              width: 52,
-              height: 52,
+              width: 56,
+              height: 56,
               borderRadius: "50%",
               background: "rgba(255,107,53,0.08)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              margin: "0 auto 14px",
+              margin: "0 auto 16px",
             }}
           >
-            <History size={22} color="#E8541C" strokeWidth={1.8} />
+            <History size={24} color="#E8541C" strokeWidth={1.8} />
           </div>
-          <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#1a0e08", marginBottom: 4 }}>
+          <p style={{ fontSize: "0.92rem", fontWeight: 600, color: "#1a0e08", marginBottom: 4 }}>
             Tidak ada riwayat edit
           </p>
-          <p style={{ fontSize: "0.75rem", color: "#a8856b" }}>
+          <p style={{ fontSize: "0.78rem", color: "#a8856b" }}>
             Belum ada laporan yang diedit pada periode ini
           </p>
         </div>

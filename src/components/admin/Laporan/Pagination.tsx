@@ -16,7 +16,6 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
   const from = (page - 1) * itemsPerPage + 1;
   const to = Math.min(page * itemsPerPage, totalItems);
 
-  // Build pages array with ellipsis logic
   const pages: (number | "...")[] = [];
   if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -34,14 +33,14 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    minWidth: 34,
-    height: 34,
-    padding: "0 10px",
+    minWidth: 36,
+    height: 36,
+    padding: "0 11px",
     borderRadius: 9,
     border: `0.5px solid ${active ? "transparent" : "#f0e6dc"}`,
     background: active ? "linear-gradient(135deg, #FF6B35, #E8541C)" : "white",
     color: active ? "white" : disabled ? "#d4b89e" : "#3d2817",
-    fontSize: "0.78rem",
+    fontSize: "0.8rem",
     fontWeight: active ? 700 : 500,
     cursor: disabled ? "not-allowed" : "pointer",
     transition: "all 0.15s",
@@ -60,7 +59,7 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
         flexWrap: "wrap",
       }}
     >
-      <p style={{ fontSize: "0.75rem", color: "#a8856b", margin: 0 }}>
+      <p style={{ fontSize: "0.78rem", color: "#a8856b", margin: 0 }}>
         Menampilkan <strong style={{ color: "#1a0e08", fontWeight: 700 }}>{from}–{to}</strong> dari{" "}
         <strong style={{ color: "#1a0e08", fontWeight: 700 }}>{totalItems}</strong> laporan
       </p>
