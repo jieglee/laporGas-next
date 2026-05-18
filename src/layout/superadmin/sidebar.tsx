@@ -59,8 +59,8 @@ export default function SuperadminSidebar() {
             style={{
                 width: expanded ? 244 : 72,
                 background: "#0f0f0f",
-                borderColor: "#1f1f1f",
-                boxShadow: expanded ? "0 8px 40px rgba(0,0,0,0.4)" : "none",
+                borderColor: "#f0e6dc",
+                boxShadow: expanded ? "0 8px 32px rgba(255,107,53,0.06)" : "none",
                 transition: "width 300ms ease-out, box-shadow 300ms ease-out",
             }}
         >
@@ -79,7 +79,7 @@ export default function SuperadminSidebar() {
                         fontWeight: 800,
                         fontSize: "1.15rem",
                         letterSpacing: "-0.02em",
-                        color: "#ffffff",
+                        color: "#1a0e08ommi",
                         maxWidth: expanded ? 200 : 0,
                         display: "inline-flex",
                         alignItems: "center",
@@ -115,7 +115,7 @@ export default function SuperadminSidebar() {
                     return (
                         <Link
                             key={menu.path}
-                            href={menu.path}
+                            href={menu.path as any}
                             className="group flex items-center gap-4 rounded-xl px-3 py-3 transition-all duration-200"
                             style={{
                                 textDecoration: "none",

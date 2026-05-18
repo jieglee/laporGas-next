@@ -111,7 +111,7 @@ export default function AdminSidebar() {
                     return (
                         <Link
                             key={menu.path}
-                            href={menu.path}
+                            href={menu.path as any}
                             className={`group flex items-center gap-4 rounded-xl px-3 py-3 transition-colors duration-200
                                 ${active ? "bg-[#FFF5EE]" : "hover:bg-[#FAF5EF]"}`}
                             style={{ textDecoration: "none" }}
