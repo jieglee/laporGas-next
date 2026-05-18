@@ -25,7 +25,6 @@ const MENUS = [
     { name: "Dashboard",          icon: LayoutDashboard, path: "/superadmin" },
     { name: "Manajemen Laporan",  icon: FileText,        path: "/superadmin/laporan" },
     { name: "Manajemen User",     icon: Users,           path: "/superadmin/users" },
-    { name: "Atur Role",          icon: ShieldCheck,     path: "/superadmin/users/role" },
 ];
 
 export default function SuperadminSidebar() {
@@ -88,7 +87,7 @@ export default function SuperadminSidebar() {
                         <span style={{
                             fontSize: "0.55rem",
                             fontWeight: 700,
-                            padding: "2px 7px",
+                            padding: "2px 4px",
                             borderRadius: 99,
                             background: "#FFF5EE",
                             color: "#E8541C",
