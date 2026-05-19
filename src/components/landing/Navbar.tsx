@@ -278,7 +278,7 @@ export default function Navbar() {
                                     Masuk
                                 </Link>
                                 <Link
-                                    href="/daftar"
+                                    href={"/daftar" as any}
                                     onClick={() => setMenuOpen(false)}
                                     style={{
                                         flex: 1,
