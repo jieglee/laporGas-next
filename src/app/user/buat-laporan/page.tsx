@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Loader2 } from "lucide-react";
+import { createReport } from "@/lib/reports";
 
 import TitleField from "@/components/user/BuatLaporan/TitleField";
 import DescriptionField from "@/components/user/BuatLaporan/DescriptionField";
@@ -62,14 +63,32 @@ export default function BuatLaporanPage() {
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmit = async () => {
-    if (!isFormValid(form) || submitting) return;
+const handleSubmit = async () => {
+  if (!isFormValid(form) || submitting) return;
+
+  try {
     setSubmitting(true);
-    // TODO: ganti dengan real fetch ke backend
-    await new Promise((r) => setTimeout(r, 1600));
-    setSubmitting(false);
+
+    await createReport({
+      title: form.title,
+      description: form.description,
+      category_id: Number(form.category_id),
+      priority: form.priority as any,
+      location: form.location,
+      latitude: Number(form.latitude),
+      longitude: Number(form.longitude),
+      image: form.images[0], // ambil image pertama
+    });
+
     setSubmitted(true);
-  };
+    setForm(EMPTY_FORM);
+  } catch (error) {
+    console.error(error);
+    alert("Gagal membuat laporan");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   // Progress 0–100 berdasar 5 required fields
   const progress = (

@@ -1,4 +1,5 @@
-// Register tidak butuh token — pakai fetch langsung, bypass axios interceptor
+import api from "./api"
+
 export async function registerUser(data: {
     name: string
     email: string
@@ -18,4 +19,15 @@ export async function registerUser(data: {
     if (!res.ok) throw new Error(json.message || "Register gagal")
 
     return json
+}
+
+export async function logout() {
+  try {
+    await api.post("/logout");
+  } catch (error) {
+    console.error("Logout error:", error);
+  } finally {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+  }
 }

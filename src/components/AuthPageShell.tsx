@@ -67,12 +67,26 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
           // ignore storage errors
         }
 
-        setStatus({ type: "success", message: "Login berhasil." });
-        setLoginEmail("");
-        setLoginPassword("");
+const sessionRes = await fetch("/api/auth/session");
+const session = await sessionRes.json();
 
-        // redirect to home
-        router.push("/user");
+setStatus({ type: "success", message: "Login berhasil." });
+
+setLoginEmail("");
+setLoginPassword("");
+
+if (res?.ok) {
+   const sessionRes = await fetch("/api/auth/session");
+   const session = await sessionRes.json();
+
+   const role = session?.user?.role;
+
+   if (role === "admin" || role === "superadmin") {
+      router.replace("/admin");
+   } else {
+      router.replace("/user");
+   }
+}
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

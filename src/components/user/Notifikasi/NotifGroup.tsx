@@ -2,8 +2,33 @@
 
 import { motion } from "framer-motion";
 import NotifItem from "./NotifItem";
-import type { Notif, NotifGrup } from "@/lib/mock-notifikasi";
-import { GRUP_CONFIG } from "@/lib/mock-notifikasi";
+
+export type NotifGrup =
+  | "laporan"
+  | "sosial"
+  | "sistem";
+
+export interface Notif {
+  id: string;
+  judul: string;
+  deskripsi: string;
+  waktu: string;
+  dibaca: boolean;
+}
+
+const GRUP_CONFIG = {
+  laporan: {
+    label: "Laporan",
+  },
+
+  sosial: {
+    label: "Sosial",
+  },
+
+  sistem: {
+    label: "Sistem",
+  },
+};
 
 interface Props {
   grup: NotifGrup;
@@ -12,17 +37,33 @@ interface Props {
   onRead: (id: string) => void;
 }
 
-export default function NotifGroup({ grup, notifs, index, onRead }: Props) {
+export default function NotifGroup({
+  grup,
+  notifs,
+  index,
+  onRead,
+}: Props) {
   const cfg = GRUP_CONFIG[grup];
-  const unread = notifs.filter((n) => !n.dibaca).length;
+
+  const unread = notifs.filter(
+    (n) => !n.dibaca
+  ).length;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
+      initial={{
+        opacity: 0,
+        y: 10,
+      }}
+      animate={{
+        opacity: 1,
+        y: 0,
+      }}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.06,
+      }}
     >
-      {/* Section label */}
       <div
         style={{
           padding: "18px 4px 8px",
@@ -43,6 +84,7 @@ export default function NotifGroup({ grup, notifs, index, onRead }: Props) {
         >
           {cfg.label}
         </p>
+
         {unread > 0 && (
           <span
             style={{
@@ -59,7 +101,6 @@ export default function NotifGroup({ grup, notifs, index, onRead }: Props) {
         )}
       </div>
 
-      {/* Items card */}
       <div
         style={{
           background: "white",
@@ -71,9 +112,17 @@ export default function NotifGroup({ grup, notifs, index, onRead }: Props) {
         {notifs.map((n, i) => (
           <div
             key={n.id}
-            style={{ borderBottom: i < notifs.length - 1 ? "0.5px solid #f5ede3" : "none" }}
+            style={{
+              borderBottom:
+                i < notifs.length - 1
+                  ? "0.5px solid #f5ede3"
+                  : "none",
+            }}
           >
-            <NotifItem notif={n} onRead={onRead} />
+            <NotifItem
+              notif={n}
+              onRead={onRead}
+            />
           </div>
         ))}
       </div>

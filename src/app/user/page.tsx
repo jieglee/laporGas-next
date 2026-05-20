@@ -1,81 +1,128 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+
 import HeroSection from "@/components/user/Home/HeroSection";
 import CategorySection from "@/components/user/Home/CategorySection";
-import TrendingSection, { type TrendingReport } from "@/components/user/Home/Trendingsection";
-import NearbySection, { type NearbyReport } from "@/components/user/Home/NearbySection";
+
+import TrendingSection, {
+  type TrendingReport,
+} from "@/components/user/Home/Trendingsection";
+
+import NearbySection, {
+  type NearbyReport,
+} from "@/components/user/Home/NearbySection";
+
 import LaporanSelesaiSection from "@/components/landing/Laporanselesaisection";
 import CtaSection from "@/components/user/Home/Ctasection";
 
-const mockTrending: TrendingReport[] = [
-  {
-    id: "t1",
-    title: "Macet parah tiap pagi di simpang Margonda",
-    category: "Transportasi",
-    location: "Margonda, Depok",
-    status: "onProgress",
-    upvotes: 342,
-  },
-  {
-    id: "t2",
-    title: "Pungli di terminal Depok belum tertangani",
-    category: "Keamanan",
-    location: "Depok Lama",
-    status: "pending",
-    upvotes: 287,
-  },
-  {
-    id: "t3",
-    title: "Banjir tahunan di kompleks Pesona Khayangan",
-    category: "Lingkungan",
-    location: "Sukmajaya, Depok",
-    status: "onProgress",
-    upvotes: 256,
-  },
-];
+import { getReports, type Report } from "@/lib/reports";
 
-const mockNearby: NearbyReport[] = [
-  {
-    id: "n1",
-    title: "Jalan rusak di kawasan Kukusan",
-    category: "Infrastruktur",
-    location: "Kukusan, Depok",
-    distance: "250m",
-    status: "approved",
-    thumbnail: undefined,
-    upvotes: 156,
-    comments: 24,
-  },
-  {
-    id: "n2",
-    title: "Lampu jalan mati di perumahan Pesona",
-    category: "Utilitas Publik",
-    location: "Pesona Khayangan",
-    distance: "500m",
-    status: "onProgress",
-    thumbnail: undefined,
-    upvotes: 89,
-    comments: 12,
-  },
-  {
-    id: "n3",
-    title: "Sampah menumpuk di TPS kawasan Cinere",
-    category: "Lingkungan",
-    location: "Cinere, Depok",
-    distance: "750m",
-    status: "pending",
-    thumbnail: undefined,
-    upvotes: 204,
-    comments: 31,
-  },
-];
+function mapStatus(status: string) {
+  switch (status) {
+    case "approved":
+      return "approved";
+
+    case "on_progress":
+      return "onProgress";
+
+    case "completed":
+      return "completed";
+
+    case "rejected":
+      return "rejected";
+
+    default:
+      return "pending";
+  }
+}
 
 export default function UserHomePage() {
+  const [reports, setReports] = useState<Report[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchReports() {
+      try {
+        setLoading(true);
+
+        const data = await getReports();
+
+        setReports(data);
+      } catch (error) {
+        console.error("Failed fetch home reports:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReports();
+  }, []);
+
+  const trendingReports: TrendingReport[] = useMemo(() => {
+    return reports
+      .slice(0, 3)
+      .map((report) => ({
+        id: String(report.id),
+
+        title: report.title,
+
+        category: report.category_name,
+
+        location: report.location || "Lokasi tidak diketahui",
+
+        status: mapStatus(report.status),
+
+        // sementara dummy
+        upvotes: Math.floor(Math.random() * 500),
+      }));
+  }, [reports]);
+
+  const nearbyReports: NearbyReport[] = useMemo(() => {
+    return reports
+      .slice(0, 3)
+      .map((report) => ({
+        id: String(report.id),
+
+        title: report.title,
+
+        category: report.category_name,
+
+        location: report.location || "Lokasi tidak diketahui",
+
+        distance: "1 km",
+
+        status: mapStatus(report.status),
+
+        thumbnail: report.image_url || undefined,
+
+        // sementara dummy
+        upvotes: Math.floor(Math.random() * 300),
+
+        comments: Math.floor(Math.random() * 50),
+      }));
+  }, [reports]);
+
   return (
     <div className="space-y-10 px-4 py-6 md:px-8 md:py-10">
       <HeroSection />
-      <NearbySection reports={mockNearby} />
-      <CategorySection />
-      <TrendingSection reports={mockTrending} />
+
+      {loading ? (
+        <div className="text-center py-10 text-sm text-neutral-500">
+          Loading laporan...
+        </div>
+      ) : (
+        <>
+          <NearbySection reports={nearbyReports} />
+
+          <CategorySection />
+
+          <TrendingSection reports={trendingReports} />
+        </>
+      )}
+
       <LaporanSelesaiSection />
+
       <CtaSection />
     </div>
   );

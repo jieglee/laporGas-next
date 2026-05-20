@@ -45,6 +45,7 @@ function toAdminLaporan(r: Report): AdminLaporan {
         }),
         upvote: 0,
         komentarCount: 0,
+        koordinat: r.latitude && r.longitude ? { lat: r.latitude, lng: r.longitude } : null,
     };
 }
 

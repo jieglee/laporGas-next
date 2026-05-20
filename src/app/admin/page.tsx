@@ -5,6 +5,7 @@ import HeroSection from "@/components/admin/Dashboard/HeroSection";
 import StatCard from "@/components/admin/Dashboard/StatCard";
 import UrgentReports, { type AdminLaporan } from "@/components/admin/Dashboard/UrgentReports";
 import StatisticsChart, { type ChartData } from "@/components/admin/Dashboard/StatisticsChart";
+import { useSession } from "next-auth/react";
 
 // ── Data sementara — nanti ganti ke real fetch ────────────────────────────────
 
@@ -54,8 +55,19 @@ export default function AdminDashboardPage() {
     .filter((l) => l.priority === "urgent" && l.status !== "completed" && l.status !== "rejected")
     .sort((a, b) => PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]);
 
+    const { data: session, status } = useSession();
+
+   if (status === "loading") {
+      return null;
+   }
+
   return (
     <div style={{ padding: "32px 32px 64px", maxWidth: 1280, margin: "0 auto" }}>
+       {session?.user?.role === "superadmin" ? (
+            <h1>Superadmin Dashboard</h1>
+         ) : (
+            <h1>Admin Dashboard</h1>
+         )}
 
       {/* 1. HERO SECTION */}
       <HeroSection pendingCount={stats.pending} urgentCount={stats.urgent} />

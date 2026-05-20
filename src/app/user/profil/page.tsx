@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import { FileText, Loader2 } from "lucide-react";
 import ProfileHeader from "@/components/user/Profile/ProfileHeader";
 import EditProfileModal from "@/components/user/Profile/EditProfileModal";
 import UserLaporanCard, { type UserLaporan, type UserLaporanStatus } from "@/components/user/Profile/UserLaporanCard";
 import { getReports, type Report } from "@/lib/reports";
-
+import { logout } from "@/lib/auth-api";
 // ── Adapter ───────────────────────────────────────────────────────────────────
 
 const KATEGORI_MAP: Record<string, string> = {
@@ -54,8 +54,13 @@ export default function ProfilPage() {
     async function fetch() {
       try {
         setLoadingLaporan(true);
-        const data = await getReports();
-        // Filter laporan milik user sendiri kalau ada user_id di session
+const data = await getReports();
+
+const myReports = data.filter(
+  (r) => r.user_id === Number(session?.user?.id)
+);
+
+setLaporan(myReports.map(toUserLaporan));
         setLaporan(data.map(toUserLaporan));
       } catch {
         setLaporan([]);
@@ -97,7 +102,10 @@ export default function ProfilPage() {
           avatarUrl={session?.user?.image ?? null}
           inisial={inisial}
           onEdit={() => setEditOpen(true)}
-          onLogout={() => signOut({ callbackUrl: "/auth/login" })}
+          onLogout={async () => {
+  await logout();
+  window.location.href = "/";
+}}
         />
       </motion.div>
 
