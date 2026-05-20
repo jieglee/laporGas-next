@@ -24,7 +24,7 @@ export function AdminSidebarProvider({ children }: { children: React.ReactNode }
 const MENUS = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/admin" },
     { name: "Laporan",   icon: FileText,        path: "/admin/laporan" },
-    { name: "Riwayat",   icon: History,         path: "/admin/riwayat" },
+
 ];
 
 export default function AdminSidebar() {

@@ -1,116 +1,214 @@
 "use client";
 
-import Link from "next/link";
-import { MapPin, Calendar, Settings } from "lucide-react";
-import type { UserProfile } from "@/lib/mock-user";
+import { Camera, Mail, Calendar, LogOut, Pencil } from "lucide-react";
 
 interface Props {
-  user: UserProfile;
-  onEditClick: () => void;
+  nama: string;
+  email: string;
+  joinedAt: string;
+  avatarUrl?: string | null;
+  inisial: string;
+  onEdit: () => void;
+  onLogout: () => void;
 }
 
-export default function ProfileHeader({ user, onEditClick }: Props) {
-  const inisial = user.nama
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
+export default function ProfileHeader({
+  nama, email, joinedAt, avatarUrl, inisial, onEdit, onLogout,
+}: Props) {
   return (
-    <section style={{ padding: "32px 0 24px" }}>
-      {/* Avatar + stats horizontal */}
-      <div style={{ display: "flex", alignItems: "center", gap: 32, marginBottom: 20 }}>
+    <div
+      style={{
+        background: "white",
+        border: "0.5px solid #f0e6dc",
+        borderRadius: 18,
+        overflow: "hidden",
+        marginBottom: 24,
+      }}
+    >
+      {/* Orange banner */}
+      <div
+        style={{
+          height: 110,
+          background: "linear-gradient(135deg, #FF6B35 0%, #E8541C 60%, #c94415 100%)",
+          position: "relative",
+        }}
+      >
+        {/* subtle pattern overlay */}
         <div
           style={{
-            width: 110,
-            height: 110,
-            borderRadius: "50%",
-            background: "linear-gradient(135deg, #FF6B35, #E8541C)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "2.2rem",
-            fontWeight: 800,
-            color: "white",
-            fontFamily: "'Syne', sans-serif",
-            flexShrink: 0,
-            boxShadow: "0 4px 16px rgba(255,107,53,0.18)",
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)",
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: "0 28px 24px", position: "relative" }}>
+        {/* Avatar */}
+        <div
+          style={{
+            position: "relative",
+            display: "inline-block",
+            marginTop: -48,
+            marginBottom: 14,
           }}
         >
-          {inisial}
+          <div
+            style={{
+              width: 88,
+              height: 88,
+              borderRadius: "50%",
+              border: "4px solid white",
+              overflow: "hidden",
+              background: "linear-gradient(135deg, #FF6B35, #E8541C)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 8px 24px rgba(255,107,53,0.25)",
+            }}
+          >
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={nama}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            ) : (
+              <span
+                style={{
+                  fontSize: "1.8rem",
+                  fontWeight: 800,
+                  color: "white",
+                  fontFamily: "'Syne', sans-serif",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {inisial}
+              </span>
+            )}
+          </div>
         </div>
 
-        <div style={{ flex: 1, display: "flex", gap: 32, flexWrap: "wrap" }}>
-          {[
-            { label: "laporan",      value: user.stats.laporan },
-            { label: "diselesaikan", value: user.stats.diselesaikan },
-            { label: "dukungan",     value: user.stats.dukungan.toLocaleString("id-ID") },
-          ].map((s) => (
-            <div key={s.label}>
-              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: "1.4rem", fontWeight: 800, color: "#1a0e08", letterSpacing: "-0.03em", lineHeight: 1, marginBottom: 4 }}>
-                {s.value}
+        {/* Name + meta */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                fontFamily: "'Syne', sans-serif",
+                fontSize: "1.4rem",
+                fontWeight: 800,
+                color: "#1a0e08",
+                letterSpacing: "-0.025em",
+                margin: "0 0 10px",
+              }}
+            >
+              {nama}
+            </h1>
+            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  fontSize: "0.8rem",
+                  color: "#6b5546",
+                }}
+              >
+                <Mail size={13} strokeWidth={1.8} style={{ color: "#a8856b" }} />
+                {email}
               </div>
-              <div style={{ fontSize: "0.72rem", color: "#a8856b", fontWeight: 500 }}>
-                {s.label}
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 7,
+                  fontSize: "0.78rem",
+                  color: "#8a6f5e",
+                }}
+              >
+                <Calendar size={13} strokeWidth={1.8} style={{ color: "#a8856b" }} />
+                Bergabung {joinedAt}
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* Buttons */}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+            <button
+              onClick={onEdit}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "9px 18px",
+                background: "linear-gradient(135deg, #FF6B35, #E8541C)",
+                color: "white",
+                border: "none",
+                borderRadius: 10,
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                boxShadow: "0 4px 14px rgba(255,107,53,0.28)",
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 8px 20px rgba(255,107,53,0.38)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(255,107,53,0.28)";
+              }}
+            >
+              <Pencil size={13} strokeWidth={2} />
+              Edit Profil
+            </button>
+
+            <button
+              onClick={onLogout}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 7,
+                padding: "9px 18px",
+                background: "white",
+                color: "#6b5546",
+                border: "0.5px solid #f0e6dc",
+                borderRadius: 10,
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "all 0.15s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#FEF2F2";
+                e.currentTarget.style.color = "#B91C1C";
+                e.currentTarget.style.borderColor = "#FEE2E2";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "white";
+                e.currentTarget.style.color = "#6b5546";
+                e.currentTarget.style.borderColor = "#f0e6dc";
+              }}
+            >
+              <LogOut size={13} strokeWidth={1.8} />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
-
-      {/* Name */}
-      <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "1.4rem", fontWeight: 800, color: "#1a0e08", letterSpacing: "-0.025em", margin: 0, marginBottom: 10 }}>
-        {user.nama}
-      </h1>
-
-      {/* Bio */}
-      <p style={{ fontSize: "0.85rem", color: "#3d2817", lineHeight: 1.65, margin: "0 0 14px", maxWidth: 480 }}>
-        {user.bio}
-      </p>
-
-      {/* Meta */}
-      <div style={{ display: "flex", gap: 18, marginBottom: 18, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.75rem", color: "#8a6f5e" }}>
-          <MapPin size={13} strokeWidth={1.8} />
-          {user.lokasi}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: "0.75rem", color: "#8a6f5e" }}>
-          <Calendar size={13} strokeWidth={1.8} />
-          Bergabung sejak {user.bergabungSejak}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div style={{ display: "flex", gap: 8 }}>
-        <button
-          onClick={onEditClick}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 7,
-            background: "white",
-            border: "0.5px solid #f0e6dc",
-            borderRadius: 10,
-            padding: "9px 18px",
-            fontSize: "0.78rem",
-            fontWeight: 600,
-            color: "#1a0e08",
-            cursor: "pointer",
-            transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)";
-            e.currentTarget.style.background = "#FFF5EE";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "#f0e6dc";
-            e.currentTarget.style.background = "white";
-          }}
-        >
-          Edit Profil
-        </button>
-      </div>
-    </section>
+    </div>
   );
 }

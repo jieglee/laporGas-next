@@ -22,6 +22,7 @@ export interface AdminLaporan {
   priority: LaporanPriority;
   lokasi: string;
   alamat: string;
+  koordinat: { lat: number; lng: number };
   fotoCount: number;
   pelapor: { nama: string; inisial: string; email: string };
   createdAt: string;
@@ -58,7 +59,6 @@ export const KATEGORI_LABEL: Record<LaporanKategori, string> = {
   "lalu-lintas":    "Lalu Lintas",
 };
 
-// Hash inisial → palette warna konsisten per user
 export function avatarColor(inisial: string): { bg: string; color: string } {
   const palettes = [
     { bg: "linear-gradient(135deg, #FF6B35, #E8541C)", color: "white" },

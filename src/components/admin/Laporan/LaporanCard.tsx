@@ -1,9 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  MapPin, ArrowBigUp, MessageCircle, Image as ImageIcon, Clock,
-  Check, X as XIcon, Loader, CheckCircle2, MoreHorizontal,
+  MapPin, ArrowBigUp, MessageCircle, Image as ImageIcon,
+  Check, X as XIcon, Loader, CheckCircle2, ChevronRight,
 } from "lucide-react";
 import {
   type AdminLaporan,
@@ -21,395 +22,374 @@ function fmt(n: number) {
 interface Props {
   laporan: AdminLaporan;
   index: number;
-  onClick: (l: AdminLaporan) => void;
-  onAction: (id: string, action: { type: "approve" | "rejectAsk" | "update"; status?: AdminLaporanStatus }) => void;
+  onAction: (
+    id: string,
+    action: { type: "approve" | "rejectAsk" | "update"; status?: AdminLaporanStatus }
+  ) => void;
 }
 
-function ActionBtn({
-  onClick,
-  children,
-  variant = "default",
-  title,
-}: {
-  onClick: (e: React.MouseEvent) => void;
-  children: React.ReactNode;
-  variant?: "default" | "primary" | "danger";
-  title: string;
-}) {
-  const styles = {
-    default: { bg: "white", color: "#3d2817", border: "#f0e6dc" },
-    primary: { bg: "linear-gradient(135deg, #FF6B35, #E8541C)", color: "white", border: "transparent" },
-    danger:  { bg: "white", color: "#B91C1C", border: "#FEE2E2" },
-  };
-  const s = styles[variant];
-
-  return (
-    <button
-      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClick(e); }}
-      title={title}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: 5,
-        padding: "7px 12px",
-        borderRadius: 8,
-        background: s.bg,
-        color: s.color,
-        border: `0.5px solid ${s.border}`,
-        cursor: "pointer",
-        transition: "all 0.15s",
-        fontSize: "0.72rem",
-        fontWeight: 600,
-        fontFamily: "inherit",
-        boxShadow: variant === "primary" ? "0 4px 12px rgba(255,107,53,0.22)" : "none",
-        whiteSpace: "nowrap",
-      }}
-      onMouseEnter={(e) => {
-        if (variant === "default") {
-          e.currentTarget.style.background = "#FFF5EE";
-          e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)";
-          e.currentTarget.style.color = "#E8541C";
-        } else if (variant === "primary") {
-          e.currentTarget.style.transform = "translateY(-1px)";
-          e.currentTarget.style.boxShadow = "0 8px 20px rgba(255,107,53,0.35)";
-        } else if (variant === "danger") {
-          e.currentTarget.style.background = "#FEF2F2";
-        }
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = variant === "primary" ? "linear-gradient(135deg, #FF6B35, #E8541C)" : variant === "danger" ? "white" : "white";
-        if (variant === "default") {
-          e.currentTarget.style.borderColor = "#f0e6dc";
-          e.currentTarget.style.color = "#3d2817";
-        }
-        e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.boxShadow = variant === "primary" ? "0 4px 12px rgba(255,107,53,0.22)" : "none";
-      }}
-    >
-      {children}
-    </button>
-  );
-}
-
-export default function LaporanCard({ laporan, index, onClick, onAction }: Props) {
+export default function LaporanCard({ laporan, index, onAction }: Props) {
+  const router = useRouter();
   const s = STATUS_CONFIG[laporan.status];
   const p = PRIORITY_CONFIG[laporan.priority];
   const avatar = avatarColor(laporan.pelapor.inisial);
 
-  const showApproveReject = laporan.status === "pending";
-  const showSetProgress = laporan.status === "approved";
-  const showMarkCompleted = laporan.status === "on_progress";
-
   return (
     <motion.article
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }}
-      onClick={() => onClick(laporan)}
+      transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+      onClick={() => router.push(`/admin/laporan/${laporan.id}`)}
       style={{
         background: "white",
         border: "0.5px solid #f0e6dc",
         borderRadius: 14,
-        padding: 0,
-        marginBottom: 10,
-        cursor: "pointer",
-        transition: "all 0.2s",
         overflow: "hidden",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        transition: "all 0.2s",
       }}
       whileHover={{
-        borderColor: "rgba(255,107,53,0.25)",
-        boxShadow: "0 6px 20px rgba(255,107,53,0.08)",
-        y: -1,
+        borderColor: "rgba(255,107,53,0.3)",
+        boxShadow: "0 8px 24px rgba(255,107,53,0.09)",
+        y: -2,
       }}
     >
-      <div style={{ display: "flex", gap: 14, padding: "16px 18px" }}>
-        {/* Photo thumbnail */}
+      {/* Thumbnail */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          aspectRatio: "16/9",
+          background: "linear-gradient(135deg, #e0dcd8, #cac6c2)",
+          flexShrink: 0,
+        }}
+      >
         <div
           style={{
-            width: 110,
-            height: 110,
-            borderRadius: 10,
-            background: "linear-gradient(135deg, #d0ccc8, #b8b4b0)",
+            position: "absolute",
+            inset: 0,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            position: "relative",
-            overflow: "hidden",
-            flexShrink: 0,
           }}
         >
-          <ImageIcon size={24} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
-          <div
+          <ImageIcon size={28} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
+        </div>
+
+        {/* Status — top left */}
+        <div
+          style={{
+            position: "absolute",
+            top: 9,
+            left: 9,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+            fontSize: "0.58rem",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            padding: "3px 9px",
+            borderRadius: 99,
+            background: s.bg,
+            color: s.color,
+          }}
+        >
+          <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.dot }} />
+          {s.label}
+        </div>
+
+        {/* Priority — top right */}
+        <div
+          style={{
+            position: "absolute",
+            top: 9,
+            right: 9,
+            fontSize: "0.58rem",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            textTransform: "uppercase",
+            padding: "3px 9px",
+            borderRadius: 99,
+            background: p.bg,
+            color: p.color,
+          }}
+        >
+          {p.label}
+        </div>
+
+        {/* Foto count — bottom right */}
+        <div
+          style={{
+            position: "absolute",
+            bottom: 9,
+            right: 9,
+            fontSize: "0.6rem",
+            fontWeight: 600,
+            background: "rgba(0,0,0,0.52)",
+            color: "white",
+            padding: "3px 8px",
+            borderRadius: 99,
+            backdropFilter: "blur(4px)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 4,
+          }}
+        >
+          <ImageIcon size={9} strokeWidth={2} />
+          {laporan.fotoCount}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div style={{ padding: "13px 14px", display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
+
+        {/* ID + Kategori */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span
             style={{
-              position: "absolute",
-              bottom: 6,
-              right: 6,
-              fontSize: "0.58rem",
-              fontWeight: 600,
-              background: "rgba(0,0,0,0.55)",
-              color: "white",
+              fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
+              fontSize: "0.6rem",
+              fontWeight: 700,
+              color: "#8a6f5e",
+              background: "#fafaf8",
+              border: "0.5px solid #f0e6dc",
               padding: "2px 7px",
-              borderRadius: 99,
-              backdropFilter: "blur(4px)",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 3,
+              borderRadius: 5,
             }}
           >
-            <ImageIcon size={9} strokeWidth={2} />
-            {laporan.fotoCount}
+            {laporan.id}
+          </span>
+          <span
+            style={{
+              fontSize: "0.58rem",
+              fontWeight: 700,
+              color: "#E8541C",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+            }}
+          >
+            {KATEGORI_LABEL[laporan.kategori]}
+          </span>
+        </div>
+
+        {/* Judul */}
+        <h3
+          style={{
+            fontSize: "0.88rem",
+            fontWeight: 700,
+            color: "#1a0e08",
+            margin: 0,
+            lineHeight: 1.4,
+            letterSpacing: "-0.01em",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+          }}
+        >
+          {laporan.judul}
+        </h3>
+
+        {/* Lokasi */}
+        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#a8856b" }}>
+          <MapPin size={11} strokeWidth={1.8} style={{ flexShrink: 0 }} />
+          <span
+            style={{
+              fontSize: "0.7rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {laporan.lokasi}
+          </span>
+        </div>
+
+        {/* Divider */}
+        <div style={{ borderTop: "0.5px solid #f5ede3" }} />
+
+        {/* Pelapor + engagement */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+            <div
+              style={{
+                width: 22,
+                height: 22,
+                borderRadius: "50%",
+                background: avatar.bg,
+                color: avatar.color,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "0.55rem",
+                fontWeight: 700,
+                flexShrink: 0,
+              }}
+            >
+              {laporan.pelapor.inisial}
+            </div>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                color: "#3d2817",
+                fontWeight: 500,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {laporan.pelapor.nama}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#a8856b", fontSize: "0.68rem", flexShrink: 0 }}>
+            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <ArrowBigUp size={11} strokeWidth={1.8} />
+              {fmt(laporan.upvote)}
+            </span>
+            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+              <MessageCircle size={10} strokeWidth={1.8} />
+              {laporan.komentarCount}
+            </span>
           </div>
         </div>
 
-        {/* Content */}
-        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-          {/* Top row: ID + status + priority + time */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              marginBottom: 7,
-              flexWrap: "wrap",
-            }}
-          >
-            <span
-              style={{
-                fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                fontSize: "0.65rem",
-                fontWeight: 700,
-                color: "#6b5546",
-                background: "#fafaf8",
-                border: "0.5px solid #f0e6dc",
-                padding: "2px 8px",
-                borderRadius: 6,
-              }}
-            >
-              {laporan.id}
-            </span>
+        {/* Actions */}
+        <div style={{ display: "flex", gap: 6, marginTop: 2 }}>
+          {laporan.status === "pending" && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "approve" }); }}
+                style={{
+                  flex: 1,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 5,
+                  padding: "7px 0",
+                  borderRadius: 8,
+                  background: "linear-gradient(135deg, #FF6B35, #E8541C)",
+                  color: "white",
+                  border: "none",
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  boxShadow: "0 3px 10px rgba(255,107,53,0.22)",
+                  transition: "all 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(255,107,53,0.35)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 3px 10px rgba(255,107,53,0.22)"; }}
+              >
+                <Check size={12} strokeWidth={2.5} /> Approve
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "rejectAsk" }); }}
+                style={{
+                  flex: 1,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 5,
+                  padding: "7px 0",
+                  borderRadius: 8,
+                  background: "white",
+                  color: "#B91C1C",
+                  border: "0.5px solid #FEE2E2",
+                  fontSize: "0.72rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#FEF2F2")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+              >
+                <XIcon size={12} strokeWidth={2.5} /> Reject
+              </button>
+            </>
+          )}
 
-            {/* Status with dot */}
-            <span
+          {laporan.status === "approved" && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "update", status: "on_progress" }); }}
               style={{
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                padding: "3px 9px",
-                borderRadius: 99,
-                background: s.bg,
-                color: s.color,
+                flex: 1,
                 display: "inline-flex",
                 alignItems: "center",
+                justifyContent: "center",
                 gap: 5,
+                padding: "7px 0",
+                borderRadius: 8,
+                background: "white",
+                color: "#C2410C",
+                border: "0.5px solid #FFEDD5",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "background 0.15s",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#FFF7ED")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
             >
-              <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.dot }} />
-              {s.label}
-            </span>
+              <Loader size={12} strokeWidth={1.8} /> On Progress
+            </button>
+          )}
 
-            {/* Priority */}
-            <span
+          {laporan.status === "on_progress" && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "update", status: "completed" }); }}
               style={{
-                fontSize: "0.6rem",
-                fontWeight: 700,
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
-                padding: "3px 9px",
-                borderRadius: 99,
-                background: p.bg,
-                color: p.color,
+                flex: 1,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 5,
+                padding: "7px 0",
+                borderRadius: 8,
+                background: "white",
+                color: "#047857",
+                border: "0.5px solid #D1FAE5",
+                fontSize: "0.72rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                transition: "background 0.15s",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "#F0FDF4")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
             >
-              {p.label}
-            </span>
+              <CheckCircle2 size={12} strokeWidth={1.8} /> Selesai
+            </button>
+          )}
 
-            <span style={{ marginLeft: "auto", fontSize: "0.68rem", color: "#c9a892", display: "flex", alignItems: "center", gap: 4 }}>
-              <Clock size={11} strokeWidth={1.8} />
-              {laporan.createdAt}
-            </span>
-          </div>
-
-          {/* Title */}
-          <h3
+          {/* Chevron detail */}
+          <button
+            onClick={(e) => { e.stopPropagation(); router.push(`/admin/laporan/${laporan.id}`); }}
             style={{
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              color: "#1a0e08",
-              margin: 0,
-              marginBottom: 5,
-              lineHeight: 1.4,
-              letterSpacing: "-0.01em",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 1,
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {laporan.judul}
-          </h3>
-
-          {/* Description preview */}
-          <p
-            style={{
-              fontSize: "0.78rem",
-              color: "#8a6f5e",
-              margin: 0,
-              marginBottom: 10,
-              lineHeight: 1.5,
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {laporan.deskripsi}
-          </p>
-
-          {/* Bottom row: pelapor + meta + actions */}
-          <div
-            style={{
-              display: "flex",
+              width: 32,
+              height: 32,
+              borderRadius: 8,
+              background: "#fafaf8",
+              border: "0.5px solid #f0e6dc",
+              cursor: "pointer",
+              display: "inline-flex",
               alignItems: "center",
-              justifyContent: "space-between",
-              gap: 12,
-              marginTop: "auto",
-              flexWrap: "wrap",
+              justifyContent: "center",
+              color: "#a8856b",
+              flexShrink: 0,
+              transition: "all 0.15s",
             }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#FFF5EE"; e.currentTarget.style.color = "#E8541C"; e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fafaf8"; e.currentTarget.style.color = "#a8856b"; e.currentTarget.style.borderColor = "#f0e6dc"; }}
           >
-            {/* Left meta */}
-            <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, flexWrap: "wrap" }}>
-              {/* Pelapor avatar + nama */}
-              <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
-                <div
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: "50%",
-                    background: avatar.bg,
-                    color: avatar.color,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "0.55rem",
-                    fontWeight: 700,
-                    flexShrink: 0,
-                  }}
-                >
-                  {laporan.pelapor.inisial}
-                </div>
-                <span style={{ fontSize: "0.72rem", color: "#3d2817", fontWeight: 500, whiteSpace: "nowrap" }}>
-                  {laporan.pelapor.nama}
-                </span>
-              </div>
-
-              {/* Lokasi */}
-              <span style={{ fontSize: "0.7rem", color: "#a8856b", display: "flex", alignItems: "center", gap: 3, minWidth: 0 }}>
-                <MapPin size={11} strokeWidth={1.8} />
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{laporan.lokasi}</span>
-              </span>
-
-              {/* Kategori */}
-              <span
-                style={{
-                  fontSize: "0.6rem",
-                  fontWeight: 600,
-                  color: "#E8541C",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.06em",
-                }}
-              >
-                {KATEGORI_LABEL[laporan.kategori]}
-              </span>
-
-              {/* Engagement */}
-              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#a8856b", fontSize: "0.7rem" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                  <ArrowBigUp size={12} strokeWidth={1.8} />
-                  {fmt(laporan.upvote)}
-                </span>
-                <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-                  <MessageCircle size={11} strokeWidth={1.8} />
-                  {laporan.komentarCount}
-                </span>
-              </div>
-            </div>
-
-            {/* Right: action buttons */}
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-              {showApproveReject && (
-                <>
-                  <ActionBtn
-                    title="Approve"
-                    variant="primary"
-                    onClick={() => onAction(laporan.id, { type: "approve" })}
-                  >
-                    <Check size={13} strokeWidth={2.4} />
-                    Approve
-                  </ActionBtn>
-                  <ActionBtn
-                    title="Reject"
-                    variant="danger"
-                    onClick={() => onAction(laporan.id, { type: "rejectAsk" })}
-                  >
-                    <XIcon size={13} strokeWidth={2.4} />
-                    Reject
-                  </ActionBtn>
-                </>
-              )}
-
-              {showSetProgress && (
-                <ActionBtn
-                  title="Set on progress"
-                  onClick={() => onAction(laporan.id, { type: "update", status: "on_progress" })}
-                >
-                  <Loader size={12} strokeWidth={1.8} />
-                  On Progress
-                </ActionBtn>
-              )}
-
-              {showMarkCompleted && (
-                <ActionBtn
-                  title="Mark completed"
-                  onClick={() => onAction(laporan.id, { type: "update", status: "completed" })}
-                >
-                  <CheckCircle2 size={12} strokeWidth={1.8} />
-                  Selesai
-                </ActionBtn>
-              )}
-
-              {!showApproveReject && !showSetProgress && !showMarkCompleted && (
-                <button
-                  onClick={(e) => { e.stopPropagation(); onClick(laporan); }}
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 8,
-                    background: "white",
-                    border: "0.5px solid #f0e6dc",
-                    cursor: "pointer",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "#a8856b",
-                    transition: "all 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#fafaf8";
-                    e.currentTarget.style.color = "#E8541C";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "white";
-                    e.currentTarget.style.color = "#a8856b";
-                  }}
-                >
-                  <MoreHorizontal size={14} />
-                </button>
-              )}
-            </div>
-          </div>
+            <ChevronRight size={13} strokeWidth={2} />
+          </button>
         </div>
       </div>
     </motion.article>

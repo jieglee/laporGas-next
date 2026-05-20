@@ -196,49 +196,6 @@ export default function HeroSection() {
         className="relative text-center"
         style={{ maxWidth: 800, padding: "0 24px" }}
       >
-        {/* Eyebrow badge */}
-        <motion.div
-          {...fadeUp(0.1)}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "6px 16px 6px 8px",
-            background:
-              "linear-gradient(90deg, rgba(255,107,53,0.08), rgba(192,57,43,0.04))",
-            border: "1px solid rgba(255,107,53,0.18)",
-            borderRadius: 999,
-            fontSize: 11,
-            fontWeight: 500,
-            letterSpacing: "0.16em",
-            textTransform: "uppercase",
-            color: "#C0392B",
-            marginBottom: 40,
-          }}
-        >
-          <span
-            style={{
-              width: 20,
-              height: 20,
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #FF6B35, #E8541C)",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "white",
-              }}
-            />
-          </span>
-          Platform aduan publik
-        </motion.div>
-
         {/* Headline */}
         <motion.h1
           {...fadeUp(0.2)}
@@ -437,64 +394,6 @@ export default function HeroSection() {
           </a>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        {...fadeUp(0.7)}
-        style={{
-          position: "absolute",
-          bottom: 32,
-          left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          fontFamily: "'Poppins', sans-serif",
-          fontSize: 10,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "#C0392B",
-          opacity: 0.55,
-        }}
-      >
-        <span
-          style={{
-            width: 28,
-            height: 1,
-            background: "#C0392B",
-            opacity: 0.4,
-          }}
-        />
-        <motion.span
-          style={{
-            width: 5,
-            height: 5,
-            borderRadius: "50%",
-            background: "#C0392B",
-          }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <span>Scroll untuk lihat</span>
-        <motion.span
-          style={{
-            width: 5,
-            height: 5,
-            borderRadius: "50%",
-            background: "#C0392B",
-          }}
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <span
-          style={{
-            width: 28,
-            height: 1,
-            background: "#C0392B",
-            opacity: 0.4,
-          }}
-        />
-      </motion.div>
     </section>
   );
 }
