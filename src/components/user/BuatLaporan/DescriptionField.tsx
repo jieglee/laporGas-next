@@ -14,10 +14,9 @@ export default function DescriptionField({ value, onChange }: Props) {
       label="Deskripsi"
       required
       icon={<FileText size={12} strokeWidth={2} />}
-      hint="Minimal 20 karakter. Jelaskan masalah secara detail agar admin bisa menindaklanjuti."
     >
       <textarea
-        placeholder="Jelaskan kondisi masalah, sejak kapan terjadi, dampaknya terhadap warga, dll."
+        placeholder="Minimal 20 karakter. Jelaskan masalah secara detail agar admin bisa menindaklanjuti."
         value={value}
         onChange={(e) => onChange(e.target.value)}
         rows={4}

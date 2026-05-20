@@ -45,16 +45,6 @@ export default function SubmitButton({ form, submitting, onSubmit }: Props) {
     <div style={{ paddingTop: 4 }}>
       {!valid && (
         <div style={{ marginBottom: 14 }}>
-          <p style={{ fontSize: "0.7rem", color: "#a8856b", margin: "0 0 6px" }}>
-            Lengkapi field berikut sebelum kirim:
-          </p>
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-            {form.title.trim().length < 5 && <Chip label="Judul" />}
-            {form.description.trim().length < 20 && <Chip label="Deskripsi (min 20 karakter)" />}
-            {!form.category_id && <Chip label="Kategori" />}
-            {!form.latitude && <Chip label="Lokasi di peta" />}
-            {!form.priority && <Chip label="Prioritas" />}
-          </div>
         </div>
       )}
 

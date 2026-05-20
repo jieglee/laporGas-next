@@ -147,7 +147,7 @@ export default function LaporanSelesaiSection() {
                 {/* Header */}
                 <div className="mb-10 flex items-end justify-between gap-4">
                     <div>
-                        <h2 className="font-['Syne'] text-2xl font-bold tracking-tight text-[#1a0e08] sm:text-3xl">
+                        <h2 className="text-2xl font-bold tracking-tight text-[#1a0e08] sm:text-3xl">
                             Laporan yang telah ditangani
                         </h2>
                     </div>

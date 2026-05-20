@@ -14,11 +14,10 @@ export default function TitleField({ value, onChange }: Props) {
       label="Judul laporan"
       required
       icon={<FileText size={12} strokeWidth={2} />}
-      hint="Minimal 5 karakter. Tulis judul yang singkat dan jelas."
     >
       <input
         type="text"
-        placeholder="Contoh: Jalan berlubang di depan SDN 01"
+        placeholder="Minimal 5 karakter. Tulis judul yang singkat dan jelas."
         value={value}
         onChange={(e) => onChange(e.target.value)}
         maxLength={120}
