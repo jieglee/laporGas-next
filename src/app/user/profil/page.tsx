@@ -6,33 +6,56 @@ import { motion } from "framer-motion";
 import { FileText, Loader2 } from "lucide-react";
 import ProfileHeader from "@/components/user/Profile/ProfileHeader";
 import EditProfileModal from "@/components/user/Profile/EditProfileModal";
-import UserLaporanCard, { type UserLaporan, type UserLaporanStatus } from "@/components/user/Profile/UserLaporanCard";
+import ReportCard from "@/components/common-ui/ReportCard";
+import type { ExplorePost, ExploreStatus } from "@/components/user/Explore/types";
 import { getReports, type Report } from "@/lib/reports";
 import { logout } from "@/lib/auth-api";
 // ── Adapter ───────────────────────────────────────────────────────────────────
 
-const KATEGORI_MAP: Record<string, string> = {
-  "1": "Infrastruktur",
-  "2": "Fasilitas Umum",
-  "3": "Kebersihan",
-  "4": "Lalu Lintas",
+const KATEGORI_MAP: Record<string, ExplorePost["kategori"]> = {
+  "1": "infrastruktur",
+  "2": "fasilitas-umum",
+  "3": "kebersihan",
+  "4": "lalu-lintas",
 };
 
-function toUserLaporan(r: Report): UserLaporan {
+function toExplorePost(r: Report): ExplorePost {
   return {
     id: String(r.id),
     judul: r.title,
     deskripsi: r.description,
-    kategori: r.category_name || KATEGORI_MAP[String(r.category_id)] || "Lainnya",
-    status: r.status as UserLaporanStatus,
+
+  kategori:
+  KATEGORI_MAP[String(r.category_id)] || "infrastruktur",
+
+    status: r.status as ExploreStatus,
+
     imageUrl: r.image_url,
+
+    lokasi: r.location || "Lokasi tidak tersedia",
+
     upvote: 0,
+
     komentarCount: 0,
-    createdAt: new Date(r.created_at).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    }),
+
+    createdAt: new Date(r.created_at).toLocaleDateString(
+      "id-ID",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      }
+    ),
+
+    pelapor: {
+      nama: r.user_name || "Pengguna",
+      inisial: (r.user_name || "U")
+        .split(" ")
+        .slice(0, 2)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase(),
+    },
   };
 }
 
@@ -41,7 +64,7 @@ function toUserLaporan(r: Report): UserLaporan {
 export default function ProfilPage() {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
-  const [laporan, setLaporan] = useState<UserLaporan[]>([]);
+  const [laporan, setLaporan] = useState<ExplorePost[]>([]);
   const [loadingLaporan, setLoadingLaporan] = useState(true);
 
   const nama = session?.user?.name ?? "Pengguna";
@@ -50,26 +73,31 @@ export default function ProfilPage() {
   const inisial = namaArr.slice(0, 2).map((n) => n[0]).join("").toUpperCase();
 
   // Fetch laporan milik user
-  useEffect(() => {
-    async function fetch() {
-      try {
-        setLoadingLaporan(true);
-const data = await getReports();
+useEffect(() => {
+  async function fetchReports() {
+    try {
+      if (!session?.user?.id) return;
 
-const myReports = data.filter(
-  (r) => r.user_id === Number(session?.user?.id)
-);
+      setLoadingLaporan(true);
 
-setLaporan(myReports.map(toUserLaporan));
-        setLaporan(data.map(toUserLaporan));
-      } catch {
-        setLaporan([]);
-      } finally {
-        setLoadingLaporan(false);
-      }
+      const data = await getReports();
+
+      const myReports = data.filter(
+        (r) => Number(r.user_id) === Number(session.user.id)
+      );
+
+setLaporan(myReports.map(toExplorePost));      
+
+    } catch (error) {
+      console.error(error);
+      setLaporan([]);
+    } finally {
+      setLoadingLaporan(false);
     }
-    fetch();
-  }, []);
+  }
+
+  fetchReports();
+}, [session?.user?.id]);
 
   const handleSave = async (data: {
     nama: string;
@@ -221,7 +249,7 @@ setLaporan(myReports.map(toUserLaporan));
             }}
           >
             {laporan.map((l, i) => (
-              <UserLaporanCard key={l.id} laporan={l} index={i} />
+              <ReportCard key={l.id} post={l} index={i} />
             ))}
           </div>
         )}

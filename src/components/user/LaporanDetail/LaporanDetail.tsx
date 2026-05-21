@@ -18,21 +18,26 @@ const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-    pending:     "Pending",
+    pending:     "Menunggu",
     approved:    "Disetujui",
     on_progress: "Sedang Diproses",
     completed:   "Selesai",
     rejected:    "Ditolak",
 }
 
+function fmtDate(dateStr: string) {
+    return new Date(dateStr).toLocaleDateString("id-ID", {
+        day: "numeric", month: "long", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+    }).replace("pukul", "pukul")
+}
+
 export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     const { data: session } = useSession()
-
     const [report, setReport] = useState<Report | null>(null)
     const [comments, setComments] = useState<Comment[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-
     const [newComment, setNewComment] = useState("")
     const [submitting, setSubmitting] = useState(false)
 
@@ -91,142 +96,137 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     )
 
     const statusStyle = STATUS_STYLE[report.status] ?? { bg: "#F3F4F6", color: "#6B7280" }
-    const isOwner = session?.user?.id === String(report.user_id)
-    
+    const publicComments = comments.filter((c) => c.type === "public")
+    const officialComments = comments.filter((c) => c.type === "official")
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">
             {/* Header */}
-            <div className="mb-6">
-                <div className="flex items-center gap-3 mb-3 flex-wrap">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+            <div className="mb-6 bg-white rounded-2xl border border-gray-100 p-6">
+                <div className="flex items-center gap-3 mb-4 flex-wrap">
+                    <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
                         {report.category_name ?? "Umum"}
                     </span>
-                    <span
-                        className="px-3 py-1 rounded-full text-sm font-medium"
-                        style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
-                    >
-                        {STATUS_LABEL[report.status] ?? report.status}
+                    <span className="px-3 py-1 rounded-full text-xs font-medium"
+                        style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}>
+                        ● {STATUS_LABEL[report.status] ?? report.status}
                     </span>
-                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
                         {report.priority}
                     </span>
                 </div>
-                <h1 className="text-3xl font-bold mb-2">{report.title}</h1>
-                <p className="text-gray-600">
-                    {report.location ?? "-"} •{" "}
-                    {new Date(report.created_at).toLocaleDateString("id-ID", {
-                        day: "numeric", month: "long", year: "numeric"
-                    })}
-                </p>
-                <p className="text-sm text-gray-500 mt-1">
-                    Dilaporkan oleh <strong>{report.user_name}</strong>
-                </p>
+
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">{report.title}</h1>
+                <div className="flex items-center gap-2 text-xs text-gray-400 mb-4 flex-wrap">
+                    <span>🗓 {fmtDate(report.created_at)}</span>
+                    {report.location && <><span>·</span><span>📍 {report.location}</span></>}
+                </div>
+
+                <div className="bg-gray-50 rounded-xl p-4 mb-4">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Kronologi</p>
+                    <p className="text-gray-700 text-sm leading-relaxed">{report.description}</p>
+                </div>
+
+                {report.image_url && (
+                    <img src={report.image_url} alt="Bukti" className="rounded-xl w-full max-h-72 object-cover border border-gray-100" />
+                )}
             </div>
 
-            {/* Deskripsi */}
-            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <p className="text-gray-700">{report.description}</p>
-            </div>
-
-            {/* Foto */}
-            {report.image_url && (
-                <div className="mb-6">
-                    <h2 className="text-lg font-bold mb-3">Foto Bukti</h2>
-                    <img
-                        src={report.image_url}
-                        alt="Bukti laporan"
-                        className="rounded-xl w-full max-h-80 object-cover border border-gray-200"
-                    />
+            {/* Tindak Lanjut (Official Comments) */}
+            {officialComments.length > 0 && (
+                <div className="mb-6 bg-white rounded-2xl border border-gray-100 p-6">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Tindak Lanjut</p>
+                    <p className="text-sm font-semibold text-gray-800 mb-4">Catatan resmi instansi</p>
+                    <div className="space-y-4">
+                        {officialComments.map((c) => {
+                            const inisial = (c.name ?? "A").split(" ").slice(0, 2).map((n: string) => n[0]).join("").toUpperCase()
+                            const isOwner = session?.user?.id === String(c.user_id)
+                            return (
+                                <div key={c.id} className="flex gap-3">
+                                    {/* Blue left border */}
+                                    <div style={{ width: 3, borderRadius: 99, background: "#3B82F6", flexShrink: 0 }} />
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 shrink-0">
+                                                {inisial}
+                                            </div>
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <span className="text-sm font-semibold text-gray-800">{c.name ?? "Admin"}</span>
+                                                <span className="text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100 px-2 py-0.5 rounded-full">
+                                                    INSTANSI
+                                                </span>
+                                                <span className="text-xs text-gray-400">{fmtDate(c.created_at)}</span>
+                                            </div>
+                                            {isOwner && (
+                                                <button onClick={() => handleDeleteComment(c.id)} className="ml-auto text-xs text-red-400 hover:text-red-600">
+                                                    Hapus
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-gray-700 ml-10">{c.comment}</p>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
                 </div>
             )}
 
-            {/* Lokasi koordinat */}
-            {report.latitude && report.longitude && (
-                <div className="mb-6 bg-gray-50 rounded-lg p-4">
-                    <p className="text-sm font-medium text-gray-600 mb-1">Koordinat Lokasi</p>
-                    <p className="text-sm text-gray-700">
-                        {report.latitude}, {report.longitude}
-                    </p>
-                </div>
-            )}
+            {/* Public Comments */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+                <p className="text-sm font-semibold text-gray-800 mb-4">
+                    Komentar Publik ({publicComments.length})
+                </p>
 
-            {/* Stats */}
-            <div className="flex gap-6 mb-6">
-                <div className="flex items-center gap-2">
-                    <span className="text-2xl">💬</span>
-                    <span className="font-semibold">{comments.length} Komentar</span>
-                </div>
-            </div>
-
-            {/* Komentar */}
-            <div>
-                <h2 className="text-xl font-bold mb-4">Komentar ({comments.length})</h2>
-                
-
-                {/* Form tambah komentar — hanya muncul kalau sudah login */}
                 {session ? (
                     <div className="flex gap-3 mb-6">
                         <input
                             value={newComment}
                             onChange={(e) => setNewComment(e.target.value)}
                             placeholder="Tulis komentar..."
-                            className="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                            className="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm outline-none focus:border-blue-300 focus:ring-2 focus:ring-blue-50"
                             onKeyDown={(e) => e.key === "Enter" && handleSubmitComment()}
                         />
                         <button
                             onClick={handleSubmitComment}
                             disabled={submitting || !newComment.trim()}
-                            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-orange-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-orange-600 disabled:opacity-40"
                         >
                             {submitting ? "..." : "Kirim"}
                         </button>
                     </div>
                 ) : (
-                    <p className="text-sm text-gray-500 mb-6">
-                        <a href="/auth/login" className="text-blue-600 hover:underline">Login</a> untuk menambahkan komentar.
+                    <p className="text-sm text-gray-400 mb-6">
+                        <a href="/auth/login" className="text-orange-500 hover:underline">Login</a> untuk berkomentar.
                     </p>
                 )}
 
-                {/* List komentar */}
-                {comments.length === 0 ? (
-                    <p className="text-gray-400 text-sm">Belum ada komentar.</p>
+                {publicComments.length === 0 ? (
+                    <p className="text-gray-400 text-sm">Belum ada komentar publik.</p>
                 ) : (
                     <div className="space-y-4">
-                        {comments.map((c) => {
-                            const inisial = c.name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase()
-                            const isCommentOwner = session?.user?.id === String(c.user_id)
-
+                        {publicComments.map((c) => {
+                            const inisial = (c.name ?? "U").split(" ").slice(0, 2).map((n: string) => n[0]).join("").toUpperCase()
+                            const isOwner = session?.user?.id === String(c.user_id)
                             return (
-                                <div key={c.id} className="border-b pb-4">
-                                    <div className="flex items-start gap-3">
-                                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700 shrink-0">
-                                            {inisial}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex items-center justify-between gap-2 mb-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-semibold text-sm">{c.name}</span>
-                                                    <span className="text-xs text-gray-500">
-                                                        • {new Date(c.created_at).toLocaleDateString("id-ID", {
-                                                            day: "numeric", month: "short", year: "numeric"
-                                                        })}
-                                                    </span>
-                                                </div>
-                                                {/* Tombol hapus — hanya owner komentar */}
-                                                {isCommentOwner && (
-                                                    <button
-                                                        onClick={() => handleDeleteComment(c.id)}
-                                                        className="text-xs text-red-500 hover:text-red-700"
-                                                    >
-                                                        Hapus
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <p className="text-gray-700 text-sm">{c.comment}</p>
-                                        </div>
+                                <div key={c.id} className="flex gap-3 pb-4 border-b border-gray-50 last:border-0">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-xs font-bold text-white shrink-0">
+                                        {inisial}
                                     </div>
-                                    
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-sm font-semibold text-gray-800">{c.name ?? "Anonim"}</span>
+                                                <span className="text-xs text-gray-400">{fmtDate(c.created_at)}</span>
+                                            </div>
+                                            {isOwner && (
+                                                <button onClick={() => handleDeleteComment(c.id)} className="text-xs text-red-400 hover:text-red-600">
+                                                    Hapus
+                                                </button>
+                                            )}
+                                        </div>
+                                        <p className="text-sm text-gray-700">{c.comment}</p>
+                                    </div>
                                 </div>
                             )
                         })}
@@ -236,6 +236,3 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
         </div>
     )
 }
-
-
-

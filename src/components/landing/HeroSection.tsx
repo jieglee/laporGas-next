@@ -385,11 +385,7 @@ export default function HeroSection() {
               e.currentTarget.style.color = "#E8541C";
               e.currentTarget.style.borderBottomColor = "#E8541C";
             }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "#8a6a52";
-              e.currentTarget.style.borderBottomColor = "rgba(255,107,53,0.3)";
-            }}
-          >
+          onMouseLeave={(e) => {e.currentTarget.style.color = "#8a6a52"; e.currentTarget.style.borderBottomColor = "rgba(255,107,53,0.3)";}}>
             Cara kerja platform →
           </a>
         </motion.div>

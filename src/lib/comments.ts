@@ -7,7 +7,9 @@ export interface Comment {
     report_id: number
     user_id: number
     name: string
+    role: string
     comment: string
+    type: "public" | "official"
     created_at: string
 }
 

@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 
 import ExploreHeader from "@/components/user/Explore/ExploreHeader";
-import PostCard from "@/components/user/Explore/PostCard";
-import PostModal from "@/components/user/Explore/PostModal";
+import PostCard from "@/components/common-ui/ReportCard";
 
 import {
   type ExplorePost,
@@ -15,32 +14,24 @@ import {
 
 import { getReports, type Report } from "@/lib/reports";
 
-function mapCategory(category: string): Exclude<ExploreKategori, "all"> {
-  switch (category.toLowerCase()) {
-    case "infrastruktur":
-      return "infrastruktur";
-
-    case "fasilitas umum":
-      return "fasilitas-umum";
-
-    case "kebersihan":
-      return "kebersihan";
-
-    case "lalu lintas":
-      return "lalu-lintas";
-
-    default:
-      return "infrastruktur";
-  }
+function mapCategory(category: string | null): Exclude<ExploreKategori, "all"> {
+    switch (category?.toLowerCase()) {
+        case "infrastruktur": return "infrastruktur";
+        case "fasilitas umum": return "fasilitas-umum";
+        case "kebersihan": return "kebersihan";
+        case "lalu lintas": return "lalu-lintas";
+        default: return "infrastruktur";
+    }
 }
 
-function getInitial(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+function getInitial(name: string | null) {
+    if (!name) return "?"
+    return name
+        .split(" ")
+        .slice(0, 2)
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase();
 }
 
 function formatTime(date: string) {
@@ -65,10 +56,10 @@ function mapReportToPost(report: Report): ExplorePost {
 
     imageUrl: report.image_url,
 
-    pelapor: {
-      nama: report.user_name,
-      inisial: getInitial(report.user_name),
-    },
+pelapor: {
+    nama: report.user_name ?? "Anonim",
+    inisial: getInitial(report.user_name),
+},
 
     lokasi: report.location || "Lokasi tidak diketahui",
 
@@ -113,23 +104,22 @@ export default function ExplorePage() {
     let result = [...posts];
 
     if (kategori !== "all") {
-      result = result.filter((p) => p.kategori === kategori);
+        result = result.filter((p) => p.kategori === kategori);
     }
 
     if (search.trim()) {
-      const q = search.toLowerCase();
-
-      result = result.filter(
-        (p) =>
-          p.judul.toLowerCase().includes(q) ||
-          p.deskripsi.toLowerCase().includes(q) ||
-          p.lokasi.toLowerCase().includes(q) ||
-          p.pelapor.nama.toLowerCase().includes(q)
-      );
+        const q = search.toLowerCase();
+        result = result.filter(
+            (p) =>
+                (p.judul ?? "").toLowerCase().includes(q) ||
+                (p.deskripsi ?? "").toLowerCase().includes(q) ||
+                (p.lokasi ?? "").toLowerCase().includes(q) ||
+                (p.pelapor?.nama ?? "").toLowerCase().includes(q)
+        );
     }
 
     return result;
-  }, [search, kategori, posts]);
+}, [search, kategori, posts]);
 
   return (
     <div
@@ -236,11 +226,6 @@ export default function ExplorePage() {
           )}
         </AnimatePresence>
       )}
-
-      <PostModal
-        post={selected}
-        onClose={() => setSelected(null)}
-      />
     </div>
   );
 }

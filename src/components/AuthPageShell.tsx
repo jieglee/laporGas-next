@@ -52,23 +52,38 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
         setRegisterConfirm("");
         setTimeout(() => switchTo("login"), 700);
       } else {
-        const res = await signIn("credentials", {
-          email: loginEmail,
-          password: loginPassword,
-          redirect: false
-        });
+const res = await signIn("credentials", {
+  email: loginEmail,
+  password: loginPassword,
+  redirect: false,
+});
 
-        // if backend returns token, save it
-        try {
-          if (res && typeof res === "object" && (res as any).token) {
-            localStorage.setItem("token", (res as any).token);
-          }
-        } catch (e) {
-          // ignore storage errors
-        }
+if (res?.error) {
+  throw new Error("Email atau password salah.");
+}
+
+if (!res?.ok) {
+  throw new Error("Login gagal.");
+}
 
 const sessionRes = await fetch("/api/auth/session");
 const session = await sessionRes.json();
+
+setStatus({
+  type: "success",
+  message: "Login berhasil.",
+});
+
+setLoginEmail("");
+setLoginPassword("");
+
+const role = session?.user?.role;
+
+if (role === "admin" || role === "superadmin") {
+  router.replace("/admin");
+} else {
+  router.replace("/user");
+}
 
 setStatus({ type: "success", message: "Login berhasil." });
 
