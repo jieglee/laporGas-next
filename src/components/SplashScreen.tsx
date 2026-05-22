@@ -13,7 +13,7 @@ export default function SplashScreen({ isVisible, onExitComplete }: SplashScreen
             {isVisible && (
                 <motion.div
                     key="splash"
-                    className="fixed inset-0 z-[9999] flex items-center justify-center"
+                    className="fixed inset-0 z-9999 flex items-center justify-center"
                     initial={{ y: 0 }}
                     animate={{ y: 0 }}
                     exit={{

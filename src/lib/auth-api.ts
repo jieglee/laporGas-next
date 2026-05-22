@@ -1,4 +1,4 @@
-import api from "./api"
+import { signOut } from "next-auth/react"
 
 export async function registerUser(data: {
     name: string
@@ -22,12 +22,11 @@ export async function registerUser(data: {
 }
 
 export async function logout() {
-  try {
-    await api.post("/logout");
-  } catch (error) {
-    console.error("Logout error:", error);
-  } finally {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-  }
+    try {
+        localStorage.removeItem("token")
+        localStorage.removeItem("user")
+    } catch {}
+
+    // signOut dari NextAuth — ini yang hapus session cookie
+    await signOut({ callbackUrl: "/" })
 }

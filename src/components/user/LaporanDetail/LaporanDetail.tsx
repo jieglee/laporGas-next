@@ -5,24 +5,13 @@ import { useSession } from "next-auth/react";
 import { ArrowBigUp } from "lucide-react";
 import { getReportById, getUpvoteStatus, toggleUpvote, type Report } from "@/lib/reports";
 import { getComments, createComment, deleteComment, type Comment } from "@/lib/comments";
+import {
+  STATUS_CFG,
+  PRIORITY_CFG,
+} from "@/constants/report-config";
 
 interface LaporanDetailProps {
     reportId: number;
-}
-
-const STATUS_CFG: Record<string, { label: string; bg: string; color: string; dot: string }> = {
-    pending:     { label: "Menunggu",   bg: "#FFFBEB", color: "#92400E", dot: "#F59E0B" },
-    approved:    { label: "Disetujui",  bg: "#EFF6FF", color: "#1D4ED8", dot: "#3B82F6" },
-    on_progress: { label: "Diproses",   bg: "#FFF7ED", color: "#C2410C", dot: "#FB923C" },
-    completed:   { label: "Selesai",    bg: "#F0FDF4", color: "#047857", dot: "#10B981" },
-    rejected:    { label: "Ditolak",    bg: "#FFF1F2", color: "#BE123C", dot: "#FB7185" },
-}
-
-const PRIORITY_CFG: Record<string, { label: string; color: string }> = {
-    low:    { label: "Rendah",   color: "#6B7280" },
-    medium: { label: "Sedang",   color: "#D97706" },
-    high:   { label: "Tinggi",   color: "#EA580C" },
-    urgent: { label: "Mendesak", color: "#DC2626" },
 }
 
 function fmtDate(dateStr: string) {
@@ -203,10 +192,36 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
                     {report.description}
                 </p>
 
-                {report.image_url && (
-                    <img src={report.image_url} alt="Bukti laporan"
-                        style={{ marginTop: 20, width: "100%", maxHeight: 360, objectFit: "cover", borderRadius: 14, border: "1px solid #F3F4F6" }} />
-                )}
+                {/* Foto bukti — support multiple images */}
+                {(report.images?.length > 0 || report.image_url) && (() => {
+                    const imgs = report.images?.length > 0
+                        ? report.images
+                        : [report.image_url!]
+                    return (
+                        <div style={{ marginTop: 20 }}>
+                            {/* Cover — foto pertama besar */}
+                            <img
+                                src={imgs[0]}
+                                alt="Bukti laporan"
+                                style={{ width: "100%", maxHeight: 360, objectFit: "cover", borderRadius: 14, border: "1px solid #F3F4F6", display: "block" }}
+                            />
+                            {/* Foto lainnya — grid kecil */}
+                            {imgs.length > 1 && (
+                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: 8, marginTop: 8 }}>
+                                    {imgs.slice(1).map((url, i) => (
+                                        <img
+                                            key={i}
+                                            src={url}
+                                            alt={`Foto ${i + 2}`}
+                                            style={{ width: "100%", aspectRatio: "1/1", objectFit: "cover", borderRadius: 10, border: "1px solid #F3F4F6", cursor: "pointer" }}
+                                            onClick={() => window.open(url, "_blank")}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )
+                })()}
 
                 {/* ── UPVOTE BUTTON ── */}
                 <div style={{ marginTop: 20, paddingTop: 20, borderTop: "1px solid #F9FAFB", display: "flex", alignItems: "center", gap: 16 }}>

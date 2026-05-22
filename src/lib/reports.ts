@@ -22,6 +22,7 @@ export interface Report {
     title: string
     description: string
     image_url: string | null
+    images: string[]    
     status: ReportStatus
     priority: Priority
     location: string | null
@@ -44,7 +45,7 @@ export interface CreateReportPayload {
     priority?: Priority
     latitude?: number
     longitude?: number
-    image?: File
+    images?: File[]
 }
 
 export interface UpdateReportPayload {
@@ -123,7 +124,9 @@ export async function createReport(payload: CreateReportPayload): Promise<Report
     if (payload.priority) formData.append("priority", payload.priority)
     if (payload.latitude !== undefined) formData.append("latitude", String(payload.latitude))
     if (payload.longitude !== undefined) formData.append("longitude", String(payload.longitude))
-    if (payload.image) formData.append("image", payload.image)
+    if (payload.images?.length) {
+        payload.images.forEach((img) => formData.append("images", img))
+    }
 
     const response = await api.post("/reports", formData, {
         headers: { "Content-Type": "multipart/form-data" },

@@ -54,6 +54,7 @@ async authorize(credentials) {
         return {
             id: String(payload.id),
             name: payload.name,
+            email: payload.email,
             role: payload.role,
             accessToken: token,
         }
@@ -70,23 +71,38 @@ async authorize(credentials) {
         strategy: "jwt"
     },
 
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id
-                token.role = user.role
-                token.accessToken = user.accessToken
-            }
-            return token
-        },
+callbacks: {
+    async jwt({ token, user, trigger, session }) {
 
-        async session({ session, token }) {
-            session.user.id = token.id as string
-            session.user.role = token.role as string
-            session.accessToken = token.accessToken as string
-            return session
+        // login awal
+        if (user) {
+            token.id = user.id
+            token.role = user.role
+            token.accessToken = user.accessToken
+            token.name = user.name
         }
+
+        // update session manual
+        if (trigger === "update" && session?.user) {
+            token.name = session.user.name
+            token.email = session.user.email
+        }
+
+        return token
     },
+
+    async session({ session, token }) {
+
+        session.user.id = token.id as string
+        session.user.role = token.role as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
+
+        session.accessToken = token.accessToken as string
+
+        return session
+    }
+},
 
     pages: {
         signIn: "/auth/login"

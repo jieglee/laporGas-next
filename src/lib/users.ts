@@ -92,3 +92,13 @@ export async function updateUserRole(id: number, role: UserRole): Promise<User> 
 export async function deleteUser(id: number): Promise<void> {
     await api.delete(`/users/${id}`)
 }
+
+// ── UPDATE PROFILE (user sendiri) ─────────────────────
+export async function updateProfile(data: {
+    name?: string
+    email?: string
+    password?: string
+}): Promise<{ id: number; name: string; email: string; role: string }> {
+    const response = await api.patch("/users/me/profile", data)
+    return response.data
+}
