@@ -1,6 +1,6 @@
 import api from "./api"
 
-// == TYPES ==
+// ── TYPES ─────────────────────────────────────────────
 
 export type Priority = "low" | "medium" | "high" | "urgent"
 
@@ -30,6 +30,8 @@ export interface Report {
     edit_count: number
     approved_by: number | null
     approved_at: string | null
+    comment_count: number   // dari JOIN comments
+    upvote_count: number    // dari JOIN report_upvotes
     created_at: string
     updated_at: string
 }
@@ -61,19 +63,20 @@ export interface GetReportsParams {
     sort?: SortOption
 }
 
-// == FETCHING FUNCTIONS ==
+export interface UpvoteStatus {
+    upvote_count: number
+    upvoted: boolean
+}
+
+// ── FETCHING FUNCTIONS ────────────────────────────────
 
 // --------------------------------------------------------
 // GET ALL REPORTS
-// Dipanggil di: halaman list laporan (user & admin)
+// Dipanggil di: explore, home (nearby, trending)
+// Public — tidak butuh token
 //
-// Contoh penggunaan:
-//   import { getReports } from "@/lib/reports"
-//
-//   // Tanpa filter
+// Contoh:
 //   const reports = await getReports()
-//
-//   // Dengan filter
 //   const reports = await getReports({ status: "pending", sort: "newest" })
 //   const reports = await getReports({ priority: "urgent", category: 1 })
 // --------------------------------------------------------
@@ -85,10 +88,9 @@ export async function getReports(params?: GetReportsParams): Promise<Report[]> {
 // --------------------------------------------------------
 // GET REPORT BY ID
 // Dipanggil di: halaman detail laporan
+// Public — tidak butuh token
 //
-// Contoh penggunaan:
-//   import { getReportById } from "@/lib/reports"
-//
+// Contoh:
 //   const report = await getReportById(1)
 // --------------------------------------------------------
 export async function getReportById(id: number): Promise<Report> {
@@ -98,29 +100,25 @@ export async function getReportById(id: number): Promise<Report> {
 
 // --------------------------------------------------------
 // CREATE REPORT
-// Dipanggil di: form buat laporan baru (user login)
+// Dipanggil di: form buat laporan (user login)
 // Butuh: token (auto dari interceptor)
-// Note: pakai FormData karena ada upload image
+// Pakai FormData karena ada upload image
 //
-// Contoh penggunaan:
-//   import { createReport } from "@/lib/reports"
-//
+// Contoh:
 //   await createReport({
 //     title: "Jalan rusak",
 //     description: "Berlubang cukup dalam",
 //     category_id: 1,
 //     priority: "high",
 //     location: "Jl. Raya Sawangan",
-//     image: fileInputRef.current.files[0] // opsional
+//     image: file // opsional
 //   })
 // --------------------------------------------------------
 export async function createReport(payload: CreateReportPayload): Promise<Report> {
     const formData = new FormData()
-
     formData.append("title", payload.title)
     formData.append("description", payload.description)
     formData.append("category_id", String(payload.category_id))
-
     if (payload.location) formData.append("location", payload.location)
     if (payload.priority) formData.append("priority", payload.priority)
     if (payload.latitude !== undefined) formData.append("latitude", String(payload.latitude))
@@ -130,7 +128,6 @@ export async function createReport(payload: CreateReportPayload): Promise<Report
     const response = await api.post("/reports", formData, {
         headers: { "Content-Type": "multipart/form-data" },
     })
-
     return response.data
 }
 
@@ -139,9 +136,7 @@ export async function createReport(payload: CreateReportPayload): Promise<Report
 // Dipanggil di: form edit laporan (owner only, max 1x)
 // Butuh: token (auto dari interceptor)
 //
-// Contoh penggunaan:
-//   import { updateReport } from "@/lib/reports"
-//
+// Contoh:
 //   await updateReport(1, { title: "Judul baru", priority: "urgent" })
 // --------------------------------------------------------
 export async function updateReport(id: number, payload: UpdateReportPayload): Promise<Report> {
@@ -154,9 +149,7 @@ export async function updateReport(id: number, payload: UpdateReportPayload): Pr
 // Dipanggil di: tombol hapus laporan (owner only)
 // Butuh: token (auto dari interceptor)
 //
-// Contoh penggunaan:
-//   import { deleteReport } from "@/lib/reports"
-//
+// Contoh:
 //   await deleteReport(1)
 // --------------------------------------------------------
 export async function deleteReport(id: number): Promise<void> {
@@ -165,12 +158,10 @@ export async function deleteReport(id: number): Promise<void> {
 
 // --------------------------------------------------------
 // UPDATE REPORT STATUS
-// Dipanggil di: panel admin/superadmin untuk update status laporan
-// Butuh: token + role admin atau superadmin (auto dari interceptor)
+// Dipanggil di: panel admin/superadmin
+// Butuh: token + role admin atau superadmin
 //
-// Contoh penggunaan:
-//   import { updateReportStatus } from "@/lib/reports"
-//
+// Contoh:
 //   await updateReportStatus(1, "approved")
 //   await updateReportStatus(1, "on_progress")
 //   await updateReportStatus(1, "completed")
@@ -178,5 +169,32 @@ export async function deleteReport(id: number): Promise<void> {
 // --------------------------------------------------------
 export async function updateReportStatus(id: number, status: ReportStatus): Promise<Report> {
     const response = await api.patch(`/reports/${id}/status`, { status })
+    return response.data
+}
+
+// --------------------------------------------------------
+// GET UPVOTE STATUS
+// Dipanggil di: halaman detail laporan (public)
+// Return: { upvote_count, upvoted }
+//
+// Contoh:
+//   const { upvote_count, upvoted } = await getUpvoteStatus(1)
+// --------------------------------------------------------
+export async function getUpvoteStatus(reportId: number): Promise<UpvoteStatus> {
+    const response = await api.get(`/reports/${reportId}/upvote`)
+    return response.data
+}
+
+// --------------------------------------------------------
+// TOGGLE UPVOTE
+// Dipanggil di: tombol dukung di halaman detail
+// Butuh: token (auto dari interceptor)
+// Toggle: kalau sudah upvote → unvote, belum → upvote
+//
+// Contoh:
+//   const { upvoted, upvote_count } = await toggleUpvote(1)
+// --------------------------------------------------------
+export async function toggleUpvote(reportId: number): Promise<UpvoteStatus> {
+    const response = await api.post(`/reports/${reportId}/upvote`)
     return response.data
 }

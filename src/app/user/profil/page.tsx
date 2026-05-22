@@ -64,7 +64,7 @@ function toExplorePost(r: Report): ExplorePost {
 export default function ProfilPage() {
   const { data: session } = useSession();
   const [editOpen, setEditOpen] = useState(false);
-  const [laporan, setLaporan] = useState<ExplorePost[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
   const [loadingLaporan, setLoadingLaporan] = useState(true);
 
   const nama = session?.user?.name ?? "Pengguna";
@@ -86,11 +86,11 @@ useEffect(() => {
         (r) => Number(r.user_id) === Number(session.user.id)
       );
 
-setLaporan(myReports.map(toExplorePost));      
+setReports(myReports);      
 
     } catch (error) {
       console.error(error);
-      setLaporan([]);
+      setReports([]);
     } finally {
       setLoadingLaporan(false);
     }
@@ -183,7 +183,7 @@ setLaporan(myReports.map(toExplorePost));
                 Laporan Saya
               </h2>
               <p style={{ fontSize: "0.7rem", color: "#a8856b", margin: 0 }}>
-                {loadingLaporan ? "Memuat..." : `${laporan.length} laporan dibuat`}
+                {loadingLaporan ? "Memuat..." : `${reports.length} laporan dibuat`}
               </p>
             </div>
           </div>
@@ -209,7 +209,7 @@ setLaporan(myReports.map(toExplorePost));
             <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
             Memuat laporan...
           </div>
-        ) : laporan.length === 0 ? (
+        ) : reports.length === 0 ? (
           <div
             style={{
               background: "white",
@@ -248,8 +248,8 @@ setLaporan(myReports.map(toExplorePost));
               gap: 14,
             }}
           >
-            {laporan.map((l, i) => (
-              <ReportCard key={l.id} post={l} index={i} />
+            {reports.map((r, i) => (
+              <ReportCard key={r.id} report={r} index={i} />
             ))}
           </div>
         )}
