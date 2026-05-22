@@ -41,11 +41,9 @@ export default function ExplorePage() {
 
     const filtered = useMemo(() => {
         let result = [...reports];
-
         if (kategori !== "all") {
             result = result.filter((r) => mapKategori(r.category_name) === kategori);
         }
-
         if (search.trim()) {
             const q = search.toLowerCase();
             result = result.filter(
@@ -56,12 +54,11 @@ export default function ExplorePage() {
                     (r.user_name ?? "").toLowerCase().includes(q)
             );
         }
-
         return result;
     }, [search, kategori, reports]);
 
     return (
-        <div style={{ padding: "28px 24px 72px", maxWidth: 1200, margin: "0 auto" }}>
+        <div className="px-6 pt-7 pb-[72px] max-w-[1200px] mx-auto">
             <ExploreHeader
                 search={search}
                 onSearch={setSearch}
@@ -71,23 +68,30 @@ export default function ExplorePage() {
             />
 
             {loading ? (
-                <div style={{ background: "white", border: "0.5px solid #f0e6dc", borderRadius: 14, padding: "80px 24px", textAlign: "center" }}>
-                    <p style={{ color: "#a8856b", fontSize: "0.85rem" }}>Memuat laporan...</p>
+                <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[80px] px-6 text-center">
+                    <p className="text-[#a8856b] text-[0.85rem]">Memuat laporan...</p>
                 </div>
             ) : (
                 <AnimatePresence mode="wait">
                     {filtered.length === 0 ? (
-                        <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            style={{ background: "white", border: "0.5px solid #f0e6dc", borderRadius: 14, padding: "80px 24px", textAlign: "center" }}>
-                            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(255,107,53,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                        <motion.div
+                            key="empty"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[80px] px-6 text-center"
+                        >
+                            <div className="w-[52px] h-[52px] rounded-full bg-[rgba(255,107,53,0.08)] flex items-center justify-center mx-auto mb-[14px]">
                                 <Search size={22} color="#E8541C" strokeWidth={1.8} />
                             </div>
-                            <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "#1a0e08", marginBottom: 5 }}>Tidak ada laporan ditemukan</p>
-                            <p style={{ fontSize: "0.78rem", color: "#a8856b" }}>Coba ubah kata kunci atau kategori</p>
+                            <p className="text-[0.9rem] font-semibold text-[#1a0e08] mb-[5px]">Tidak ada laporan ditemukan</p>
+                            <p className="text-[0.78rem] text-[#a8856b]">Coba ubah kata kunci atau kategori</p>
                         </motion.div>
                     ) : (
-                        <motion.div key="grid" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 14 }}>
+                        <motion.div
+                            key="grid"
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            className="grid gap-[14px]"
+                            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}
+                        >
                             {filtered.map((report, i) => (
                                 <ReportCard key={report.id} report={report} index={i} variant="status" />
                             ))}

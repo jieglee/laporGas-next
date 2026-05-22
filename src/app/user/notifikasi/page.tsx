@@ -163,44 +163,46 @@ export default function NotifikasiPage() {
     const byGrup = (grup: NotifGrup) => notifs.filter((n) => n.grup === grup);
 
     return (
-        <div style={{ minHeight: "100vh", background: "#fafaf8" }}>
-            <div style={{ maxWidth: 600, margin: "0 auto", padding: "0 16px 48px" }}>
+        <div className="min-h-screen bg-[#fafaf8]">
+            <div className="max-w-[600px] mx-auto px-4 pb-12">
 
                 {/* Header */}
-                <div style={{ padding: "28px 4px 16px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", position: "sticky", top: 0, background: "#fafaf8", zIndex: 10 }}>
+                <div className="pt-7 pb-4 px-1 flex items-end justify-between sticky top-0 bg-[#fafaf8] z-10">
                     <div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 2 }}>
-                            <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: "1.5rem", fontWeight: 800, color: "#1a0e08", letterSpacing: "-0.03em", margin: 0 }}>
+                        <div className="flex items-center gap-[10px] mb-[2px]">
+                            <h1 className="text-[1.5rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0"
+                                style={{ fontFamily: "'Syne', sans-serif" }}>
                                 Notifikasi
                             </h1>
                             {unreadTotal > 0 && (
-                                <span style={{ fontSize: "0.65rem", fontWeight: 700, background: "#FF6B35", color: "white", padding: "2px 9px", borderRadius: 99 }}>
+                                <span className="text-[0.65rem] font-bold bg-[#FF6B35] text-white px-[9px] py-[2px] rounded-full">
                                     {unreadTotal} baru
                                 </span>
                             )}
                         </div>
-                        <p style={{ fontSize: "0.75rem", color: "#a8856b", margin: 0 }}>Update terbaru seputar laporan & aktivitasmu</p>
+                        <p className="text-[0.75rem] text-[#a8856b] m-0">Update terbaru seputar laporan & aktivitasmu</p>
                     </div>
                     {unreadTotal > 0 && (
-                        <button onClick={handleMarkAllRead} style={{ fontSize: "0.72rem", fontWeight: 600, color: "#E8541C", background: "none", border: "none", cursor: "pointer", padding: 0, whiteSpace: "nowrap" }}>
+                        <button onClick={handleMarkAllRead}
+                            className="text-[0.72rem] font-semibold text-[#E8541C] bg-transparent border-0 cursor-pointer p-0 whitespace-nowrap">
                             Tandai semua dibaca
                         </button>
                     )}
                 </div>
 
                 {loading && (
-                    <div style={{ textAlign: "center", padding: "60px 0" }}>
-                        <p style={{ fontSize: "0.82rem", color: "#a8856b" }}>Memuat notifikasi...</p>
+                    <div className="text-center py-[60px]">
+                        <p className="text-[0.82rem] text-[#a8856b]">Memuat notifikasi...</p>
                     </div>
                 )}
 
                 {!loading && notifs.length === 0 && (
-                    <div style={{ textAlign: "center", padding: "80px 0" }}>
-                        <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(255,107,53,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                    <div className="text-center py-[80px]">
+                        <div className="w-[52px] h-[52px] rounded-full bg-[rgba(255,107,53,0.08)] flex items-center justify-center mx-auto mb-[14px]">
                             <Bell size={22} color="#E8541C" strokeWidth={1.8} />
                         </div>
-                        <p style={{ fontSize: "0.88rem", fontWeight: 600, color: "#1a0e08", marginBottom: 4 }}>Tidak ada notifikasi</p>
-                        <p style={{ fontSize: "0.75rem", color: "#a8856b" }}>Kamu sudah up to date!</p>
+                        <p className="text-[0.88rem] font-semibold text-[#1a0e08] mb-1">Tidak ada notifikasi</p>
+                        <p className="text-[0.75rem] text-[#a8856b]">Kamu sudah up to date!</p>
                     </div>
                 )}
 
@@ -210,19 +212,19 @@ export default function NotifikasiPage() {
                     const unread = items.filter((n) => !n.dibaca).length;
                     return (
                         <motion.div key={grup} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: i * 0.06 }}>
-                            <div style={{ padding: "18px 4px 8px", display: "flex", alignItems: "center", gap: 7 }}>
-                                <p style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", color: "#a8856b", margin: 0 }}>
+                            <div className="pt-[18px] pb-2 px-1 flex items-center gap-[7px]">
+                                <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#a8856b] m-0">
                                     {GRUP_CONFIG[grup].label}
                                 </p>
                                 {unread > 0 && (
-                                    <span style={{ fontSize: "0.6rem", fontWeight: 700, background: "#FF6B35", color: "white", padding: "1px 6px", borderRadius: 99 }}>
+                                    <span className="text-[0.6rem] font-bold bg-[#FF6B35] text-white px-[6px] py-[1px] rounded-full">
                                         {unread}
                                     </span>
                                 )}
                             </div>
-                            <div style={{ background: "white", border: "0.5px solid #f0e6dc", borderRadius: 14, overflow: "hidden" }}>
+                            <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden">
                                 {items.map((n, idx) => (
-                                    <div key={n.id} style={{ borderBottom: idx < items.length - 1 ? "0.5px solid #f5ede3" : "none" }}>
+                                    <div key={n.id} className={idx < items.length - 1 ? "border-b-[0.5px] border-[#f5ede3]" : ""}>
                                         <NotifItem notif={n} onRead={handleRead} />
                                     </div>
                                 ))}

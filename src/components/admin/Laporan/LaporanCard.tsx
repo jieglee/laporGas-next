@@ -7,12 +7,8 @@ import {
   Check, X as XIcon, Loader, CheckCircle2, ChevronRight,
 } from "lucide-react";
 import {
-  type AdminLaporan,
-  type AdminLaporanStatus,
-  STATUS_CONFIG,
-  PRIORITY_CONFIG,
-  KATEGORI_LABEL,
-  avatarColor,
+  type AdminLaporan, type AdminLaporanStatus,
+  STATUS_CONFIG, PRIORITY_CONFIG, KATEGORI_LABEL, avatarColor,
 } from "./types";
 
 function fmt(n: number) {
@@ -22,10 +18,7 @@ function fmt(n: number) {
 interface Props {
   laporan: AdminLaporan;
   index: number;
-  onAction: (
-    id: string,
-    action: { type: "approve" | "rejectAsk" | "update"; status?: AdminLaporanStatus }
-  ) => void;
+  onAction: (id: string, action: { type: "approve" | "rejectAsk" | "update"; status?: AdminLaporanStatus }) => void;
 }
 
 export default function LaporanCard({ laporan, index, onAction }: Props) {
@@ -40,302 +33,112 @@ export default function LaporanCard({ laporan, index, onAction }: Props) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
       onClick={() => router.push(`/admin/laporan/${laporan.id}`)}
-      style={{
-        background: "white",
-        border: "0.5px solid #f0e6dc",
-        borderRadius: 14,
-        overflow: "hidden",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        transition: "all 0.2s",
-      }}
-      whileHover={{
-        borderColor: "rgba(255,107,53,0.3)",
-        boxShadow: "0 8px 24px rgba(255,107,53,0.09)",
-        y: -2,
-      }}
+      className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden cursor-pointer flex flex-col transition-all duration-200"
+      whileHover={{ borderColor: "rgba(255,107,53,0.3)", boxShadow: "0 8px 24px rgba(255,107,53,0.09)", y: -2 }}
     >
       {/* Thumbnail */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          aspectRatio: "16/9",
-          background: "linear-gradient(135deg, #e0dcd8, #cac6c2)",
-          flexShrink: 0,
-        }}
-      >
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
+      <div className="relative w-full shrink-0" style={{ aspectRatio: "16/9", background: "linear-gradient(135deg, #e0dcd8, #cac6c2)" }}>
+        <div className="absolute inset-0 flex items-center justify-center">
           <ImageIcon size={28} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
         </div>
 
         {/* Status — top left */}
         <div
-          style={{
-            position: "absolute",
-            top: 9,
-            left: 9,
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-            fontSize: "0.58rem",
-            fontWeight: 700,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            padding: "3px 9px",
-            borderRadius: 99,
-            background: s.bg,
-            color: s.color,
-          }}
+          className="absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full"
+          style={{ background: s.bg, color: s.color }}
         >
-          <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.dot }} />
+          <span className="w-[5px] h-[5px] rounded-full" style={{ background: s.dot }} />
           {s.label}
         </div>
 
         {/* Priority — top right */}
         <div
-          style={{
-            position: "absolute",
-            top: 9,
-            right: 9,
-            fontSize: "0.58rem",
-            fontWeight: 700,
-            letterSpacing: "0.05em",
-            textTransform: "uppercase",
-            padding: "3px 9px",
-            borderRadius: 99,
-            background: p.bg,
-            color: p.color,
-          }}
+          className="absolute top-[9px] right-[9px] text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full"
+          style={{ background: p.bg, color: p.color }}
         >
           {p.label}
         </div>
 
         {/* Foto count — bottom right */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 9,
-            right: 9,
-            fontSize: "0.6rem",
-            fontWeight: 600,
-            background: "rgba(0,0,0,0.52)",
-            color: "white",
-            padding: "3px 8px",
-            borderRadius: 99,
-            backdropFilter: "blur(4px)",
-            display: "inline-flex",
-            alignItems: "center",
-            gap: 4,
-          }}
-        >
+        <div className="absolute bottom-[9px] right-[9px] text-[0.6rem] font-semibold bg-[rgba(0,0,0,0.52)] text-white px-2 py-[3px] rounded-full backdrop-blur-sm inline-flex items-center gap-1">
           <ImageIcon size={9} strokeWidth={2} />
           {laporan.fotoCount}
         </div>
       </div>
 
       {/* Content */}
-      <div style={{ padding: "13px 14px", display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
+      <div className="px-[14px] py-[13px] flex flex-col flex-1 gap-2">
 
         {/* ID + Kategori */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <span
-            style={{
-              fontFamily: "ui-monospace, 'SF Mono', Menlo, monospace",
-              fontSize: "0.6rem",
-              fontWeight: 700,
-              color: "#8a6f5e",
-              background: "#fafaf8",
-              border: "0.5px solid #f0e6dc",
-              padding: "2px 7px",
-              borderRadius: 5,
-            }}
-          >
+        <div className="flex items-center gap-[6px]">
+          <span className="font-mono text-[0.6rem] font-bold text-[#8a6f5e] bg-[#fafaf8] border-[0.5px] border-[#f0e6dc] px-[7px] py-[2px] rounded-[5px]">
             {laporan.id}
           </span>
-          <span
-            style={{
-              fontSize: "0.58rem",
-              fontWeight: 700,
-              color: "#E8541C",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-            }}
-          >
+          <span className="text-[0.58rem] font-bold text-[#E8541C] uppercase tracking-[0.06em]">
             {KATEGORI_LABEL[laporan.kategori]}
           </span>
         </div>
 
         {/* Judul */}
         <h3
-          style={{
-            fontSize: "0.88rem",
-            fontWeight: 700,
-            color: "#1a0e08",
-            margin: 0,
-            lineHeight: 1.4,
-            letterSpacing: "-0.01em",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-          }}
+          className="text-[0.88rem] font-bold text-[#1a0e08] m-0 leading-[1.4] tracking-[-0.01em]"
+          style={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
         >
           {laporan.judul}
         </h3>
 
         {/* Lokasi */}
-        <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#a8856b" }}>
-          <MapPin size={11} strokeWidth={1.8} style={{ flexShrink: 0 }} />
-          <span
-            style={{
-              fontSize: "0.7rem",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {laporan.lokasi}
-          </span>
+        <div className="flex items-center gap-1 text-[#a8856b]">
+          <MapPin size={11} strokeWidth={1.8} className="shrink-0" />
+          <span className="text-[0.7rem] overflow-hidden text-ellipsis whitespace-nowrap">{laporan.lokasi}</span>
         </div>
 
         {/* Divider */}
-        <div style={{ borderTop: "0.5px solid #f5ede3" }} />
+        <div className="border-t-[0.5px] border-[#f5ede3]" />
 
         {/* Pelapor + engagement */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0 }}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-[6px] min-w-0">
             <div
-              style={{
-                width: 22,
-                height: 22,
-                borderRadius: "50%",
-                background: avatar.bg,
-                color: avatar.color,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.55rem",
-                fontWeight: 700,
-                flexShrink: 0,
-              }}
+              className="w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.55rem] font-bold shrink-0"
+              style={{ background: avatar.bg, color: avatar.color }}
             >
               {laporan.pelapor.inisial}
             </div>
-            <span
-              style={{
-                fontSize: "0.7rem",
-                color: "#3d2817",
-                fontWeight: 500,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
+            <span className="text-[0.7rem] text-[#3d2817] font-medium overflow-hidden text-ellipsis whitespace-nowrap">
               {laporan.pelapor.nama}
             </span>
           </div>
-
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#a8856b", fontSize: "0.68rem", flexShrink: 0 }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-              <ArrowBigUp size={11} strokeWidth={1.8} />
-              {fmt(laporan.upvote)}
-            </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-              <MessageCircle size={10} strokeWidth={1.8} />
-              {laporan.komentarCount}
-            </span>
+          <div className="flex items-center gap-2 text-[#a8856b] text-[0.68rem] shrink-0">
+            <span className="flex items-center gap-[3px]"><ArrowBigUp size={11} strokeWidth={1.8} />{fmt(laporan.upvote)}</span>
+            <span className="flex items-center gap-[3px]"><MessageCircle size={10} strokeWidth={1.8} />{laporan.komentarCount}</span>
           </div>
         </div>
 
         {/* Actions */}
-        <div style={{ display: "flex", gap: 6, marginTop: 2 }}>
-          {laporan.status === "pending" && (
-            <>
-              <button
-                onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "approve" }); }}
-                style={{
-                  flex: 1,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 5,
-                  padding: "7px 0",
-                  borderRadius: 8,
-                  background: "linear-gradient(135deg, #FF6B35, #E8541C)",
-                  color: "white",
-                  border: "none",
-                  fontSize: "0.72rem",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  boxShadow: "0 3px 10px rgba(255,107,53,0.22)",
-                  transition: "all 0.15s",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 16px rgba(255,107,53,0.35)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 3px 10px rgba(255,107,53,0.22)"; }}
-              >
-                <Check size={12} strokeWidth={2.5} /> Approve
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "rejectAsk" }); }}
-                style={{
-                  flex: 1,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 5,
-                  padding: "7px 0",
-                  borderRadius: 8,
-                  background: "white",
-                  color: "#B91C1C",
-                  border: "0.5px solid #FEE2E2",
-                  fontSize: "0.72rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#FEF2F2")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
-              >
-                <XIcon size={12} strokeWidth={2.5} /> Reject
-              </button>
-            </>
-          )}
+        <div className="flex gap-[6px] mt-[2px]">
+          {laporan.status === "pending" && (<>
+            <button
+              onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "approve" }); }}
+              className="flex-1 inline-flex items-center justify-center gap-[5px] py-[7px] rounded-lg border-0 text-[0.72rem] font-bold text-white cursor-pointer transition-all duration-150 hover:-translate-y-px"
+              style={{ background: "linear-gradient(135deg, #FF6B35, #E8541C)", boxShadow: "0 3px 10px rgba(255,107,53,0.22)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 6px 16px rgba(255,107,53,0.35)")}
+              onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 3px 10px rgba(255,107,53,0.22)")}
+            >
+              <Check size={12} strokeWidth={2.5} /> Approve
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "rejectAsk" }); }}
+              className="flex-1 inline-flex items-center justify-center gap-[5px] py-[7px] rounded-lg bg-white text-[#B91C1C] border-[0.5px] border-[#FEE2E2] text-[0.72rem] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#FEF2F2]"
+            >
+              <XIcon size={12} strokeWidth={2.5} /> Reject
+            </button>
+          </>)}
 
           {laporan.status === "approved" && (
             <button
               onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "update", status: "on_progress" }); }}
-              style={{
-                flex: 1,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 5,
-                padding: "7px 0",
-                borderRadius: 8,
-                background: "white",
-                color: "#C2410C",
-                border: "0.5px solid #FFEDD5",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#FFF7ED")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+              className="flex-1 inline-flex items-center justify-center gap-[5px] py-[7px] rounded-lg bg-white text-[#C2410C] border-[0.5px] border-[#FFEDD5] text-[0.72rem] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#FFF7ED]"
             >
               <Loader size={12} strokeWidth={1.8} /> On Progress
             </button>
@@ -344,25 +147,7 @@ export default function LaporanCard({ laporan, index, onAction }: Props) {
           {laporan.status === "on_progress" && (
             <button
               onClick={(e) => { e.stopPropagation(); onAction(laporan.id, { type: "update", status: "completed" }); }}
-              style={{
-                flex: 1,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 5,
-                padding: "7px 0",
-                borderRadius: 8,
-                background: "white",
-                color: "#047857",
-                border: "0.5px solid #D1FAE5",
-                fontSize: "0.72rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontFamily: "inherit",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = "#F0FDF4")}
-              onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+              className="flex-1 inline-flex items-center justify-center gap-[5px] py-[7px] rounded-lg bg-white text-[#047857] border-[0.5px] border-[#D1FAE5] text-[0.72rem] font-semibold cursor-pointer transition-colors duration-150 hover:bg-[#F0FDF4]"
             >
               <CheckCircle2 size={12} strokeWidth={1.8} /> Selesai
             </button>
@@ -371,22 +156,7 @@ export default function LaporanCard({ laporan, index, onAction }: Props) {
           {/* Chevron detail */}
           <button
             onClick={(e) => { e.stopPropagation(); router.push(`/admin/laporan/${laporan.id}`); }}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              background: "#fafaf8",
-              border: "0.5px solid #f0e6dc",
-              cursor: "pointer",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#a8856b",
-              flexShrink: 0,
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "#FFF5EE"; e.currentTarget.style.color = "#E8541C"; e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)"; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "#fafaf8"; e.currentTarget.style.color = "#a8856b"; e.currentTarget.style.borderColor = "#f0e6dc"; }}
+            className="w-8 h-8 rounded-lg bg-[#fafaf8] border-[0.5px] border-[#f0e6dc] cursor-pointer inline-flex items-center justify-center text-[#a8856b] shrink-0 transition-all duration-150 hover:bg-[#FFF5EE] hover:text-[#E8541C] hover:border-[rgba(255,107,53,0.3)]"
           >
             <ChevronRight size={13} strokeWidth={2} />
           </button>

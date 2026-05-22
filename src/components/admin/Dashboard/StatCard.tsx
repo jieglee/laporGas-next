@@ -19,39 +19,34 @@ export default function StatCard({ label, value, icon: Icon, delta, highlight, i
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -2, transition: { duration: 0.15 } }}
+      className={`rounded-[14px] px-5 py-[18px] transition-all duration-200 border-[0.5px] ${
+        highlight
+          ? "border-[rgba(255,107,53,0.2)]"
+          : "border-[#f0e6dc] bg-white"
+      }`}
       style={{
-        background: highlight ? "linear-gradient(135deg, #FFF5EE 0%, #FFEDE0 100%)" : "white",
-        border: `0.5px solid ${highlight ? "rgba(255,107,53,0.2)" : "#f0e6dc"}`,
-        borderRadius: 14,
-        padding: "18px 20px",
-        transition: "all 0.2s",
+        background: highlight
+          ? "linear-gradient(135deg, #FFF5EE 0%, #FFEDE0 100%)"
+          : undefined,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+      <div className="flex items-center justify-between mb-[14px]">
         <div
-          style={{
-            width: 36,
-            height: 36,
-            borderRadius: 10,
-            background: highlight ? "rgba(255,107,53,0.15)" : "#fafaf8",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: highlight ? "#E8541C" : "#8a6f5e",
-          }}
+          className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${
+            highlight
+              ? "bg-[rgba(255,107,53,0.15)] text-[#E8541C]"
+              : "bg-[#fafaf8] text-[#8a6f5e]"
+          }`}
         >
           <Icon size={18} strokeWidth={1.8} />
         </div>
         {delta && (
           <span
-            style={{
-              fontSize: "0.65rem",
-              fontWeight: 700,
-              padding: "3px 8px",
-              borderRadius: 99,
-              background: delta.positive ? "#ECFDF5" : "#FEF3F3",
-              color: delta.positive ? "#059669" : "#DC2626",
-            }}
+            className={`text-[0.65rem] font-bold px-2 py-[3px] rounded-full ${
+              delta.positive
+                ? "bg-[#ECFDF5] text-[#059669]"
+                : "bg-[#FEF3F3] text-[#DC2626]"
+            }`}
           >
             {delta.positive ? "↑" : "↓"} {delta.value}
           </span>
@@ -59,19 +54,12 @@ export default function StatCard({ label, value, icon: Icon, delta, highlight, i
       </div>
 
       <div
-        style={{
-          fontFamily: "'Syne', sans-serif",
-          fontSize: "1.8rem",
-          fontWeight: 800,
-          color: "#1a0e08",
-          letterSpacing: "-0.035em",
-          lineHeight: 1,
-          marginBottom: 6,
-        }}
+        className="text-[1.8rem] font-extrabold text-[#1a0e08] tracking-[-0.035em] leading-none mb-[6px]"
+        style={{ fontFamily: "'Syne', sans-serif" }}
       >
         {value}
       </div>
-      <p style={{ fontSize: "0.75rem", color: highlight ? "#8a4a1c" : "#a8856b", margin: 0, fontWeight: 500 }}>
+      <p className={`text-[0.75rem] font-medium m-0 ${highlight ? "text-[#8a4a1c]" : "text-[#a8856b]"}`}>
         {label}
       </p>
     </motion.div>

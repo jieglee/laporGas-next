@@ -7,8 +7,6 @@ import UrgentReports, { type AdminLaporan } from "@/components/admin/Dashboard/U
 import StatisticsChart, { type ChartData } from "@/components/admin/Dashboard/StatisticsChart";
 import { useSession } from "next-auth/react";
 
-// ── Data sementara — nanti ganti ke real fetch ────────────────────────────────
-
 const LAPORAN: AdminLaporan[] = [
   { id: "AL-001", judul: "Jalan berlubang di Jl. Sudirman KM 5",  kategori: "infrastruktur",  status: "pending",     priority: "urgent", lokasi: "Jakarta Selatan", pelapor: { nama: "Rizky Hidayat", inisial: "RH" }, createdAt: "2 menit lalu" },
   { id: "AL-002", judul: "Sampah menumpuk di pasar Minggu",        kategori: "kebersihan",     status: "approved",    priority: "high",   lokasi: "Jakarta Selatan", pelapor: { nama: "Dewi Rahayu",   inisial: "DR" }, createdAt: "1 hari lalu" },
@@ -40,6 +38,8 @@ const CHART_DATA: ChartData = {
 const PRIORITY_RANK = { urgent: 4, high: 3, medium: 2, low: 1 };
 
 export default function AdminDashboardPage() {
+  const { data: session, status } = useSession();
+
   const stats = {
     total:      LAPORAN.length,
     pending:    LAPORAN.filter((l) => l.status === "pending").length,
@@ -50,77 +50,31 @@ export default function AdminDashboardPage() {
     ).length,
   };
 
-  // Urgent yang belum kelar — diurutin priority
   const urgent = LAPORAN
     .filter((l) => l.priority === "urgent" && l.status !== "completed" && l.status !== "rejected")
     .sort((a, b) => PRIORITY_RANK[b.priority] - PRIORITY_RANK[a.priority]);
 
-    const { data: session, status } = useSession();
-
-   if (status === "loading") {
-      return null;
-   }
+  if (status === "loading") return null;
 
   return (
-    <div style={{ padding: "32px 32px 64px", maxWidth: 1280, margin: "0 auto" }}>
-       {session?.user?.role === "superadmin" ? (
-            <h1>Superadmin Dashboard</h1>
-         ) : (
-            <h1>Admin Dashboard</h1>
-         )}
+    <div className="px-8 pt-8 pb-16 max-w-[1280px] mx-auto">
+      {session?.user?.role === "superadmin" ? (
+        <h1>Superadmin Dashboard</h1>
+      ) : (
+        <h1>Admin Dashboard</h1>
+      )}
 
-      {/* 1. HERO SECTION */}
       <HeroSection pendingCount={stats.pending} urgentCount={stats.urgent} />
 
-      {/* 2. STATS CARDS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 14,
-          marginBottom: 32,
-        }}
-      >
-        <StatCard
-          index={0}
-          label="Total laporan"
-          value={stats.total}
-          icon={FileText}
-          delta={{ value: "12% minggu ini", positive: true }}
-        />
-        <StatCard
-          index={1}
-          label="Pending review"
-          value={stats.pending}
-          icon={Clock}
-          highlight={stats.pending > 0}
-        />
-        <StatCard
-          index={2}
-          label="Sedang diproses"
-          value={stats.onProgress}
-          icon={TrendingUp}
-        />
-        <StatCard
-          index={3}
-          label="Selesai"
-          value={stats.completed}
-          icon={CheckCircle2}
-          delta={{ value: "67% rate", positive: true }}
-        />
-        <StatCard
-          index={4}
-          label="Prioritas urgent"
-          value={stats.urgent}
-          icon={AlertTriangle}
-          highlight={stats.urgent > 0}
-        />
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-[14px] mb-8">
+        <StatCard index={0} label="Total laporan"    value={stats.total}      icon={FileText}      delta={{ value: "12% minggu ini", positive: true }} />
+        <StatCard index={1} label="Pending review"   value={stats.pending}    icon={Clock}         highlight={stats.pending > 0} />
+        <StatCard index={2} label="Sedang diproses"  value={stats.onProgress} icon={TrendingUp} />
+        <StatCard index={3} label="Selesai"          value={stats.completed}  icon={CheckCircle2}  delta={{ value: "67% rate", positive: true }} />
+        <StatCard index={4} label="Prioritas urgent" value={stats.urgent}     icon={AlertTriangle} highlight={stats.urgent > 0} />
       </div>
 
-      {/* 3. URGENT REPORTS */}
       <UrgentReports laporan={urgent} limit={5} />
-
-      {/* 4. STATISTICS CHART */}
       <StatisticsChart data={CHART_DATA} />
     </div>
   );

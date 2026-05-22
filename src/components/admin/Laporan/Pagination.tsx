@@ -29,89 +29,36 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
     pages.push(totalPages);
   }
 
-  const btnStyle = (active: boolean, disabled?: boolean): React.CSSProperties => ({
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minWidth: 36,
-    height: 36,
-    padding: "0 11px",
-    borderRadius: 9,
-    border: `0.5px solid ${active ? "transparent" : "#f0e6dc"}`,
-    background: active ? "linear-gradient(135deg, #FF6B35, #E8541C)" : "white",
-    color: active ? "white" : disabled ? "#d4b89e" : "#3d2817",
-    fontSize: "0.8rem",
-    fontWeight: active ? 700 : 500,
-    cursor: disabled ? "not-allowed" : "pointer",
-    transition: "all 0.15s",
-    fontFamily: "inherit",
-    boxShadow: active ? "0 4px 12px rgba(255,107,53,0.22)" : "none",
-  });
+  const baseBtn = "inline-flex items-center justify-center min-w-[36px] h-9 px-[11px] rounded-[9px] text-[0.8rem] cursor-pointer transition-all duration-150 border-[0.5px] font-[inherit]";
+  const activeBtn = `${baseBtn} border-transparent font-bold text-white shadow-[0_4px_12px_rgba(255,107,53,0.22)]`;
+  const normalBtn = `${baseBtn} bg-white border-[#f0e6dc] font-medium hover:bg-[#FFF5EE] hover:border-[rgba(255,107,53,0.3)] hover:text-[#E8541C]`;
+  const disabledBtn = `${baseBtn} bg-white border-[#f0e6dc] text-[#d4b89e] cursor-not-allowed`;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginTop: 20,
-        gap: 16,
-        flexWrap: "wrap",
-      }}
-    >
-      <p style={{ fontSize: "0.78rem", color: "#a8856b", margin: 0 }}>
-        Menampilkan <strong style={{ color: "#1a0e08", fontWeight: 700 }}>{from}–{to}</strong> dari{" "}
-        <strong style={{ color: "#1a0e08", fontWeight: 700 }}>{totalItems}</strong> laporan
+    <div className="flex items-center justify-between mt-5 gap-4 flex-wrap">
+      <p className="text-[0.78rem] text-[#a8856b] m-0">
+        Menampilkan <strong className="text-[#1a0e08] font-bold">{from}–{to}</strong> dari{" "}
+        <strong className="text-[#1a0e08] font-bold">{totalItems}</strong> laporan
       </p>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+      <div className="flex items-center gap-1">
         <button
           onClick={() => onPageChange(page - 1)}
           disabled={page === 1}
-          style={btnStyle(false, page === 1)}
-          onMouseEnter={(e) => {
-            if (page !== 1) {
-              e.currentTarget.style.background = "#FFF5EE";
-              e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)";
-              e.currentTarget.style.color = "#E8541C";
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "white";
-            e.currentTarget.style.borderColor = "#f0e6dc";
-            e.currentTarget.style.color = page === 1 ? "#d4b89e" : "#3d2817";
-          }}
+          className={page === 1 ? disabledBtn : `${normalBtn} text-[#3d2817]`}
         >
           <ChevronLeft size={14} strokeWidth={2} />
         </button>
 
         {pages.map((p, i) =>
           p === "..." ? (
-            <span
-              key={`ellipsis-${i}`}
-              style={{ padding: "0 6px", color: "#a8856b", fontSize: "0.78rem" }}
-            >
-              …
-            </span>
+            <span key={`ellipsis-${i}`} className="px-[6px] text-[#a8856b] text-[0.78rem]">…</span>
           ) : (
             <button
               key={p}
-              onClick={() => onPageChange(p)}
-              style={btnStyle(p === page)}
-              onMouseEnter={(e) => {
-                if (p !== page) {
-                  e.currentTarget.style.background = "#FFF5EE";
-                  e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)";
-                  e.currentTarget.style.color = "#E8541C";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (p !== page) {
-                  e.currentTarget.style.background = "white";
-                  e.currentTarget.style.borderColor = "#f0e6dc";
-                  e.currentTarget.style.color = "#3d2817";
-                }
-              }}
+              onClick={() => onPageChange(p as number)}
+              className={p === page ? activeBtn : `${normalBtn} text-[#3d2817]`}
+              style={p === page ? { background: "linear-gradient(135deg, #FF6B35, #E8541C)" } : undefined}
             >
               {p}
             </button>
@@ -121,19 +68,7 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
         <button
           onClick={() => onPageChange(page + 1)}
           disabled={page === totalPages}
-          style={btnStyle(false, page === totalPages)}
-          onMouseEnter={(e) => {
-            if (page !== totalPages) {
-              e.currentTarget.style.background = "#FFF5EE";
-              e.currentTarget.style.borderColor = "rgba(255,107,53,0.3)";
-              e.currentTarget.style.color = "#E8541C";
-            }
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "white";
-            e.currentTarget.style.borderColor = "#f0e6dc";
-            e.currentTarget.style.color = page === totalPages ? "#d4b89e" : "#3d2817";
-          }}
+          className={page === totalPages ? disabledBtn : `${normalBtn} text-[#3d2817]`}
         >
           <ChevronRight size={14} strokeWidth={2} />
         </button>

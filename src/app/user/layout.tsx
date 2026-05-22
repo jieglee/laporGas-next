@@ -6,14 +6,11 @@ function UserLayoutInner({ children }: { children: React.ReactNode }) {
     const { expanded } = useSidebar();
 
     return (
-        <div style={{ minHeight: "100vh", background: "#fff" }}>
+        <div className="min-h-screen bg-white">
             <UserSidebar />
             <main
-                style={{
-                    marginLeft: expanded ? 244 : 72,
-                    minHeight: "100vh",
-                    transition: "margin-left 300ms ease-out",
-                }}
+                className="min-h-screen transition-[margin-left] duration-300 ease-out"
+                style={{ marginLeft: expanded ? 244 : 72 }}
             >
                 {children}
             </main>

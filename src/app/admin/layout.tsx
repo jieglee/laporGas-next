@@ -9,14 +9,11 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     const { expanded } = useAdminSidebar();
 
     return (
-        <div style={{ minHeight: "100vh", background: "#fafaf8" }}>
+        <div className="min-h-screen bg-[#fafaf8]">
             <AdminSidebar />
             <main
-                style={{
-                    marginLeft: expanded ? 244 : 72,
-                    minHeight: "100vh",
-                    transition: "margin-left 300ms ease-out",
-                }}
+                className="min-h-screen transition-[margin-left] duration-300 ease-out"
+                style={{ marginLeft: expanded ? 244 : 72 }}
             >
                 {children}
             </main>

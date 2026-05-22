@@ -37,13 +37,11 @@ export default function DetailMap({ lat, lng, judul, alamat }: Props) {
                 attributionControl: false,
             });
 
-            // CartoDB Voyager — clean, no API key
             L.tileLayer(
                 "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
                 { subdomains: "abcd", maxZoom: 20 }
             ).addTo(map);
 
-            // Dot marker
             L.circleMarker([lat, lng], {
                 radius: 10,
                 color: "white",
@@ -69,38 +67,23 @@ export default function DetailMap({ lat, lng, judul, alamat }: Props) {
     };
 
     return (
-        <div style={{
-            position: "relative", background: "white",
-            border: "0.5px solid #f0e6dc", borderRadius: 14,
-            overflow: "hidden", marginBottom: 16,
-        }}>
-            <div ref={mapRef} style={{ width: "100%", height: 380 }} />
+        <div className="relative bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden mb-4">
+            <div ref={mapRef} className="w-full" style={{ height: 380 }} />
 
             {/* Address overlay */}
-            <div style={{
-                position: "absolute", top: 14, left: 14,
-                background: "rgba(255,255,255,0.96)", backdropFilter: "blur(8px)",
-                border: "0.5px solid #f0e6dc", borderRadius: 10,
-                padding: "10px 14px", maxWidth: 320,
-                boxShadow: "0 4px 16px rgba(0,0,0,0.08)", zIndex: 400,
-            }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                    <div style={{
-                        width: 28, height: 28, borderRadius: 8,
-                        background: "rgba(255,107,53,0.1)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        color: "#E8541C", flexShrink: 0,
-                    }}>
+            <div className="absolute top-[14px] left-[14px] bg-[rgba(255,255,255,0.96)] backdrop-blur-sm border-[0.5px] border-[#f0e6dc] rounded-[10px] px-[14px] py-[10px] max-w-[320px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] z-[400]">
+                <div className="flex items-start gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-[rgba(255,107,53,0.1)] flex items-center justify-center text-[#E8541C] shrink-0">
                         <MapPin size={14} strokeWidth={2} />
                     </div>
-                    <div style={{ minWidth: 0 }}>
-                        <p style={{ fontSize: "0.6rem", fontWeight: 700, color: "#a8856b", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 2px" }}>
+                    <div className="min-w-0">
+                        <p className="text-[0.6rem] font-bold text-[#a8856b] uppercase tracking-[0.08em] m-0 mb-[2px]">
                             Lokasi laporan
                         </p>
-                        <p style={{ fontSize: "0.8rem", fontWeight: 600, color: "#1a0e08", margin: 0, lineHeight: 1.4 }}>
+                        <p className="text-[0.8rem] font-semibold text-[#1a0e08] m-0 leading-[1.4]">
                             {alamat || "Koordinat tercatat"}
                         </p>
-                        <p style={{ fontSize: "0.62rem", color: "#a8856b", margin: "3px 0 0", fontFamily: "ui-monospace, monospace" }}>
+                        <p className="text-[0.62rem] text-[#a8856b] mt-[3px] mb-0 font-mono">
                             {lat.toFixed(6)}, {lng.toFixed(6)}
                         </p>
                     </div>
@@ -110,17 +93,7 @@ export default function DetailMap({ lat, lng, judul, alamat }: Props) {
             {/* Open in Maps */}
             <button
                 onClick={openGoogleMaps}
-                style={{
-                    position: "absolute", top: 14, right: 14,
-                    display: "inline-flex", alignItems: "center", gap: 6,
-                    background: "white", border: "0.5px solid #f0e6dc",
-                    borderRadius: 10, padding: "8px 14px",
-                    fontSize: "0.75rem", fontWeight: 600, color: "#3d2817",
-                    cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-                    transition: "all 0.15s", zIndex: 400,
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#FFF5EE"; e.currentTarget.style.color = "#E8541C"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "white"; e.currentTarget.style.color = "#3d2817"; }}
+                className="absolute top-[14px] right-[14px] inline-flex items-center gap-[6px] bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] px-[14px] py-2 text-[0.75rem] font-semibold text-[#3d2817] cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-150 z-[400] hover:bg-[#FFF5EE] hover:text-[#E8541C]"
             >
                 <Navigation size={12} strokeWidth={1.8} />
                 Buka di Google Maps

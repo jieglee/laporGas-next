@@ -1,11 +1,7 @@
 "use client";
 
-import { Search, X, Tag, Flag, ArrowUpDown } from "lucide-react";
-import {
-  type LaporanPriority,
-  type LaporanKategori,
-  KATEGORI_LABEL,
-} from "./types";
+import { Search, X, Tag, Flag } from "lucide-react";
+import { type LaporanPriority, type LaporanKategori, KATEGORI_LABEL } from "./types";
 
 export type SortBy = "newest" | "oldest" | "urgent";
 
@@ -23,10 +19,7 @@ interface Props {
 
 const KATEGORI_OPTS: { value: LaporanKategori | "all"; label: string }[] = [
   { value: "all", label: "Semua kategori" },
-  ...Object.entries(KATEGORI_LABEL).map(([k, v]) => ({
-    value: k as LaporanKategori,
-    label: v,
-  })),
+  ...Object.entries(KATEGORI_LABEL).map(([k, v]) => ({ value: k as LaporanKategori, label: v })),
 ];
 
 const PRIORITY_OPTS: { value: LaporanPriority | "all"; label: string }[] = [
@@ -37,11 +30,7 @@ const PRIORITY_OPTS: { value: LaporanPriority | "all"; label: string }[] = [
   { value: "low",    label: "Low" },
 ];
 
-const SORT_OPTS: { value: SortBy; label: string }[] = [
-  { value: "newest", label: "Terbaru" },
-  { value: "oldest", label: "Terlama" },
-  { value: "urgent", label: "Prioritas urgent" },
-];
+const chevronSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8856b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`;
 
 function SelectField({
   icon,
@@ -55,30 +44,18 @@ function SelectField({
   options: { value: string; label: string }[];
 }) {
   return (
-    <div style={{ position: "relative" }}>
-      <div style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#a8856b", pointerEvents: "none", display: "flex" }}>
+    <div className="relative">
+      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[#a8856b] pointer-events-none flex">
         {icon}
       </div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] h-[38px] pl-[34px] pr-9 text-[0.78rem] text-[#3d2817] cursor-pointer outline-none font-[inherit] font-medium appearance-none min-w-[160px]"
         style={{
-          background: "white",
-          border: "0.5px solid #f0e6dc",
-          borderRadius: 10,
-          height: 38,
-          padding: "0 36px 0 34px",
-          fontSize: "0.78rem",
-          color: "#3d2817",
-          cursor: "pointer",
-          outline: "none",
-          fontFamily: "inherit",
-          fontWeight: 500,
-          appearance: "none",
-          backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8856b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`,
+          backgroundImage: chevronSvg,
           backgroundRepeat: "no-repeat",
           backgroundPosition: "right 12px center",
-          minWidth: 160,
         }}
       >
         {options.map((o) => (
@@ -90,51 +67,24 @@ function SelectField({
 }
 
 export default function SearchAndFilter({ filter, onChange }: Props) {
-  const hasActive =
-    filter.search || filter.kategori !== "all" || filter.priority !== "all";
+  const hasActive = filter.search || filter.kategori !== "all" || filter.priority !== "all";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 18 }}>
+    <div className="flex flex-col gap-[10px] mb-[18px]">
       {/* Search */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          background: "white",
-          border: "0.5px solid #f0e6dc",
-          borderRadius: 10,
-          padding: "0 14px",
-          height: 42,
-        }}
-      >
-        <Search size={15} style={{ color: "#a8856b", flexShrink: 0 }} />
+      <div className="flex items-center gap-[10px] bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] px-[14px] h-[42px]">
+        <Search size={15} className="text-[#a8856b] shrink-0" />
         <input
           type="text"
           placeholder="Cari laporan, pelapor, atau ID..."
           value={filter.search}
           onChange={(e) => onChange({ ...filter, search: e.target.value })}
-          style={{
-            flex: 1,
-            border: "none",
-            outline: "none",
-            fontSize: "0.85rem",
-            color: "#1a0e08",
-            background: "transparent",
-            fontFamily: "inherit",
-          }}
+          className="flex-1 border-0 outline-none text-[0.85rem] text-[#1a0e08] bg-transparent font-[inherit]"
         />
         {filter.search && (
           <button
             onClick={() => onChange({ ...filter, search: "" })}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: 2,
-              display: "flex",
-              color: "#a8856b",
-            }}
+            className="bg-transparent border-0 cursor-pointer p-[2px] flex text-[#a8856b]"
           >
             <X size={14} />
           </button>
@@ -142,7 +92,7 @@ export default function SearchAndFilter({ filter, onChange }: Props) {
       </div>
 
       {/* Filters row */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+      <div className="flex items-center gap-2 flex-wrap">
         <SelectField
           icon={<Tag size={13} strokeWidth={1.8} />}
           value={filter.kategori}
@@ -155,22 +105,10 @@ export default function SearchAndFilter({ filter, onChange }: Props) {
           onChange={(v) => onChange({ ...filter, priority: v as LaporanPriority | "all" })}
           options={PRIORITY_OPTS}
         />
-
         {hasActive && (
           <button
             onClick={() => onChange({ search: "", kategori: "all", priority: "all", sortBy: filter.sortBy })}
-            style={{
-              fontSize: "0.72rem",
-              fontWeight: 600,
-              color: "#E8541C",
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              padding: "8px 4px",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 4,
-            }}
+            className="text-[0.72rem] font-semibold text-[#E8541C] bg-transparent border-0 cursor-pointer py-2 px-1 inline-flex items-center gap-1"
           >
             <X size={12} /> Reset
           </button>

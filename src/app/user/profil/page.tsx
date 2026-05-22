@@ -41,34 +41,28 @@ export default function ProfilPage() {
         fetchReports();
     }, [session?.user?.id]);
 
-const handleSave = async (data: {
-    nama: string;
-    email: string;
-    password?: string;
-    avatar?: File;
-}) => {
-    const updatedUser = await updateProfile({
-        name: data.nama,
-        email: data.email,
-        ...(data.password ? { password: data.password } : {}),
-    });
-
-    // update session biar langsung refresh
-    await updateSession({
-        user: {
-            ...session?.user,
-            name: updatedUser.name,
-            email: updatedUser.email,
-        },
-    });
-};
+    const handleSave = async (data: {
+        nama: string;
+        email: string;
+        password?: string;
+        avatar?: File;
+    }) => {
+        const updatedUser = await updateProfile({
+            name: data.nama,
+            email: data.email,
+            ...(data.password ? { password: data.password } : {}),
+        });
+        await updateSession({
+            user: { ...session?.user, name: updatedUser.name, email: updatedUser.email },
+        });
+    };
 
     const joinedAt = session?.user
         ? new Date().toLocaleDateString("id-ID", { month: "long", year: "numeric" })
         : "-";
 
     return (
-        <div style={{ padding: "28px 32px 72px", maxWidth: 1100, margin: "0 auto" }}>
+        <div className="px-8 pt-7 pb-[72px] max-w-[1100px] mx-auto">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
                 <ProfileHeader
                     nama={nama}
@@ -82,35 +76,36 @@ const handleSave = async (data: {
             </motion.div>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 9, background: "rgba(255,107,53,0.08)", display: "flex", alignItems: "center", justifyContent: "center", color: "#E8541C" }}>
+                <div className="flex items-center gap-[10px] mb-4">
+                    <div className="w-8 h-8 rounded-[9px] bg-[rgba(255,107,53,0.08)] flex items-center justify-center text-[#E8541C]">
                         <FileText size={15} strokeWidth={2} />
                     </div>
                     <div>
-                        <h2 style={{ fontFamily: "'Syne', sans-serif", fontSize: "1.1rem", fontWeight: 800, color: "#1a0e08", letterSpacing: "-0.02em", margin: 0 }}>
+                        <h2 className="text-[1.1rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0"
+                            style={{ fontFamily: "'Syne', sans-serif" }}>
                             Laporan Saya
                         </h2>
-                        <p style={{ fontSize: "0.7rem", color: "#a8856b", margin: 0 }}>
+                        <p className="text-[0.7rem] text-[#a8856b] m-0">
                             {loadingLaporan ? "Memuat..." : `${reports.length} laporan dibuat`}
                         </p>
                     </div>
                 </div>
 
                 {loadingLaporan ? (
-                    <div style={{ background: "white", border: "0.5px solid #f0e6dc", borderRadius: 14, padding: "64px 24px", textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center", gap: 10, color: "#a8856b", fontSize: "0.85rem" }}>
-                        <Loader2 size={18} style={{ animation: "spin 1s linear infinite" }} />
+                    <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-16 px-6 text-center flex items-center justify-center gap-[10px] text-[#a8856b] text-[0.85rem]">
+                        <Loader2 size={18} className="animate-spin" />
                         Memuat laporan...
                     </div>
                 ) : reports.length === 0 ? (
-                    <div style={{ background: "white", border: "0.5px solid #f0e6dc", borderRadius: 14, padding: "72px 24px", textAlign: "center" }}>
-                        <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(255,107,53,0.08)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px" }}>
+                    <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[72px] px-6 text-center">
+                        <div className="w-14 h-14 rounded-full bg-[rgba(255,107,53,0.08)] flex items-center justify-center mx-auto mb-[14px]">
                             <FileText size={24} color="#E8541C" strokeWidth={1.8} />
                         </div>
-                        <p style={{ fontSize: "0.9rem", fontWeight: 600, color: "#1a0e08", marginBottom: 5 }}>Belum ada laporan</p>
-                        <p style={{ fontSize: "0.78rem", color: "#a8856b", margin: 0 }}>Kamu belum pernah membuat laporan</p>
+                        <p className="text-[0.9rem] font-semibold text-[#1a0e08] mb-[5px]">Belum ada laporan</p>
+                        <p className="text-[0.78rem] text-[#a8856b] m-0">Kamu belum pernah membuat laporan</p>
                     </div>
                 ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
+                    <div className="grid gap-[14px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
                         {reports.map((r, i) => (
                             <ReportCard key={r.id} report={r} index={i} />
                         ))}
@@ -124,8 +119,6 @@ const handleSave = async (data: {
                 initial={{ nama, email, avatarUrl: session?.user?.image ?? null, inisial }}
                 onSave={handleSave}
             />
-
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 }

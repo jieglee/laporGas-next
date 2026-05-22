@@ -23,39 +23,22 @@ export default function HeroSection({ pendingCount, urgentCount }: Props) {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      style={{ marginBottom: 40, position: "relative" }}
+      className="mb-10 relative"
     >
       {/* Greeting label */}
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: 7,
-          background: "rgba(255,107,53,0.08)",
-          border: "0.5px solid rgba(255,107,53,0.15)",
-          padding: "5px 12px",
-          borderRadius: 99,
-          marginBottom: 18,
-        }}
-      >
-        <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#FF6B35" }} />
-        <span style={{ fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "#E8541C" }}>
+      <div className="inline-flex items-center gap-[7px] bg-[rgba(255,107,53,0.08)] border-[0.5px] border-[rgba(255,107,53,0.15)] px-3 py-[5px] rounded-full mb-[18px]">
+        <span className="w-[5px] h-[5px] rounded-full bg-[#FF6B35]" />
+        <span className="text-[0.65rem] font-bold tracking-[0.1em] uppercase text-[#E8541C]">
           {greeting}, {nama}
         </span>
       </div>
 
       {/* Headline */}
       <h1
+        className="font-extrabold text-[#1a0e08] tracking-[-0.035em] leading-[1.1] m-0 mb-[14px] max-w-[720px]"
         style={{
           fontFamily: "'Syne', sans-serif",
           fontSize: "clamp(1.6rem, 3.2vw, 2.4rem)",
-          fontWeight: 800,
-          color: "#1a0e08",
-          letterSpacing: "-0.035em",
-          lineHeight: 1.1,
-          margin: 0,
-          marginBottom: 14,
-          maxWidth: 720,
         }}
       >
         Ada{" "}
@@ -73,18 +56,10 @@ export default function HeroSection({ pendingCount, urgentCount }: Props) {
       </h1>
 
       {/* Subtext */}
-      <p
-        style={{
-          fontSize: "0.92rem",
-          color: "#6b5546",
-          lineHeight: 1.65,
-          margin: 0,
-          maxWidth: 560,
-        }}
-      >
+      <p className="text-[0.92rem] text-[#6b5546] leading-[1.65] m-0 max-w-[560px]">
         {urgentCount > 0 ? (
           <>
-            <span style={{ fontWeight: 600, color: "#E8541C" }}>{urgentCount} di antaranya prioritas urgent</span>
+            <span className="font-semibold text-[#E8541C]">{urgentCount} di antaranya prioritas urgent</span>
             {" — "}butuh penanganan segera.
           </>
         ) : (

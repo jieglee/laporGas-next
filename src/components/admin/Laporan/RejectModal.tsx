@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import { X, AlertTriangle } from "lucide-react";
 import type { AdminLaporan } from "./types";
 
@@ -20,9 +19,18 @@ const QUICK_REASONS = [
 
 export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
   const [alasan, setAlasan] = useState("");
+  const [visible, setVisible] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Animate in/out
   useEffect(() => {
-    if (laporan) setAlasan("");
+    if (laporan) {
+      setAlasan("");
+      requestAnimationFrame(() => setVisible(true));
+      setTimeout(() => textareaRef.current?.focus(), 100);
+    } else {
+      setVisible(false);
+    }
   }, [laporan?.id]);
 
   useEffect(() => {
@@ -37,6 +45,8 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
     return () => { document.body.style.overflow = ""; };
   }, [laporan]);
 
+  if (!laporan) return null;
+
   const valid = alasan.trim().length >= 10;
 
   const handleSubmit = () => {
@@ -46,342 +56,151 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
   };
 
   return (
-    <AnimatePresence>
-      {laporan && (
-        <motion.div
-          key="overlay"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-          onClick={onClose}
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 110,
-            background: "rgba(26,14,8,0.6)",
-            backdropFilter: "blur(8px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 20,
-          }}
-        >
-          <motion.div
-            key="modal"
-            initial={{ scale: 0.94, opacity: 0, y: 14 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.94, opacity: 0, y: 14 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            onClick={(e) => e.stopPropagation()}
+    <div
+      className="fixed inset-0 z-[110] flex items-center justify-center p-5 transition-all duration-200"
+      style={{
+        background: visible ? "rgba(26,14,8,0.6)" : "rgba(26,14,8,0)",
+        backdropFilter: visible ? "blur(8px)" : "blur(0px)",
+      }}
+      onClick={onClose}
+    >
+      <div
+        className="flex flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.25)] transition-all duration-[280ms]"
+        style={{
+          width: "min(480px, 95vw)",
+          opacity: visible ? 1 : 0,
+          transform: visible ? "scale(1) translateY(0)" : "scale(0.94) translateY(14px)",
+          transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="px-[22px] pt-5 pb-4 flex gap-3 items-start relative">
+          <div className="w-10 h-10 rounded-[11px] bg-[rgba(220,38,38,0.1)] flex items-center justify-center text-[#DC2626] shrink-0">
+            <AlertTriangle size={18} strokeWidth={2} />
+          </div>
+          <div className="flex-1">
+            <h2
+              className="text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0 mb-1"
+              style={{ fontFamily: "'Syne', sans-serif" }}
+            >
+              Tolak laporan ini?
+            </h2>
+            <p className="text-[0.78rem] text-[#8a6f5e] m-0 leading-[1.5]">
+              Berikan alasan jelas — pelapor akan dapat notifikasi
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="bg-transparent border-0 cursor-pointer text-[#a8856b] p-1 flex rounded-lg transition-colors duration-150 hover:text-[#1a0e08]"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Laporan ref */}
+        <div className="mx-[22px] mb-[14px] px-[14px] py-[10px] bg-[#fafaf8] border-[0.5px] border-[#f0e6dc] rounded-[10px]">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-mono text-[0.62rem] font-bold text-[#6b5546] bg-white border-[0.5px] border-[#f0e6dc] px-[7px] py-[1px] rounded-[5px]">
+              {laporan.id}
+            </span>
+            <span className="text-[0.65rem] text-[#a8856b]">oleh {laporan.pelapor.nama}</span>
+          </div>
+          <p
+            className="text-[0.82rem] font-semibold text-[#1a0e08] m-0"
+            style={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
+          >
+            {laporan.judul}
+          </p>
+        </div>
+
+        {/* Body */}
+        <div className="px-[22px] pb-[18px]">
+          {/* Quick reasons */}
+          <div className="mb-3">
+            <p className="text-[0.62rem] font-bold text-[#a8856b] uppercase tracking-[0.06em] m-0 mb-2">
+              Alasan cepat
+            </p>
+            <div className="flex gap-[6px] flex-wrap">
+              {QUICK_REASONS.map((r) => {
+                const selected = alasan === r;
+                return (
+                  <button
+                    key={r}
+                    onClick={() => setAlasan(r)}
+                    className={`text-[0.72rem] font-medium px-[11px] py-[6px] rounded-full border-[0.5px] cursor-pointer transition-all duration-150 text-left font-[inherit] ${
+                      selected
+                        ? "bg-[rgba(220,38,38,0.08)] text-[#B91C1C] border-[rgba(220,38,38,0.3)]"
+                        : "bg-white text-[#6b5546] border-[#f0e6dc] hover:bg-[#fafaf8] hover:border-[#d4b89e]"
+                    }`}
+                  >
+                    {r}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Textarea */}
+          <div>
+            <div className="flex justify-between items-baseline mb-[6px]">
+              <label className="text-[0.7rem] font-bold text-[#6b5546] tracking-[0.02em]">
+                Detail alasan
+              </label>
+              <span className={`text-[0.65rem] ${alasan.length < 10 ? "text-[#a8856b]" : alasan.length > 280 ? "text-[#DC2626]" : "text-[#059669]"}`}>
+                {alasan.length}/300
+              </span>
+            </div>
+            <textarea
+              ref={textareaRef}
+              value={alasan}
+              onChange={(e) => setAlasan(e.target.value.slice(0, 300))}
+              placeholder="Tulis alasan penolakan yang jelas dan informatif untuk pelapor..."
+              rows={4}
+              className="w-full bg-[#fafaf8] rounded-[10px] px-3 py-[10px] text-[0.82rem] text-[#1a0e08] font-[inherit] outline-none resize-none leading-[1.6] transition-colors duration-200 border-[0.5px] box-border"
+              style={{ borderColor: valid ? "rgba(255,107,53,0.3)" : "#f0e6dc" }}
+            />
+            <p className="text-[0.65rem] text-[#a8856b] mt-[6px] mb-0 leading-[1.5]">
+              Minimal 10 karakter
+            </p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-[22px] py-[14px] border-t-[0.5px] border-[#f5ede3] bg-[#fafaf8] flex gap-[10px] justify-end">
+          <button
+            onClick={onClose}
+            className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] px-[18px] py-[10px] text-[0.78rem] font-semibold text-[#3d2817] cursor-pointer transition-colors duration-150 font-[inherit] hover:bg-[#fafaf8]"
+          >
+            Batal
+          </button>
+          <button
+            onClick={handleSubmit}
+            disabled={!valid}
+            className="font-bold text-[0.78rem] px-5 py-[10px] rounded-[10px] border-0 transition-all duration-200 font-[inherit]"
             style={{
-              width: "min(480px, 95vw)",
-              background: "white",
-              borderRadius: 18,
-              overflow: "hidden",
-              boxShadow: "0 24px 80px rgba(0,0,0,0.25)",
-              display: "flex",
-              flexDirection: "column",
+              background: valid ? "linear-gradient(135deg, #DC2626, #B91C1C)" : "#FEE2E2",
+              color: valid ? "white" : "#fca5a5",
+              cursor: valid ? "pointer" : "not-allowed",
+              boxShadow: valid ? "0 4px 12px rgba(220,38,38,0.25)" : "none",
+            }}
+            onMouseEnter={(e) => {
+              if (valid) {
+                e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 8px 20px rgba(220,38,38,0.4)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (valid) {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 12px rgba(220,38,38,0.25)";
+              }
             }}
           >
-            {/* Header */}
-            <div
-              style={{
-                padding: "20px 22px 16px",
-                display: "flex",
-                gap: 12,
-                alignItems: "flex-start",
-                position: "relative",
-              }}
-            >
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: 11,
-                  background: "rgba(220,38,38,0.1)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#DC2626",
-                  flexShrink: 0,
-                }}
-              >
-                <AlertTriangle size={18} strokeWidth={2} />
-              </div>
-              <div style={{ flex: 1 }}>
-                <h2
-                  style={{
-                    fontFamily: "'Syne', sans-serif",
-                    fontSize: "1.05rem",
-                    fontWeight: 800,
-                    color: "#1a0e08",
-                    letterSpacing: "-0.02em",
-                    margin: 0,
-                    marginBottom: 4,
-                  }}
-                >
-                  Tolak laporan ini?
-                </h2>
-                <p style={{ fontSize: "0.78rem", color: "#8a6f5e", margin: 0, lineHeight: 1.5 }}>
-                  Berikan alasan jelas — pelapor akan dapat notifikasi
-                </p>
-              </div>
-              <button
-                onClick={onClose}
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "#a8856b",
-                  padding: 4,
-                  display: "flex",
-                  borderRadius: 8,
-                  transition: "color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#1a0e08")}
-                onMouseLeave={(e) => (e.currentTarget.style.color = "#a8856b")}
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Laporan ref */}
-            <div
-              style={{
-                margin: "0 22px 14px",
-                padding: "10px 14px",
-                background: "#fafaf8",
-                border: "0.5px solid #f0e6dc",
-                borderRadius: 10,
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                <span
-                  style={{
-                    fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
-                    fontSize: "0.62rem",
-                    fontWeight: 700,
-                    color: "#6b5546",
-                    background: "white",
-                    border: "0.5px solid #f0e6dc",
-                    padding: "1px 7px",
-                    borderRadius: 5,
-                  }}
-                >
-                  {laporan.id}
-                </span>
-                <span style={{ fontSize: "0.65rem", color: "#a8856b" }}>
-                  oleh {laporan.pelapor.nama}
-                </span>
-              </div>
-              <p
-                style={{
-                  fontSize: "0.82rem",
-                  fontWeight: 600,
-                  color: "#1a0e08",
-                  margin: 0,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  display: "-webkit-box",
-                  WebkitLineClamp: 1,
-                  WebkitBoxOrient: "vertical",
-                }}
-              >
-                {laporan.judul}
-              </p>
-            </div>
-
-            {/* Body */}
-            <div style={{ padding: "0 22px 18px" }}>
-              {/* Quick reasons */}
-              <div style={{ marginBottom: 12 }}>
-                <p
-                  style={{
-                    fontSize: "0.62rem",
-                    fontWeight: 700,
-                    color: "#a8856b",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                    margin: "0 0 8px",
-                  }}
-                >
-                  Alasan cepat
-                </p>
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                  {QUICK_REASONS.map((r) => {
-                    const selected = alasan === r;
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => setAlasan(r)}
-                        style={{
-                          fontSize: "0.72rem",
-                          fontWeight: 500,
-                          padding: "6px 11px",
-                          borderRadius: 99,
-                          background: selected ? "rgba(220,38,38,0.08)" : "white",
-                          color: selected ? "#B91C1C" : "#6b5546",
-                          border: `0.5px solid ${selected ? "rgba(220,38,38,0.3)" : "#f0e6dc"}`,
-                          cursor: "pointer",
-                          transition: "all 0.15s",
-                          fontFamily: "inherit",
-                          textAlign: "left",
-                        }}
-                        onMouseEnter={(e) => {
-                          if (!selected) {
-                            e.currentTarget.style.background = "#fafaf8";
-                            e.currentTarget.style.borderColor = "#d4b89e";
-                          }
-                        }}
-                        onMouseLeave={(e) => {
-                          if (!selected) {
-                            e.currentTarget.style.background = "white";
-                            e.currentTarget.style.borderColor = "#f0e6dc";
-                          }
-                        }}
-                      >
-                        {r}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Textarea */}
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    marginBottom: 6,
-                  }}
-                >
-                  <label
-                    style={{
-                      fontSize: "0.7rem",
-                      fontWeight: 700,
-                      color: "#6b5546",
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    Detail alasan
-                  </label>
-                  <span
-                    style={{
-                      fontSize: "0.65rem",
-                      color:
-                        alasan.length < 10
-                          ? "#a8856b"
-                          : alasan.length > 280
-                          ? "#DC2626"
-                          : "#059669",
-                    }}
-                  >
-                    {alasan.length}/300
-                  </span>
-                </div>
-                <textarea
-                  value={alasan}
-                  onChange={(e) => setAlasan(e.target.value.slice(0, 300))}
-                  placeholder="Tulis alasan penolakan yang jelas dan informatif untuk pelapor..."
-                  rows={4}
-                  autoFocus
-                  style={{
-                    width: "100%",
-                    background: "#fafaf8",
-                    border: `0.5px solid ${valid ? "rgba(255,107,53,0.3)" : "#f0e6dc"}`,
-                    borderRadius: 10,
-                    padding: "10px 12px",
-                    fontSize: "0.82rem",
-                    color: "#1a0e08",
-                    fontFamily: "inherit",
-                    outline: "none",
-                    resize: "none",
-                    lineHeight: 1.6,
-                    transition: "border-color 0.2s",
-                    boxSizing: "border-box",
-                  }}
-                />
-                <p
-                  style={{
-                    fontSize: "0.65rem",
-                    color: "#a8856b",
-                    margin: "6px 0 0",
-                    lineHeight: 1.5,
-                  }}
-                >
-                  Minimal 10 karakter
-                </p>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div
-              style={{
-                padding: "14px 22px",
-                borderTop: "0.5px solid #f5ede3",
-                background: "#fafaf8",
-                display: "flex",
-                gap: 10,
-                justifyContent: "flex-end",
-              }}
-            >
-              <button
-                onClick={onClose}
-                style={{
-                  background: "white",
-                  border: "0.5px solid #f0e6dc",
-                  borderRadius: 10,
-                  padding: "10px 18px",
-                  fontSize: "0.78rem",
-                  fontWeight: 600,
-                  color: "#3d2817",
-                  cursor: "pointer",
-                  transition: "background 0.15s",
-                  fontFamily: "inherit",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#fafaf8")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
-              >
-                Batal
-              </button>
-              <button
-                onClick={handleSubmit}
-                disabled={!valid}
-                style={{
-                  background: valid ? "linear-gradient(135deg, #DC2626, #B91C1C)" : "#FEE2E2",
-                  color: valid ? "white" : "#fca5a5",
-                  fontWeight: 700,
-                  fontSize: "0.78rem",
-                  padding: "10px 20px",
-                  borderRadius: 10,
-                  border: "none",
-                  cursor: valid ? "pointer" : "not-allowed",
-                  boxShadow: valid ? "0 4px 12px rgba(220,38,38,0.25)" : "none",
-                  transition: "all 0.2s",
-                  fontFamily: "inherit",
-                }}
-                onMouseEnter={(e) => {
-                  if (valid) {
-                    e.currentTarget.style.transform = "translateY(-1px)";
-                    e.currentTarget.style.boxShadow = "0 8px 20px rgba(220,38,38,0.4)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (valid) {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "0 4px 12px rgba(220,38,38,0.25)";
-                  }
-                }}
-              >
-                Tolak Laporan
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+            Tolak Laporan
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }

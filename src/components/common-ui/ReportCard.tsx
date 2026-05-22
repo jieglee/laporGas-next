@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { MapPin, ArrowBigUp, MessageCircle, Image as ImageIcon } from "lucide-react";
 import type { Report, ReportStatus } from "@/lib/reports";
 
-// ── Status config ──────────────────────────────────────
 const STATUS_CFG: Record<ReportStatus, { label: string; bg: string; color: string; dot: string }> = {
     pending:     { label: "Menunggu",  bg: "#FEF3C7", color: "#92400E", dot: "#F59E0B" },
     approved:    { label: "Disetujui", bg: "#DBEAFE", color: "#1D4ED8", dot: "#3B82F6" },
@@ -46,13 +44,11 @@ function fmtDate(dateStr: string) {
     return date.toLocaleDateString("id-ID", { day: "numeric", month: "short" })
 }
 
-// ── Props ──────────────────────────────────────────────
 interface ReportCardProps {
     report: Report
     index?: number
-    // Variant: "status" (default) | "nearby" (tampilkan jarak, bukan status)
     variant?: "status" | "nearby"
-    distance?: string  // hanya untuk variant "nearby"
+    distance?: string
 }
 
 export default function ReportCard({ report, index = 0, variant = "status", distance }: ReportCardProps) {
@@ -61,109 +57,110 @@ export default function ReportCard({ report, index = 0, variant = "status", dist
     const bg = avatarBg(report.user_name ?? "?")
 
     return (
-        <Link href={`/user/laporan/${report.id}`} style={{ textDecoration: "none", color: "inherit", display: "block" }}>
-            <motion.article
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.3, delay: index * 0.03, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                    background: "white",
-                    border: "0.5px solid #f0e6dc",
-                    borderRadius: 14,
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                }}
-                whileHover={{
-                    borderColor: "rgba(255,107,53,0.3)",
-                    boxShadow: "0 8px 28px rgba(255,107,53,0.1)",
-                    y: -3,
-                }}
-            >
+        <Link
+            href={`/user/laporan/${report.id}`}
+            className="no-underline text-inherit block h-full"
+            style={{
+                opacity: 0,
+                animation: `fadeSlideIn 0.3s ease forwards`,
+                animationDelay: `${index * 0.03}s`,
+            }}
+        >
+            <article className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden cursor-pointer flex flex-col h-full transition-all duration-200 hover:border-[rgba(255,107,53,0.3)] hover:shadow-[0_8px_28px_rgba(255,107,53,0.1)] hover:-translate-y-[3px]">
+
                 {/* Thumbnail */}
-                <div style={{ position: "relative", width: "100%", aspectRatio: "4/3", background: "linear-gradient(135deg,#e0dcd8,#cac6c2)", flexShrink: 0 }}>
+                <div className="relative w-full shrink-0" style={{ aspectRatio: "4/3", background: "linear-gradient(135deg,#e0dcd8,#cac6c2)" }}>
                     {report.image_url ? (
                         <img
                             src={report.image_url}
                             alt={report.title}
-                            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                            className="w-full h-full object-cover block"
                             onError={(e) => { e.currentTarget.style.display = "none" }}
                         />
                     ) : (
-                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div className="absolute inset-0 flex items-center justify-center">
                             <ImageIcon size={26} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
                         </div>
                     )}
 
-                    {/* Badge — status atau jarak */}
+                    {/* Badge */}
                     {variant === "nearby" && distance ? (
-                        <div style={{ position: "absolute", top: 9, left: 9, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "0.62rem", fontWeight: 600, padding: "3px 9px", borderRadius: 99, background: "rgba(255,255,255,0.92)", color: "#3d2817", backdropFilter: "blur(8px)" }}>
+                        <div className="absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.62rem] font-semibold px-[9px] py-[3px] rounded-full bg-[rgba(255,255,255,0.92)] text-[#3d2817] backdrop-blur-sm">
                             <MapPin size={9} color="#E8541C" strokeWidth={2.5} />
                             {distance}
                         </div>
                     ) : (
-                        <div style={{ position: "absolute", top: 9, left: 9, display: "inline-flex", alignItems: "center", gap: 4, fontSize: "0.56rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", padding: "3px 8px", borderRadius: 99, background: s.bg, color: s.color }}>
-                            <span style={{ width: 4, height: 4, borderRadius: "50%", background: s.dot }} />
+                        <div
+                            className="absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.56rem] font-bold tracking-[0.05em] uppercase px-2 py-[3px] rounded-full"
+                            style={{ background: s.bg, color: s.color }}
+                        >
+                            <span className="w-1 h-1 rounded-full" style={{ background: s.dot }} />
                             {s.label}
                         </div>
                     )}
 
                     {/* Hover overlay */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        whileHover={{ opacity: 1 }}
-                        style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(26,14,8,0.6) 0%, transparent 60%)" }}
-                    />
+                    <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-200"
+                         style={{ background: "linear-gradient(to top, rgba(26,14,8,0.6) 0%, transparent 60%)" }} />
                 </div>
 
                 {/* Content */}
-                <div style={{ padding: "12px 13px", display: "flex", flexDirection: "column", flex: 1, gap: 7 }}>
+                <div className="px-[13px] py-3 flex flex-col flex-1 gap-[7px]">
                     {/* Pelapor row */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-                        <div style={{ width: 24, height: 24, borderRadius: "50%", background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.55rem", fontWeight: 700, color: "white", flexShrink: 0 }}>
-                            {inisial}
-                        </div>
-                        <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "#3d2817", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div className="flex items-center gap-[7px]">
+                        <div
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-[0.55rem] font-bold text-white shrink-0"
+                            style={{ background: bg }}
+                        />
+                        <span className="text-[0.72rem] font-semibold text-[#3d2817] overflow-hidden text-ellipsis whitespace-nowrap">
                             {report.user_name ?? "Anonim"}
                         </span>
-                        <span style={{ fontSize: "0.62rem", color: "#c9a892", marginLeft: "auto", whiteSpace: "nowrap" }}>
+                        <span className="text-[0.62rem] text-[#c9a892] ml-auto whitespace-nowrap">
                             {fmtDate(report.created_at)}
                         </span>
                     </div>
 
                     {/* Judul */}
-                    <h3 style={{ fontSize: "0.85rem", fontWeight: 700, color: "#1a0e08", margin: 0, lineHeight: 1.4, letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                    <h3
+                        className="text-[0.85rem] font-bold text-[#1a0e08] m-0 leading-[1.4] tracking-[-0.01em]"
+                        style={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}
+                    >
                         {report.title}
                     </h3>
 
                     {/* Lokasi */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#a8856b" }}>
-                        <MapPin size={10} strokeWidth={2} style={{ flexShrink: 0 }} />
-                        <span style={{ fontSize: "0.68rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <div className="flex items-center gap-1 text-[#a8856b]">
+                        <MapPin size={10} strokeWidth={2} className="shrink-0" />
+                        <span className="text-[0.68rem] overflow-hidden text-ellipsis whitespace-nowrap">
                             {report.location ?? "Lokasi tidak diketahui"}
                         </span>
                     </div>
 
-                    {/* Engagement — real data dari backend */}
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: "auto", paddingTop: 6, borderTop: "0.5px solid #f5ede3" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.7rem", color: "#6b5546" }}>
-                            <ArrowBigUp size={13} strokeWidth={1.8} style={{ color: "#E8541C" }} />
+                    {/* Engagement */}
+                    <div className="flex items-center gap-[10px] mt-auto pt-[6px] border-t-[0.5px] border-[#f5ede3]">
+                        <span className="flex items-center gap-1 text-[0.7rem] text-[#6b5546]">
+                            <ArrowBigUp size={13} strokeWidth={1.8} className="text-[#E8541C]" />
                             {fmt(report.upvote_count ?? 0)}
                         </span>
-                        <span style={{ display: "flex", alignItems: "center", gap: 4, fontSize: "0.7rem", color: "#6b5546" }}>
-                            <MessageCircle size={11} strokeWidth={1.8} style={{ color: "#a8856b" }} />
+                        <span className="flex items-center gap-1 text-[0.7rem] text-[#6b5546]">
+                            <MessageCircle size={11} strokeWidth={1.8} className="text-[#a8856b]" />
                             {fmt(report.comment_count ?? 0)}
                         </span>
                         {report.category_name && (
-                            <span style={{ marginLeft: "auto", fontSize: "0.6rem", fontWeight: 600, color: "#E8541C", background: "#FFF5EE", padding: "2px 7px", borderRadius: 99, whiteSpace: "nowrap" }}>
+                            <span className="ml-auto text-[0.6rem] font-semibold text-[#E8541C] bg-[#FFF5EE] px-[7px] py-[2px] rounded-full whitespace-nowrap">
                                 {report.category_name}
                             </span>
                         )}
                     </div>
                 </div>
-            </motion.article>
+            </article>
+
+            <style>{`
+                @keyframes fadeSlideIn {
+                    from { opacity: 0; transform: scale(0.97); }
+                    to   { opacity: 1; transform: scale(1); }
+                }
+            `}</style>
         </Link>
     )
 }
