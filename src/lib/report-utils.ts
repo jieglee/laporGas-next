@@ -1,33 +1,23 @@
 export const STATUS_STYLE: Record<
   string,
   {
-    bg: string;
-    color: string;
+    badge: string;
   }
 > = {
   pending: {
-    bg: "#FEF3C7",
-    color: "#D97706",
+    badge: "bg-amber-100 text-amber-700",
   },
-
   approved: {
-    bg: "#DBEAFE",
-    color: "#2563EB",
+    badge: "bg-blue-100 text-blue-600",
   },
-
   rejected: {
-    bg: "#FEE2E2",
-    color: "#DC2626",
+    badge: "bg-red-100 text-red-600",
   },
-
   on_progress: {
-    bg: "#E0E7FF",
-    color: "#4F46E5",
+    badge: "bg-indigo-100 text-indigo-600",
   },
-
   completed: {
-    bg: "#DCFCE7",
-    color: "#16A34A",
+    badge: "bg-green-100 text-green-600",
   },
 };
 

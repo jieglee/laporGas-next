@@ -1,7 +1,8 @@
 "use client";
 
 import { FileText } from "lucide-react";
-import Field, { inputStyle, focusOrange, blurOrange } from "./Field";
+import Field, { inputClassName } from "./Field";
+import { cn } from "@/lib/utils";
 
 interface Props {
   value: string;
@@ -21,12 +22,15 @@ export default function TitleField({ value, onChange }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         maxLength={120}
-        style={inputStyle}
-        onFocus={focusOrange}
-        onBlur={blurOrange}
+        className={inputClassName}
       />
-      <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
-        <span style={{ fontSize: "0.62rem", color: value.length > 100 ? "#E8541C" : "#c9a892" }}>
+      <div className="flex justify-end mt-1">
+        <span
+          className={cn(
+            "text-[0.62rem]",
+            value.length > 100 ? "text-[#E8541C]" : "text-[#c9a892]"
+          )}
+        >
           {value.length}/120
         </span>
       </div>

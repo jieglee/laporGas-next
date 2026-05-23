@@ -37,24 +37,27 @@ export const KATEGORI_TABS: { value: ExploreKategori; label: string; emoji: stri
   { value: "lalu-lintas",   label: "Lalu Lintas",    emoji: "🚦" },
 ];
 
-export const STATUS_CONFIG: Record<ExploreStatus, { label: string; bg: string; color: string; dot: string }> = {
-  pending:     { label: "Menunggu",  bg: "#FEF3C7", color: "#92400E", dot: "#F59E0B" },
-  approved:    { label: "Disetujui", bg: "#DBEAFE", color: "#1D4ED8", dot: "#3B82F6" },
-  on_progress: { label: "Diproses",  bg: "#FFEDD5", color: "#C2410C", dot: "#FB923C" },
-  completed:   { label: "Selesai",   bg: "#D1FAE5", color: "#047857", dot: "#10B981" },
-  rejected:    { label: "Ditolak",   bg: "#FEE2E2", color: "#B91C1C", dot: "#EF4444" },
+export const STATUS_CONFIG: Record<
+  ExploreStatus,
+  { label: string; badge: string; dot: string }
+> = {
+  pending: { label: "Menunggu", badge: "bg-amber-100 text-amber-900", dot: "bg-amber-500" },
+  approved: { label: "Disetujui", badge: "bg-blue-100 text-blue-800", dot: "bg-blue-500" },
+  on_progress: { label: "Diproses", badge: "bg-orange-100 text-orange-700", dot: "bg-orange-400" },
+  completed: { label: "Selesai", badge: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" },
+  rejected: { label: "Ditolak", badge: "bg-red-100 text-red-800", dot: "bg-red-500" },
 };
 
-export function avatarColor(inisial: string): { bg: string; color: string } {
-  const p = [
-    { bg: "linear-gradient(135deg,#FF6B35,#E8541C)", color: "white" },
-    { bg: "linear-gradient(135deg,#5DCAA5,#0F6E56)", color: "white" },
-    { bg: "linear-gradient(135deg,#AFA9EC,#3C3489)", color: "white" },
-    { bg: "linear-gradient(135deg,#F0997B,#993C1D)", color: "white" },
-    { bg: "linear-gradient(135deg,#85B7EB,#0C447C)", color: "white" },
-    { bg: "linear-gradient(135deg,#ED93B1,#72243E)", color: "white" },
+export function avatarColor(inisial: string): string {
+  const palettes = [
+    "bg-gradient-to-br from-[#FF6B35] to-[#E8541C] text-white",
+    "bg-gradient-to-br from-[#5DCAA5] to-[#0F6E56] text-white",
+    "bg-gradient-to-br from-[#AFA9EC] to-[#3C3489] text-white",
+    "bg-gradient-to-br from-[#F0997B] to-[#993C1D] text-white",
+    "bg-gradient-to-br from-[#85B7EB] to-[#0C447C] text-white",
+    "bg-gradient-to-br from-[#ED93B1] to-[#72243E] text-white",
   ];
-  return p[inisial.split("").reduce((a, c) => a + c.charCodeAt(0), 0) % p.length];
+  return palettes[inisial.split("").reduce((a, c) => a + c.charCodeAt(0), 0) % palettes.length];
 }
 
 // ── Mock data ─────────────────────────────────────────────────────────────────

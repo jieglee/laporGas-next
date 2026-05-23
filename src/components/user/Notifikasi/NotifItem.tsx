@@ -13,59 +13,17 @@ interface Props {
   onRead: (id: string) => void;
 }
 
-export default function NotifItem({
-  notif,
-  onRead,
-}: Props) {
+export default function NotifItem({ notif, onRead }: Props) {
   return (
     <div
       onClick={() => onRead(notif.id)}
-      style={{
-        padding: "14px 16px",
-        cursor: "pointer",
-        background: notif.dibaca
-          ? "white"
-          : "#FFF8F4",
-      }}
+      className={`px-4 py-[14px] cursor-pointer ${notif.dibaca ? "bg-white" : "bg-[#FFF8F4]"}`}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: 4,
-        }}
-      >
-        <p
-          style={{
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            margin: 0,
-            color: "#1a0e08",
-          }}
-        >
-          {notif.judul}
-        </p>
-
-        <span
-          style={{
-            fontSize: "0.65rem",
-            color: "#a8856b",
-          }}
-        >
-          {notif.waktu}
-        </span>
+      <div className="flex justify-between mb-1">
+        <p className="text-[0.82rem] font-semibold m-0 text-[#1a0e08]">{notif.judul}</p>
+        <span className="text-[0.65rem] text-[#a8856b]">{notif.waktu}</span>
       </div>
-
-      <p
-        style={{
-          fontSize: "0.74rem",
-          color: "#8a6f5e",
-          margin: 0,
-          lineHeight: 1.5,
-        }}
-      >
-        {notif.deskripsi}
-      </p>
+      <p className="text-[0.74rem] text-[#8a6f5e] m-0 leading-[1.5]">{notif.deskripsi}</p>
     </div>
   );
 }

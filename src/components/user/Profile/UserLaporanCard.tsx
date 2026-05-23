@@ -1,11 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
 import {
-  Image as ImageIcon, ArrowBigUp, MessageCircle,
-  Calendar, ChevronRight, Tag,
+  Image as ImageIcon,
+  ArrowBigUp,
+  MessageCircle,
+  Calendar,
+  ChevronRight,
+  Tag,
 } from "lucide-react";
+import { staggerClass } from "@/lib/stagger";
+import { cn } from "@/lib/utils";
 
 export type UserLaporanStatus = "pending" | "approved" | "on_progress" | "completed" | "rejected";
 
@@ -21,12 +26,12 @@ export interface UserLaporan {
   createdAt: string;
 }
 
-const STATUS_CONFIG: Record<UserLaporanStatus, { label: string; bg: string; color: string; dot: string }> = {
-  pending:     { label: "Menunggu",   bg: "#FEF3C7", color: "#92400E", dot: "#F59E0B" },
-  approved:    { label: "Disetujui",  bg: "#DBEAFE", color: "#1D4ED8", dot: "#3B82F6" },
-  on_progress: { label: "Diproses",   bg: "#FFEDD5", color: "#C2410C", dot: "#FB923C" },
-  completed:   { label: "Selesai",    bg: "#D1FAE5", color: "#047857", dot: "#10B981" },
-  rejected:    { label: "Ditolak",    bg: "#FEE2E2", color: "#B91C1C", dot: "#EF4444" },
+const STATUS_CONFIG: Record<UserLaporanStatus, { label: string; badge: string; dot: string }> = {
+  pending: { label: "Menunggu", badge: "bg-amber-100 text-amber-900", dot: "bg-amber-500" },
+  approved: { label: "Disetujui", badge: "bg-blue-100 text-blue-800", dot: "bg-blue-500" },
+  on_progress: { label: "Diproses", badge: "bg-orange-100 text-orange-700", dot: "bg-orange-400" },
+  completed: { label: "Selesai", badge: "bg-emerald-100 text-emerald-800", dot: "bg-emerald-500" },
+  rejected: { label: "Ditolak", badge: "bg-red-100 text-red-800", dot: "bg-red-500" },
 };
 
 interface Props {
@@ -39,146 +44,83 @@ export default function UserLaporanCard({ laporan, index }: Props) {
   const s = STATUS_CONFIG[laporan.status];
 
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.04, ease: [0.22, 1, 0.36, 1] }}
+    <article
       onClick={() => router.push(`/user/laporan/${laporan.id}`)}
-      style={{
-        background: "white",
-        border: "0.5px solid #f0e6dc",
-        borderRadius: 14,
-        overflow: "hidden",
-        cursor: "pointer",
-        display: "flex",
-        flexDirection: "column",
-        transition: "all 0.2s",
-      }}
-      whileHover={{
-        borderColor: "rgba(255,107,53,0.3)",
-        boxShadow: "0 8px 28px rgba(255,107,53,0.1)",
-        y: -3,
-      }}
+      className={cn(
+        "bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden cursor-pointer flex flex-col",
+        "transition-all duration-200 hover:border-[rgba(255,107,53,0.3)] hover:shadow-[0_8px_28px_rgba(255,107,53,0.1)] hover:-translate-y-[3px]",
+        "animate-fade-slide-up-sm opacity-0",
+        staggerClass(index)
+      )}
     >
-      {/* Thumbnail */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          aspectRatio: "16/9",
-          background: "linear-gradient(135deg, #e0dcd8, #cac6c2)",
-          flexShrink: 0,
-        }}
-      >
+      <div className="relative w-full shrink-0 aspect-video bg-gradient-to-br from-[#e0dcd8] to-[#cac6c2]">
         {laporan.imageUrl ? (
           <img
             src={laporan.imageUrl}
             alt={laporan.judul}
-            style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-            onError={(e) => { e.currentTarget.style.display = "none"; }}
+            className="w-full h-full object-cover block"
+            onError={(e) => e.currentTarget.classList.add("hidden")}
           />
         ) : (
-          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <ImageIcon size={28} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <ImageIcon size={28} className="text-white/40" strokeWidth={1.5} />
           </div>
         )}
 
-        {/* Status badge */}
         <div
-          style={{
-            position: "absolute", top: 9, left: 9,
-            display: "inline-flex", alignItems: "center", gap: 4,
-            fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.05em",
-            textTransform: "uppercase", padding: "3px 9px", borderRadius: 99,
-            background: s.bg, color: s.color,
-          }}
+          className={cn(
+            "absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full",
+            s.badge
+          )}
         >
-          <span style={{ width: 5, height: 5, borderRadius: "50%", background: s.dot }} />
+          <span className={cn("w-[5px] h-[5px] rounded-full", s.dot)} />
           {s.label}
         </div>
       </div>
 
-      {/* Content */}
-      <div style={{ padding: "13px 15px", display: "flex", flexDirection: "column", flex: 1, gap: 8 }}>
-        {/* Kategori */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-          <Tag size={11} strokeWidth={2} style={{ color: "#E8541C" }} />
-          <span style={{ fontSize: "0.62rem", fontWeight: 700, color: "#E8541C", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+      <div className="px-[15px] py-[13px] flex flex-col flex-1 gap-2">
+        <div className="flex items-center gap-[5px]">
+          <Tag size={11} strokeWidth={2} className="text-[#E8541C]" />
+          <span className="text-[0.62rem] font-bold text-[#E8541C] uppercase tracking-[0.06em]">
             {laporan.kategori}
           </span>
         </div>
 
-        {/* Judul */}
-        <h3
-          style={{
-            fontSize: "0.9rem", fontWeight: 700, color: "#1a0e08",
-            margin: 0, lineHeight: 1.4, letterSpacing: "-0.01em",
-            overflow: "hidden", textOverflow: "ellipsis",
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-          }}
-        >
+        <h3 className="text-[0.9rem] font-bold text-[#1a0e08] m-0 leading-[1.4] tracking-[-0.01em] line-clamp-2">
           {laporan.judul}
         </h3>
 
-        {/* Deskripsi */}
-        <p
-          style={{
-            fontSize: "0.75rem", color: "#8a6f5e", margin: 0,
-            lineHeight: 1.55, overflow: "hidden", textOverflow: "ellipsis",
-            display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-          }}
-        >
-          {laporan.deskripsi}
-        </p>
+        <p className="text-[0.75rem] text-[#8a6f5e] m-0 leading-[1.55] line-clamp-2">{laporan.deskripsi}</p>
 
-        <div style={{ borderTop: "0.5px solid #f5ede3", marginTop: 2 }} />
+        <div className="border-t-[0.5px] border-[#f5ede3] mt-[2px]" />
 
-        {/* Meta */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#a8856b", fontSize: "0.68rem" }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-[7px] text-[#a8856b] text-[0.68rem]">
             <Calendar size={11} strokeWidth={1.8} />
             {laporan.createdAt}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, color: "#a8856b", fontSize: "0.68rem" }}>
-            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+          <div className="flex items-center gap-[10px] text-[#a8856b] text-[0.68rem]">
+            <span className="flex items-center gap-[3px]">
               <ArrowBigUp size={11} strokeWidth={1.8} />
               {laporan.upvote}
             </span>
-            <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
+            <span className="flex items-center gap-[3px]">
               <MessageCircle size={10} strokeWidth={1.8} />
               {laporan.komentarCount}
             </span>
           </div>
         </div>
 
-        {/* Lihat detail button */}
         <button
-          onClick={(e) => { e.stopPropagation(); router.push(`/user/laporan/${laporan.id}`); }}
-          style={{
-            width: "100%",
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            gap: 6, padding: "8px 0",
-            background: "#FFF5EE",
-            color: "#E8541C",
-            border: "0.5px solid rgba(255,107,53,0.2)",
-            borderRadius: 9, fontSize: "0.75rem", fontWeight: 700,
-            cursor: "pointer", fontFamily: "inherit",
-            transition: "all 0.15s",
+          onClick={(e) => {
+            e.stopPropagation();
+            router.push(`/user/laporan/${laporan.id}`);
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = "linear-gradient(135deg, #FF6B35, #E8541C)";
-            e.currentTarget.style.color = "white";
-            e.currentTarget.style.borderColor = "transparent";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = "#FFF5EE";
-            e.currentTarget.style.color = "#E8541C";
-            e.currentTarget.style.borderColor = "rgba(255,107,53,0.2)";
-          }}
+          className="w-full inline-flex items-center justify-center gap-[6px] py-2 bg-[#FFF5EE] text-[#E8541C] border-[0.5px] border-[rgba(255,107,53,0.2)] rounded-[9px] text-[0.75rem] font-bold cursor-pointer font-[inherit] transition-all duration-150 hover:bg-gradient-to-br hover:from-[#FF6B35] hover:to-[#E8541C] hover:text-white hover:border-transparent"
         >
           Lihat Detail <ChevronRight size={13} strokeWidth={2} />
         </button>
       </div>
-    </motion.article>
+    </article>
   );
 }

@@ -57,8 +57,11 @@ export default function Pagination({ page, totalPages, totalItems, itemsPerPage,
             <button
               key={p}
               onClick={() => onPageChange(p as number)}
-              className={p === page ? activeBtn : `${normalBtn} text-[#3d2817]`}
-              style={p === page ? { background: "linear-gradient(135deg, #FF6B35, #E8541C)" } : undefined}
+              className={
+                p === page
+                  ? `${activeBtn} bg-gradient-to-br from-[#FF6B35] to-[#E8541C]`
+                  : `${normalBtn} text-[#3d2817]`
+              }
             >
               {p}
             </button>

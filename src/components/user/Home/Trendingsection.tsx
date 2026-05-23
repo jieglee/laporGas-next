@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { ArrowRight, Flame, MapPin, MessageCircle } from "lucide-react";
 import type { Report } from "@/lib/reports";
 
@@ -8,13 +9,13 @@ interface TrendingSectionProps {
     reports: Report[];
 }
 
-const STATUS_CFG: Record<string, { label: string; color: string }> = {
-    pending:     { label: "Menunggu",  color: "#92400E" },
-    approved:    { label: "Disetujui", color: "#1D4ED8" },
-    on_progress: { label: "Diproses",  color: "#C2410C" },
-    completed:   { label: "Selesai",   color: "#047857" },
-    rejected:    { label: "Ditolak",   color: "#B91C1C" },
-}
+const STATUS_CFG: Record<string, { label: string; text: string }> = {
+    pending: { label: "Menunggu", text: "text-amber-800" },
+    approved: { label: "Disetujui", text: "text-blue-800" },
+    on_progress: { label: "Diproses", text: "text-orange-700" },
+    completed: { label: "Selesai", text: "text-emerald-800" },
+    rejected: { label: "Ditolak", text: "text-red-800" },
+};
 
 export default function TrendingSection({ reports }: TrendingSectionProps) {
     return (
@@ -33,19 +34,25 @@ export default function TrendingSection({ reports }: TrendingSectionProps) {
 
             <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-white">
                 {reports.map((report, idx) => {
-                    const s = STATUS_CFG[report.status] ?? { label: report.status, color: "#6B7280" }
+                    const s = STATUS_CFG[report.status] ?? { label: report.status, text: "text-gray-500" };
                     return (
                         <Link key={report.id} href={`/user/laporan/${report.id}`}
-                            className="group flex items-center gap-4 border-b border-neutral-100 px-4 py-4 transition last:border-b-0 hover:bg-neutral-50 md:px-6">
+                            className="group flex items-center gap-4 border-b border-neutral-100 px-4 py-4 transition last:border-b-0 hover:bg-neutral-50 md:px-6 no-underline">
                             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-sm font-bold text-orange-600">
                                 {idx + 1}
                             </span>
                             <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs font-medium uppercase tracking-wide text-orange-600">{report.category_name ?? "Umum"}</span>
-                                    <span style={{ fontSize: "0.65rem", color: s.color, fontWeight: 600 }}>· {s.label}</span>
+                                    <span className="text-xs font-medium uppercase tracking-wide text-orange-600">
+                                        {report.category_name ?? "Umum"}
+                                    </span>
+                                    <span className={cn("text-[0.65rem] font-semibold", s.text)}>
+                                        · {s.label}
+                                    </span>
                                 </div>
-                                <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-neutral-900 group-hover:text-orange-600">{report.title}</h3>
+                                <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-neutral-900 group-hover:text-orange-600">
+                                    {report.title}
+                                </h3>
                                 <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-neutral-500">
                                     <MapPin className="h-3 w-3" />{report.location ?? "Lokasi tidak diketahui"}
                                 </p>
@@ -55,7 +62,7 @@ export default function TrendingSection({ reports }: TrendingSectionProps) {
                                 {report.comment_count ?? 0}
                             </div>
                         </Link>
-                    )
+                    );
                 })}
             </div>
         </section>

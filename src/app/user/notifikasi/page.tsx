@@ -170,8 +170,7 @@ export default function NotifikasiPage() {
                 <div className="pt-7 pb-4 px-1 flex items-end justify-between sticky top-0 bg-[#fafaf8] z-10">
                     <div>
                         <div className="flex items-center gap-[10px] mb-[2px]">
-                            <h1 className="text-[1.5rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0"
-                                style={{ fontFamily: "'Syne', sans-serif" }}>
+                            <h1 className="font-sans text-[1.5rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0">
                                 Notifikasi
                             </h1>
                             {unreadTotal > 0 && (

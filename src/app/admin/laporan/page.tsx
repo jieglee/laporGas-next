@@ -26,13 +26,19 @@ function toAdminLaporan(r: Report): AdminLaporan {
         lokasi: r.location ?? "-",
         alamat: r.location ?? "-",
         fotoCount: r.image_url ? 1 : 0,
+        image:
+  Array.isArray(r.images) && r.images.length > 0
+    ? r.images[0]
+    : r.image_url || null,
         pelapor: { nama: r.user_name ?? "Unknown", inisial, email: "-" },
         createdAt: new Date(r.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
         upvote: 0,
         komentarCount: 0,
         koordinat: r.latitude && r.longitude ? { lat: r.latitude, lng: r.longitude } : null,
+        
     };
 }
+
 
 const ITEMS_PER_PAGE = 12;
 const PRIORITY_RANK = { urgent: 4, high: 3, medium: 2, low: 1 };
@@ -160,8 +166,7 @@ export default function AdminLaporanPage() {
                         <FileText size={19} strokeWidth={1.8} />
                     </div>
                     <div>
-                        <h1 className="text-[1.65rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0 mb-1"
-                            style={{ fontFamily: "'Syne', sans-serif" }}>
+                        <h1 className="font-sans text-[1.65rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0 mb-1">
                             Manajemen Laporan
                         </h1>
                         <p className="text-[0.82rem] text-[#a8856b] m-0">
@@ -171,8 +176,7 @@ export default function AdminLaporanPage() {
                 </div>
                 <div className="flex items-center gap-[10px] bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] px-4 py-[10px]">
                     <span className="text-[0.75rem] text-[#a8856b]">Total:</span>
-                    <span className="text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] leading-none"
-                        style={{ fontFamily: "'Syne', sans-serif" }}>
+                    <span className="font-sans text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] leading-none">
                         {filtered.length}
                     </span>
                     <span className="text-[0.7rem] text-[#a8856b]">laporan</span>
@@ -192,7 +196,7 @@ export default function AdminLaporanPage() {
                     <p className="text-[0.78rem] text-[#a8856b]">Coba ubah filter atau kata kunci pencarian</p>
                 </div>
             ) : (
-                <div className="grid gap-[14px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+                <div className="grid gap-[14px] grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
                     {paginated.map((l, i) => (
                         <LaporanCard key={l.id} laporan={l} index={i} onAction={handleAction} />
                     ))}

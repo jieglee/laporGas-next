@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import ExploreHeader from "@/components/user/Explore/ExploreHeader";
 import ReportCard from "@/components/common-ui/ReportCard";
@@ -23,21 +23,31 @@ export default function ExplorePage() {
     const [kategori, setKategori] = useState<ExploreKategori>("all");
     const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
+    const [show, setShow] = useState(false);
 
     useEffect(() => {
         async function fetchReports() {
             try {
                 setLoading(true);
+                setShow(false);
                 const data = await getReports({ sort: "newest" });
                 setReports(data);
             } catch (error) {
                 console.error("Failed fetch explore reports:", error);
             } finally {
                 setLoading(false);
+                requestAnimationFrame(() => setShow(true));
             }
         }
         fetchReports();
     }, []);
+
+    // Re-trigger fade on filter change
+    useEffect(() => {
+        setShow(false);
+        const t = setTimeout(() => setShow(true), 50);
+        return () => clearTimeout(t);
+    }, [search, kategori]);
 
     const filtered = useMemo(() => {
         let result = [...reports];
@@ -71,33 +81,30 @@ export default function ExplorePage() {
                 <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[80px] px-6 text-center">
                     <p className="text-[#a8856b] text-[0.85rem]">Memuat laporan...</p>
                 </div>
-            ) : (
-                <AnimatePresence mode="wait">
-                    {filtered.length === 0 ? (
-                        <motion.div
-                            key="empty"
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[80px] px-6 text-center"
-                        >
-                            <div className="w-[52px] h-[52px] rounded-full bg-[rgba(255,107,53,0.08)] flex items-center justify-center mx-auto mb-[14px]">
-                                <Search size={22} color="#E8541C" strokeWidth={1.8} />
-                            </div>
-                            <p className="text-[0.9rem] font-semibold text-[#1a0e08] mb-[5px]">Tidak ada laporan ditemukan</p>
-                            <p className="text-[0.78rem] text-[#a8856b]">Coba ubah kata kunci atau kategori</p>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="grid"
-                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                            className="grid gap-[14px]"
-                            style={{ gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))" }}
-                        >
-                            {filtered.map((report, i) => (
-                                <ReportCard key={report.id} report={report} index={i} variant="status" />
-                            ))}
-                        </motion.div>
+            ) : filtered.length === 0 ? (
+                <div
+                    className={cn(
+                        "bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] py-[80px] px-6 text-center transition-opacity duration-200",
+                        show ? "opacity-100" : "opacity-0"
                     )}
-                </AnimatePresence>
+                >
+                    <div className="w-[52px] h-[52px] rounded-full bg-[rgba(255,107,53,0.08)] flex items-center justify-center mx-auto mb-[14px]">
+                        <Search size={22} color="#E8541C" strokeWidth={1.8} />
+                    </div>
+                    <p className="text-[0.9rem] font-semibold text-[#1a0e08] mb-[5px]">Tidak ada laporan ditemukan</p>
+                    <p className="text-[0.78rem] text-[#a8856b]">Coba ubah kata kunci atau kategori</p>
+                </div>
+            ) : (
+                <div
+                    className={cn(
+                        "grid gap-[14px] transition-opacity duration-200 grid-cols-[repeat(auto-fill,minmax(240px,1fr))]",
+                        show ? "opacity-100" : "opacity-0"
+                    )}
+                >
+                    {filtered.map((report, i) => (
+                        <ReportCard key={report.id} report={report} index={i} variant="status" />
+                    ))}
+                </div>
             )}
         </div>
     );

@@ -81,8 +81,7 @@ export default function ProfilPage() {
                         <FileText size={15} strokeWidth={2} />
                     </div>
                     <div>
-                        <h2 className="text-[1.1rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0"
-                            style={{ fontFamily: "'Syne', sans-serif" }}>
+                        <h2 className="font-sans text-[1.1rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0">
                             Laporan Saya
                         </h2>
                         <p className="text-[0.7rem] text-[#a8856b] m-0">
@@ -105,7 +104,7 @@ export default function ProfilPage() {
                         <p className="text-[0.78rem] text-[#a8856b] m-0">Kamu belum pernah membuat laporan</p>
                     </div>
                 ) : (
-                    <div className="grid gap-[14px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
+                    <div className="grid gap-[14px] grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
                         {reports.map((r, i) => (
                             <ReportCard key={r.id} report={r} index={i} />
                         ))}

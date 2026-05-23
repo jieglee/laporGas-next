@@ -1,4 +1,4 @@
-﻿import AuthPageShell from "@/components/AuthPageShell";
+import AuthPageShell from "@/components/AuthPageShell";
 export default function RegisterPage() {
   return <AuthPageShell defaultMode="register" />;
 }

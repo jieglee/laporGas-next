@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, AlertTriangle } from "lucide-react";
 import type { AdminLaporan } from "./types";
+import { cn } from "@/lib/utils";
 
 interface Props {
   laporan: AdminLaporan | null;
@@ -22,7 +23,6 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
   const [visible, setVisible] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Animate in/out
   useEffect(() => {
     if (laporan) {
       setAlasan("");
@@ -35,14 +35,18 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
 
   useEffect(() => {
     if (!laporan) return;
-    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, [laporan, onClose]);
 
   useEffect(() => {
     document.body.style.overflow = laporan ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, [laporan]);
 
   if (!laporan) return null;
@@ -57,33 +61,25 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-center justify-center p-5 transition-all duration-200"
-      style={{
-        background: visible ? "rgba(26,14,8,0.6)" : "rgba(26,14,8,0)",
-        backdropFilter: visible ? "blur(8px)" : "blur(0px)",
-      }}
+      className={cn(
+        "fixed inset-0 z-[110] flex items-center justify-center p-5 transition-all duration-200",
+        visible ? "bg-[rgba(26,14,8,0.6)] backdrop-blur-sm" : "bg-transparent backdrop-blur-none"
+      )}
       onClick={onClose}
     >
       <div
-        className="flex flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.25)] transition-all duration-[280ms]"
-        style={{
-          width: "min(480px, 95vw)",
-          opacity: visible ? 1 : 0,
-          transform: visible ? "scale(1) translateY(0)" : "scale(0.94) translateY(14px)",
-          transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)",
-        }}
+        className={cn(
+          "flex flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.25)] transition-all duration-[280ms] ease-[cubic-bezier(0.22,1,0.36,1)] w-[min(480px,95vw)]",
+          visible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-[0.94] translate-y-3.5"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div className="px-[22px] pt-5 pb-4 flex gap-3 items-start relative">
-          <div className="w-10 h-10 rounded-[11px] bg-[rgba(220,38,38,0.1)] flex items-center justify-center text-[#DC2626] shrink-0">
+          <div className="w-10 h-10 rounded-[11px] bg-red-50 flex items-center justify-center text-red-600 shrink-0">
             <AlertTriangle size={18} strokeWidth={2} />
           </div>
           <div className="flex-1">
-            <h2
-              className="text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0 mb-1"
-              style={{ fontFamily: "'Syne', sans-serif" }}
-            >
+            <h2 className="font-sans text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0 mb-1">
               Tolak laporan ini?
             </h2>
             <p className="text-[0.78rem] text-[#8a6f5e] m-0 leading-[1.5]">
@@ -98,25 +94,17 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
           </button>
         </div>
 
-        {/* Laporan ref */}
         <div className="mx-[22px] mb-[14px] px-[14px] py-[10px] bg-[#fafaf8] border-[0.5px] border-[#f0e6dc] rounded-[10px]">
           <div className="flex items-center gap-2 mb-1">
-            <span className="font-mono text-[0.62rem] font-bold text-[#6b5546] bg-white border-[0.5px] border-[#f0e6dc] px-[7px] py-[1px] rounded-[5px]">
+            <span className="font-mono text-[0.62rem] font-bold text-[#6b5546] bg-white border-[0.5px] border-[#f0e6dc] px-[7px] py-px rounded-[5px]">
               {laporan.id}
             </span>
             <span className="text-[0.65rem] text-[#a8856b]">oleh {laporan.pelapor.nama}</span>
           </div>
-          <p
-            className="text-[0.82rem] font-semibold text-[#1a0e08] m-0"
-            style={{ overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}
-          >
-            {laporan.judul}
-          </p>
+          <p className="text-[0.82rem] font-semibold text-[#1a0e08] m-0 line-clamp-1">{laporan.judul}</p>
         </div>
 
-        {/* Body */}
         <div className="px-[22px] pb-[18px]">
-          {/* Quick reasons */}
           <div className="mb-3">
             <p className="text-[0.62rem] font-bold text-[#a8856b] uppercase tracking-[0.06em] m-0 mb-2">
               Alasan cepat
@@ -128,11 +116,12 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
                   <button
                     key={r}
                     onClick={() => setAlasan(r)}
-                    className={`text-[0.72rem] font-medium px-[11px] py-[6px] rounded-full border-[0.5px] cursor-pointer transition-all duration-150 text-left font-[inherit] ${
+                    className={cn(
+                      "text-[0.72rem] font-medium px-[11px] py-1.5 rounded-full border-[0.5px] cursor-pointer transition-all duration-150 text-left font-[inherit]",
                       selected
-                        ? "bg-[rgba(220,38,38,0.08)] text-[#B91C1C] border-[rgba(220,38,38,0.3)]"
+                        ? "bg-red-50 text-red-800 border-red-300"
                         : "bg-white text-[#6b5546] border-[#f0e6dc] hover:bg-[#fafaf8] hover:border-[#d4b89e]"
-                    }`}
+                    )}
                   >
                     {r}
                   </button>
@@ -141,13 +130,15 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
             </div>
           </div>
 
-          {/* Textarea */}
           <div>
-            <div className="flex justify-between items-baseline mb-[6px]">
-              <label className="text-[0.7rem] font-bold text-[#6b5546] tracking-[0.02em]">
-                Detail alasan
-              </label>
-              <span className={`text-[0.65rem] ${alasan.length < 10 ? "text-[#a8856b]" : alasan.length > 280 ? "text-[#DC2626]" : "text-[#059669]"}`}>
+            <div className="flex justify-between items-baseline mb-1.5">
+              <label className="text-[0.7rem] font-bold text-[#6b5546] tracking-[0.02em]">Detail alasan</label>
+              <span
+                className={cn(
+                  "text-[0.65rem]",
+                  alasan.length < 10 ? "text-[#a8856b]" : alasan.length > 280 ? "text-red-600" : "text-emerald-600"
+                )}
+              >
                 {alasan.length}/300
               </span>
             </div>
@@ -157,16 +148,15 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
               onChange={(e) => setAlasan(e.target.value.slice(0, 300))}
               placeholder="Tulis alasan penolakan yang jelas dan informatif untuk pelapor..."
               rows={4}
-              className="w-full bg-[#fafaf8] rounded-[10px] px-3 py-[10px] text-[0.82rem] text-[#1a0e08] font-[inherit] outline-none resize-none leading-[1.6] transition-colors duration-200 border-[0.5px] box-border"
-              style={{ borderColor: valid ? "rgba(255,107,53,0.3)" : "#f0e6dc" }}
+              className={cn(
+                "w-full bg-[#fafaf8] rounded-[10px] px-3 py-[10px] text-[0.82rem] text-[#1a0e08] font-[inherit] outline-none resize-none leading-[1.6] transition-colors duration-200 border-[0.5px] box-border",
+                valid ? "border-[rgba(255,107,53,0.3)]" : "border-[#f0e6dc]"
+              )}
             />
-            <p className="text-[0.65rem] text-[#a8856b] mt-[6px] mb-0 leading-[1.5]">
-              Minimal 10 karakter
-            </p>
+            <p className="text-[0.65rem] text-[#a8856b] mt-1.5 mb-0 leading-[1.5]">Minimal 10 karakter</p>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="px-[22px] py-[14px] border-t-[0.5px] border-[#f5ede3] bg-[#fafaf8] flex gap-[10px] justify-end">
           <button
             onClick={onClose}
@@ -177,25 +167,12 @@ export default function RejectModal({ laporan, onClose, onConfirm }: Props) {
           <button
             onClick={handleSubmit}
             disabled={!valid}
-            className="font-bold text-[0.78rem] px-5 py-[10px] rounded-[10px] border-0 transition-all duration-200 font-[inherit]"
-            style={{
-              background: valid ? "linear-gradient(135deg, #DC2626, #B91C1C)" : "#FEE2E2",
-              color: valid ? "white" : "#fca5a5",
-              cursor: valid ? "pointer" : "not-allowed",
-              boxShadow: valid ? "0 4px 12px rgba(220,38,38,0.25)" : "none",
-            }}
-            onMouseEnter={(e) => {
-              if (valid) {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 8px 20px rgba(220,38,38,0.4)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (valid) {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 12px rgba(220,38,38,0.25)";
-              }
-            }}
+            className={cn(
+              "font-bold text-[0.78rem] px-5 py-[10px] rounded-[10px] border-0 transition-all duration-200 font-[inherit]",
+              valid
+                ? "bg-gradient-to-br from-red-600 to-red-800 text-white cursor-pointer shadow-[0_4px_12px_rgba(220,38,38,0.25)] hover:-translate-y-px hover:shadow-[0_8px_20px_rgba(220,38,38,0.4)]"
+                : "bg-red-100 text-red-300 cursor-not-allowed"
+            )}
           >
             Tolak Laporan
           </button>

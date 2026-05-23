@@ -30,8 +30,6 @@ const PRIORITY_OPTS: { value: LaporanPriority | "all"; label: string }[] = [
   { value: "low",    label: "Low" },
 ];
 
-const chevronSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8856b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")`;
-
 function SelectField({
   icon,
   value,
@@ -51,12 +49,7 @@ function SelectField({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] h-[38px] pl-[34px] pr-9 text-[0.78rem] text-[#3d2817] cursor-pointer outline-none font-[inherit] font-medium appearance-none min-w-[160px]"
-        style={{
-          backgroundImage: chevronSvg,
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "right 12px center",
-        }}
+        className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] h-[38px] pl-[34px] pr-9 text-[0.78rem] text-[#3d2817] cursor-pointer outline-none font-[inherit] font-medium appearance-none min-w-[160px] bg-no-repeat bg-[position:right_12px_center] [background-image:url('data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2710%27%20height%3D%276%27%20viewBox%3D%270%200%2010%206%27%20fill%3D%27none%27%3E%3Cpath%20d%3D%27M1%201l4%204%204-4%27%20stroke%3D%27%23a8856b%27%20stroke-width%3D%271.5%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%2F%3E%3C%2Fsvg%3E')]"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>{o.label}</option>

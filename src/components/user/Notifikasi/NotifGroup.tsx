@@ -1,12 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
 import NotifItem from "./NotifItem";
+import { staggerClass } from "@/lib/stagger";
+import { cn } from "@/lib/utils";
 
-export type NotifGrup =
-  | "laporan"
-  | "sosial"
-  | "sistem";
+export type NotifGrup = "laporan" | "sosial" | "sistem";
 
 export interface Notif {
   id: string;
@@ -17,17 +15,9 @@ export interface Notif {
 }
 
 const GRUP_CONFIG = {
-  laporan: {
-    label: "Laporan",
-  },
-
-  sosial: {
-    label: "Sosial",
-  },
-
-  sistem: {
-    label: "Sistem",
-  },
+  laporan: { label: "Laporan" },
+  sosial: { label: "Sosial" },
+  sistem: { label: "Sistem" },
 };
 
 interface Props {
@@ -37,95 +27,30 @@ interface Props {
   onRead: (id: string) => void;
 }
 
-export default function NotifGroup({
-  grup,
-  notifs,
-  index,
-  onRead,
-}: Props) {
+export default function NotifGroup({ grup, notifs, index, onRead }: Props) {
   const cfg = GRUP_CONFIG[grup];
-
-  const unread = notifs.filter(
-    (n) => !n.dibaca
-  ).length;
+  const unread = notifs.filter((n) => !n.dibaca).length;
 
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: 10,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        duration: 0.4,
-        delay: index * 0.06,
-      }}
-    >
-      <div
-        style={{
-          padding: "18px 4px 8px",
-          display: "flex",
-          alignItems: "center",
-          gap: 7,
-        }}
-      >
-        <p
-          style={{
-            fontSize: "0.7rem",
-            fontWeight: 600,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: "#a8856b",
-            margin: 0,
-          }}
-        >
+    <div className={cn("animate-fade-slide-up-sm opacity-0", staggerClass(index))}>
+      <div className="pt-[18px] pb-2 px-1 flex items-center gap-[7px]">
+        <p className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#a8856b] m-0">
           {cfg.label}
         </p>
-
         {unread > 0 && (
-          <span
-            style={{
-              fontSize: "0.6rem",
-              fontWeight: 700,
-              background: "#FF6B35",
-              color: "white",
-              padding: "1px 6px",
-              borderRadius: 99,
-            }}
-          >
+          <span className="text-[0.6rem] font-bold bg-[#FF6B35] text-white px-[6px] py-px rounded-full">
             {unread}
           </span>
         )}
       </div>
 
-      <div
-        style={{
-          background: "white",
-          border: "0.5px solid #f0e6dc",
-          borderRadius: 14,
-          overflow: "hidden",
-        }}
-      >
+      <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden">
         {notifs.map((n, i) => (
-          <div
-            key={n.id}
-            style={{
-              borderBottom:
-                i < notifs.length - 1
-                  ? "0.5px solid #f5ede3"
-                  : "none",
-            }}
-          >
-            <NotifItem
-              notif={n}
-              onRead={onRead}
-            />
+          <div key={n.id} className={i < notifs.length - 1 ? "border-b-[0.5px] border-[#f5ede3]" : ""}>
+            <NotifItem notif={n} onRead={onRead} />
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 }

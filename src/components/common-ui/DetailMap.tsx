@@ -68,7 +68,7 @@ export default function DetailMap({ lat, lng, judul, alamat }: Props) {
 
     return (
         <div className="relative bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden mb-4">
-            <div ref={mapRef} className="w-full" style={{ height: 380 }} />
+            <div ref={mapRef} className="w-full h-[380px]" />
 
             {/* Address overlay */}
             <div className="absolute top-[14px] left-[14px] bg-[rgba(255,255,255,0.96)] backdrop-blur-sm border-[0.5px] border-[#f0e6dc] rounded-[10px] px-[14px] py-[10px] max-w-[320px] shadow-[0_4px_16px_rgba(0,0,0,0.08)] z-[400]">

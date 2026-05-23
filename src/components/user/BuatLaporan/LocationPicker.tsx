@@ -32,11 +32,9 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  // Init map
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
     let cancelled = false;
-
     (async () => {
       const L = (await import("leaflet")).default;
       if (!document.querySelector('link[href*="leaflet.css"]')) {
@@ -46,32 +44,23 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
         document.head.appendChild(link);
       }
       if (cancelled || !mapRef.current) return;
-
       const map = L.map(mapRef.current, {
         center: [lat ? parseFloat(lat) : DEFAULT.lat, lng ? parseFloat(lng) : DEFAULT.lng],
         zoom: lat ? 15 : 11,
-        zoomControl: false,
-        attributionControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        touchZoom: false,
-        keyboard: false,
+        zoomControl: false, attributionControl: false,
+        dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
+        touchZoom: false, keyboard: false,
       });
-
       L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
         subdomains: "abcd", maxZoom: 20,
       }).addTo(map);
-
       if (lat && lng) {
         markerRef.current = L.circleMarker([parseFloat(lat), parseFloat(lng)], {
           radius: 10, color: "white", weight: 3, fillColor: "#E8541C", fillOpacity: 1,
         }).addTo(map);
       }
-
       mapInstanceRef.current = map;
     })();
-
     return () => {
       cancelled = true;
       if (mapInstanceRef.current) {
@@ -83,7 +72,6 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Move map + marker
   const flyTo = useCallback(async (la: number, lo: number) => {
     if (!mapInstanceRef.current) return;
     const L = (await import("leaflet")).default;
@@ -98,7 +86,6 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
     }
   }, []);
 
-  // Search
   const doSearch = useCallback(async (q: string) => {
     if (q.trim().length < 3) { setResults([]); setShowDropdown(false); return; }
     setSearching(true);
@@ -139,7 +126,6 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
       (mapInstanceRef.current as { setView: (c: [number, number], z: number) => void }).setView([DEFAULT.lat, DEFAULT.lng], 11);
   };
 
-  // Close dropdown on outside click
   useEffect(() => {
     const fn = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node))
@@ -151,19 +137,21 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
 
   return (
     <Field label="Lokasi kejadian" required hint="Ketik nama jalan, gedung, atau kawasan.">
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <div className="flex flex-col gap-[10px]">
 
-        {/* Search — wrapper pakai position relative + zIndex tinggi */}
-        <div ref={dropdownRef} style={{ position: "relative", zIndex: 9999 }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: 10, background: "white",
-            border: `0.5px solid ${showDropdown ? "rgba(255,107,53,0.5)" : "#f0e6dc"}`,
-            borderRadius: showDropdown ? "10px 10px 0 0" : 10,
-            padding: "0 14px", height: 44, transition: "all 0.15s",
-          }}>
+        {/* Search */}
+        <div ref={dropdownRef} className="relative z-[9999]">
+          <div
+            className={[
+              "flex items-center gap-[10px] bg-white border-[0.5px] px-[14px] h-11 transition-all duration-150",
+              showDropdown
+                ? "border-[rgba(255,107,53,0.5)] rounded-t-[10px]"
+                : "border-[#f0e6dc] rounded-[10px]",
+            ].join(" ")}
+          >
             {searching
-              ? <Loader2 size={15} style={{ color: "#E8541C", flexShrink: 0, animation: "spin 0.8s linear infinite" }} />
-              : <Search size={15} style={{ color: "#a8856b", flexShrink: 0 }} />
+              ? <Loader2 size={15} className="text-[#E8541C] shrink-0 animate-spin" />
+              : <Search size={15} className="text-[#a8856b] shrink-0" />
             }
             <input
               type="text"
@@ -171,27 +159,22 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
               value={query}
               onChange={(e) => handleInput(e.target.value)}
               onFocus={() => { if (results.length > 0) setShowDropdown(true); }}
-              style={{ flex: 1, border: "none", outline: "none", fontSize: "0.85rem", color: "#1a0e08", background: "transparent", fontFamily: "inherit" }}
+              className="flex-1 border-none outline-none text-[0.85rem] text-[#1a0e08] bg-transparent font-[inherit]"
             />
             {query && (
-              <button type="button" onClick={clear} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex", color: "#a8856b" }}>
+              <button
+                type="button"
+                onClick={clear}
+                className="bg-transparent border-none cursor-pointer p-0.5 flex text-[#a8856b]"
+              >
                 <X size={14} />
               </button>
             )}
           </div>
 
-          {/* Dropdown — position absolute di atas map */}
+          {/* Dropdown */}
           {showDropdown && results.length > 0 && (
-            <div style={{
-              position: "absolute", top: "100%", left: 0, right: 0,
-              background: "white",
-              border: "0.5px solid rgba(255,107,53,0.35)",
-              borderTop: "0.5px solid #f5ede3",
-              borderRadius: "0 0 10px 10px",
-              zIndex: 9999,
-              overflow: "hidden",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
-            }}>
+            <div className="absolute top-full left-0 right-0 bg-white border-[0.5px] border-[rgba(255,107,53,0.35)] [border-top:0.5px_solid_#f5ede3] rounded-b-[10px] z-[9999] overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
               {results.map((r, i) => {
                 const parts = r.display_name.split(",");
                 return (
@@ -199,22 +182,18 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
                     key={r.place_id}
                     type="button"
                     onClick={() => pick(r)}
-                    style={{
-                      width: "100%", display: "flex", alignItems: "flex-start", gap: 10,
-                      padding: "11px 14px", background: "white", border: "none",
-                      borderTop: i > 0 ? "0.5px solid #f5ede3" : "none",
-                      cursor: "pointer", textAlign: "left", transition: "background 0.1s", fontFamily: "inherit",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "#FFF5EE")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "white")}
+                    className={[
+                      "w-full flex items-start gap-[10px] py-[11px] px-[14px] bg-white border-none cursor-pointer text-left transition-colors duration-100 font-[inherit] hover:bg-[#FFF5EE]",
+                      i > 0 ? "[border-top:0.5px_solid_#f5ede3]" : "",
+                    ].join(" ")}
                   >
-                    <MapPin size={14} strokeWidth={2} style={{ color: "#E8541C", flexShrink: 0, marginTop: 3 }} />
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <p style={{ fontSize: "0.82rem", fontWeight: 600, color: "#1a0e08", margin: "0 0 2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <MapPin size={14} strokeWidth={2} className="text-[#E8541C] shrink-0 mt-[3px]" />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[0.82rem] font-semibold text-[#1a0e08] m-0 mb-0.5 overflow-hidden text-ellipsis whitespace-nowrap">
                         {parts.slice(0, 2).join(",").trim()}
                       </p>
                       {parts.length > 2 && (
-                        <p style={{ fontSize: "0.7rem", color: "#a8856b", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <p className="text-[0.7rem] text-[#a8856b] m-0 overflow-hidden text-ellipsis whitespace-nowrap">
                           {parts.slice(2, 5).join(",").trim()}
                         </p>
                       )}
@@ -227,20 +206,16 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
         </div>
 
         {/* Map */}
-        <div style={{ position: "relative", borderRadius: 12, overflow: "hidden", border: "0.5px solid #f0e6dc", height: 200 }}>
-          <div ref={mapRef} style={{ width: "100%", height: "100%" }} />
+        <div className="relative rounded-xl overflow-hidden border-[0.5px] border-[#f0e6dc] h-[200px]">
+          <div ref={mapRef} className="w-full h-full" />
 
           {/* Overlay sebelum ada lokasi */}
           {!lat && (
-            <div style={{
-              position: "absolute", inset: 0, zIndex: 400, pointerEvents: "none",
-              background: "rgba(255,255,255,0.55)", backdropFilter: "blur(1px)",
-              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8,
-            }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,107,53,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div className="absolute inset-0 z-[400] pointer-events-none bg-[rgba(255,255,255,0.55)] backdrop-blur-[1px] flex flex-col items-center justify-center gap-2">
+              <div className="w-9 h-9 rounded-full bg-[rgba(255,107,53,0.1)] flex items-center justify-center">
                 <MapPin size={17} color="#E8541C" strokeWidth={1.8} />
               </div>
-              <p style={{ fontSize: "0.7rem", color: "#6b5546", fontWeight: 500, margin: 0 }}>
+              <p className="text-[0.7rem] text-[#6b5546] font-medium m-0">
                 Cari lokasi untuk menampilkan di peta
               </p>
             </div>
@@ -248,26 +223,15 @@ export default function LocationPicker({ lat, lng, address, onChange }: Props) {
 
           {/* Address badge */}
           {lat && address && (
-            <div style={{
-              position: "absolute", bottom: 8, left: 8, right: 8, zIndex: 400,
-              background: "rgba(255,255,255,0.96)", backdropFilter: "blur(6px)",
-              border: "0.5px solid #f0e6dc", borderRadius: 8, padding: "7px 10px",
-              display: "flex", alignItems: "flex-start", gap: 7,
-              boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
-            }}>
-              <MapPin size={12} color="#E8541C" strokeWidth={2} style={{ flexShrink: 0, marginTop: 2 }} />
-              <p style={{
-                fontSize: "0.68rem", color: "#3d2817", margin: 0, lineHeight: 1.5,
-                overflow: "hidden", textOverflow: "ellipsis",
-                display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
-              }}>
+            <div className="absolute bottom-2 left-2 right-2 z-[400] bg-[rgba(255,255,255,0.96)] backdrop-blur-[6px] border-[0.5px] border-[#f0e6dc] rounded-lg py-[7px] px-[10px] flex items-start gap-[7px] shadow-[0_2px_10px_rgba(0,0,0,0.08)]">
+              <MapPin size={12} color="#E8541C" strokeWidth={2} className="shrink-0 mt-0.5" />
+              <p className="text-[0.68rem] text-[#3d2817] m-0 leading-[1.5] overflow-hidden text-ellipsis line-clamp-2">
                 {address}
               </p>
             </div>
           )}
         </div>
       </div>
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </Field>
   );
 }

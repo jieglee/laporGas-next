@@ -5,7 +5,7 @@ import Providers from "@/components/Providers";
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-poppins",
 });
 
@@ -21,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={poppins.variable}>
-      <body>
+      <body className={`${poppins.className} font-sans antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -11,17 +11,7 @@ interface Props {
 
 function Chip({ label }: { label: string }) {
   return (
-    <span
-      style={{
-        fontSize: "0.62rem",
-        fontWeight: 600,
-        color: "#E8541C",
-        background: "#FFF5EE",
-        border: "0.5px solid rgba(255,107,53,0.2)",
-        padding: "3px 9px",
-        borderRadius: 99,
-      }}
-    >
+    <span className="text-[0.62rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border-[0.5px] border-[rgba(255,107,53,0.2)] py-[3px] px-[9px] rounded-full">
       {label}
     </span>
   );
@@ -42,56 +32,34 @@ export default function SubmitButton({ form, submitting, onSubmit }: Props) {
   const valid = isFormValid(form);
 
   return (
-    <div style={{ paddingTop: 4 }}>
-      {!valid && (
-        <div style={{ marginBottom: 14 }}>
-        </div>
-      )}
+    <div className="pt-1">
+      {!valid && <div className="mb-[14px]" />}
 
       <button
         type="button"
         onClick={onSubmit}
         disabled={!valid || submitting}
-        style={{
-          width: "100%",
-          padding: "14px 20px",
-          background: valid ? "linear-gradient(135deg, #FF6B35, #E8541C)" : "#f0e6dc",
-          color: valid ? "white" : "#c9a892",
-          fontSize: "0.88rem",
-          fontWeight: 700,
-          border: "none",
-          borderRadius: 11,
-          cursor: valid ? "pointer" : "not-allowed",
-          fontFamily: "inherit",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 8,
-          boxShadow: valid ? "0 6px 18px rgba(255,107,53,0.28)" : "none",
-          transition: "all 0.25s",
-        }}
-        onMouseEnter={(e) => {
-          if (valid) {
-            e.currentTarget.style.transform = "translateY(-1px)";
-            e.currentTarget.style.boxShadow = "0 10px 26px rgba(255,107,53,0.38)";
-          }
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "translateY(0)";
-          e.currentTarget.style.boxShadow = valid ? "0 6px 18px rgba(255,107,53,0.28)" : "none";
-        }}
+        className={[
+          "w-full py-[14px] px-5 text-[0.88rem] font-bold border-none rounded-[11px] font-[inherit]",
+          "flex items-center justify-center gap-2 transition-all duration-[250ms]",
+          valid
+            ? [
+                "bg-gradient-to-br from-[#FF6B35] to-[#E8541C] text-white cursor-pointer",
+                "shadow-[0_6px_18px_rgba(255,107,53,0.28)]",
+                "hover:-translate-y-px hover:shadow-[0_10px_26px_rgba(255,107,53,0.38)]",
+              ].join(" ")
+            : "bg-[#f0e6dc] text-[#c9a892] cursor-not-allowed shadow-none",
+        ].join(" ")}
       >
         {submitting ? (
           <>
-            <Loader2 size={16} style={{ animation: "spin 1s linear infinite" }} />
+            <Loader2 size={16} className="animate-spin" />
             Mengirim laporan...
           </>
         ) : (
           <>Kirim Laporan <ChevronRight size={16} /></>
         )}
       </button>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

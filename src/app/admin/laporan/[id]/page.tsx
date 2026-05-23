@@ -8,6 +8,9 @@ import { getComments, createComment, deleteComment, type Comment } from "@/lib/c
 import { STATUS_CONFIG, PRIORITY_CONFIG } from "@/components/admin/Laporan/types";
 import type { AdminLaporanStatus } from "@/components/admin/Laporan/types";
 import RejectModal from "@/components/admin/Laporan/RejectModal";
+import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+
 
 export default function AdminLaporanDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -90,8 +93,8 @@ export default function AdminLaporanDetailPage() {
         </div>
     );
 
-    const statusCfg = STATUS_CONFIG[report.status as AdminLaporanStatus] ?? { label: report.status, bg: "#F3F4F6", color: "#6B7280", dot: "#9CA3AF" };
-    const priorityCfg = PRIORITY_CONFIG[report.priority as keyof typeof PRIORITY_CONFIG] ?? { label: report.priority, bg: "#F3F4F6", color: "#6B7280" };
+    const statusCfg = STATUS_CONFIG[report.status as AdminLaporanStatus] ?? { label: report.status, badge: "bg-gray-100 text-gray-600", dot: "bg-gray-400" };
+    const priorityCfg = PRIORITY_CONFIG[report.priority as keyof typeof PRIORITY_CONFIG] ?? { label: report.priority, badge: "bg-gray-100 text-gray-600" };
 
     const laporanForModal = {
         id: String(report.id),
@@ -103,7 +106,7 @@ export default function AdminLaporanDetailPage() {
         lokasi: report.location ?? "-",
         alamat: report.location ?? "-",
         koordinat: { lat: 0, lng: 0 },
-        fotoCount: report.image_url ? 1 : 0,
+        fotoCount: report.images?.length || (report.image_url ? 1 : 0),
         pelapor: { nama: report.user_name ?? "-", inisial: (report.user_name ?? "U")[0], email: "-" },
         createdAt: report.created_at,
         upvote: 0,
@@ -126,27 +129,72 @@ export default function AdminLaporanDetailPage() {
                     <span className="text-[0.7rem] text-[#a8856b] bg-[#FFF5EE] border-[0.5px] border-[#f0e6dc] rounded-[6px] px-2 py-[2px]">
                         #{report.id}
                     </span>
-                    <span className="text-[0.72rem] font-semibold rounded-[20px] px-[10px] py-[3px]"
-                        style={{ background: statusCfg.bg, color: statusCfg.color }}>
+                    <span className={cn("text-[0.72rem] font-semibold rounded-[20px] px-[10px] py-[3px]", statusCfg.badge)}>
                         ● {statusCfg.label}
                     </span>
-                    <span className="text-[0.72rem] font-semibold rounded-[20px] px-[10px] py-[3px]"
-                        style={{ background: priorityCfg.bg, color: priorityCfg.color }}>
+                    <span className={cn("text-[0.72rem] font-semibold rounded-[20px] px-[10px] py-[3px]", priorityCfg.badge)}>
                         {priorityCfg.label}
                     </span>
                 </div>
-                <h1 className="text-[1.35rem] font-extrabold text-[#1a0e08] tracking-[-0.025em] m-0 mb-2"
-                    style={{ fontFamily: "'Syne', sans-serif" }}>
+                <h1 className="font-sans text-[1.35rem] font-extrabold text-[#1a0e08] tracking-[-0.025em] m-0 mb-2">
                     {report.title}
                 </h1>
                 <p className="text-[0.8rem] text-[#a8856b] m-0 mb-4">
                     {report.user_name} · {new Date(report.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })} · {report.location ?? "-"}
                 </p>
                 <p className="text-[0.88rem] text-[#3d2817] leading-[1.7] m-0">{report.description}</p>
-                {report.image_url && (
-                    <img src={report.image_url} alt="Bukti"
-                        className="mt-4 w-full max-h-[300px] object-cover rounded-xl border-[0.5px] border-[#f0e6dc]" />
-                )}
+              {(() => {
+    const imgs = Array.isArray(report.images)
+        ? report.images
+        : report.image_url
+            ? [report.image_url]
+            : [];
+
+    if (imgs.length === 0) return null;
+
+    
+
+    return (
+        <div className="mt-4">
+            {/* Cover */}
+
+            {/* MAPS */}
+{report.latitude && report.longitude && (
+    <div className="mt-5 overflow-hidden rounded-[14px] border border-[#F3F4F6]">
+        <iframe
+            src={`https://maps.google.com/maps?q=${report.latitude},${report.longitude}&z=15&output=embed`}
+            width="100%"
+            height="260"
+            loading="lazy"
+            className="border-0 w-full"
+        />
+    </div>
+)}
+            <img
+                src={imgs[0]}
+                alt="Bukti laporan"
+                className="w-full max-h-[320px] object-cover rounded-xl border border-[#f0e6dc]"
+            />
+
+            {/* Gallery */}
+            {imgs.length > 1 && (
+                <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-2 mt-2">
+                    {imgs.slice(1).map((url, i) => (
+                        <img
+                            key={i}
+                            src={url}
+                            alt={`Foto ${i + 2}`}
+                            className="w-full aspect-square object-cover rounded-lg border border-[#f0e6dc] cursor-pointer"
+                            onClick={() => window.open(url, "_blank")}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+})()}
+
+
             </div>
 
             {/* Actions */}
@@ -154,15 +202,15 @@ export default function AdminLaporanDetailPage() {
                 <p className="text-[0.75rem] font-semibold text-[#a8856b] mb-3 uppercase tracking-[0.08em]">Update Status</p>
                 <div className="flex gap-2 flex-wrap">
                     {report.status === "pending" && (<>
-                        <ActionBtn label="✓ Approve" onClick={() => handleUpdateStatus("approved")} color="#1D4ED8" bg="#DBEAFE" />
-                        <ActionBtn label="✕ Reject" onClick={() => setRejectOpen(true)} color="#B91C1C" bg="#FEE2E2" />
+                        <ActionBtn label="✓ Approve" onClick={() => handleUpdateStatus("approved")} className="text-blue-800 bg-blue-100" />
+                        <ActionBtn label="✕ Reject" onClick={() => setRejectOpen(true)} className="text-red-800 bg-red-100" />
                     </>)}
                     {report.status === "approved" && (<>
-                        <ActionBtn label="→ On Progress" onClick={() => handleUpdateStatus("on_progress")} color="#C2410C" bg="#FFEDD5" />
-                        <ActionBtn label="✕ Reject" onClick={() => setRejectOpen(true)} color="#B91C1C" bg="#FEE2E2" />
+                        <ActionBtn label="→ On Progress" onClick={() => handleUpdateStatus("on_progress")} className="text-orange-700 bg-orange-100" />
+                        <ActionBtn label="✕ Reject" onClick={() => setRejectOpen(true)} className="text-red-800 bg-red-100" />
                     </>)}
                     {report.status === "on_progress" && (
-                        <ActionBtn label="✓ Selesai" onClick={() => handleUpdateStatus("completed")} color="#047857" bg="#D1FAE5" />
+                        <ActionBtn label="✓ Selesai" onClick={() => handleUpdateStatus("completed")} className="text-emerald-800 bg-emerald-100" />
                     )}
                     {report.status === "completed" && <span className="text-[0.82rem] text-[#047857] font-semibold">✓ Selesai ditangani</span>}
                     {report.status === "rejected" && <span className="text-[0.82rem] text-[#B91C1C] font-semibold">✕ Laporan ditolak</span>}
@@ -236,11 +284,9 @@ export default function AdminLaporanDetailPage() {
     );
 }
 
-function ActionBtn({ label, onClick, color, bg }: { label: string; onClick: () => void; color: string; bg: string }) {
+function ActionBtn({ label, onClick, className }: { label: string; onClick: () => void; className: string }) {
     return (
-        <button onClick={onClick}
-            className="text-[0.82rem] font-semibold border-0 rounded-lg px-4 py-2 cursor-pointer"
-            style={{ color, background: bg }}>
+        <button onClick={onClick} className={cn("text-[0.82rem] font-semibold border-0 rounded-lg px-4 py-2 cursor-pointer", className)}>
             {label}
         </button>
     );
