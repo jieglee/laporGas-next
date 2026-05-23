@@ -59,8 +59,6 @@ export default function UserSidebar() {
         "fixed top-0 left-0 h-screen flex flex-col bg-white border-r border-[#f0e6dc] z-40 overflow-hidden",
         "transition-[width,box-shadow] duration-300 ease-out",
         expanded
-          ? "w-[244px] shadow-[0_8px_32px_rgba(255,107,53,0.06)]"
-          : "w-[72px] shadow-none",
       ].join(" ")}
     >
       <div className="flex items-center px-5 py-7 mb-2">

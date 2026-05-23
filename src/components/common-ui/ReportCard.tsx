@@ -76,12 +76,12 @@ export default function ReportCard({
     <Link
       href={`/user/laporan/${report.id}`}
       className={cn(
-        "no-underline text-inherit block h-full opacity-0 animate-fade-slide-in",
+        "no-underline text-inherit block opacity-0 animate-fade-slide-in",
         staggerClass(index)
       )}
     >
-      <article className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden cursor-pointer flex flex-col h-full transition-all duration-200 hover:border-[rgba(255,107,53,0.3)] hover:shadow-[0_8px_28px_rgba(255,107,53,0.1)] hover:-translate-y-[3px]">
-        <div className="relative w-full shrink-0 aspect-[4/3] bg-gradient-to-br from-[#e0dcd8] to-[#cac6c2]">
+      <article className="bg-white border-[0.5px] border-[#f0e6dc] rounded-[14px] overflow-hidden cursor-pointer flex flex-col transition-all duration-200 hover:border-[rgba(255,107,53,0.3)] hover:shadow-[0_8px_28px_rgba(255,107,53,0.1)] hover:-translate-y-[3px]">
+        <div className="relative w-full h-[220px] shrink-0 bg-gradient-to-br from-[#e0dcd8] to-[#cac6c2] overflow-hidden">
           {report.image_url ? (
             <img
               src={report.image_url}

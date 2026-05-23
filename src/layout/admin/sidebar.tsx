@@ -73,52 +73,52 @@ export default function AdminSidebar() {
         "border-r border-[#f0e6dc]",
         "transition-[width,box-shadow] duration-300 ease-out",
         expanded
-          ? "w-[244px] shadow-[0_8px_32px_rgba(255,107,53,0.06)]"
-          : "w-[72px] shadow-none",
+  ? "w-[244px] shadow-[0_8px_32px_rgba(255,107,53,0.06)]"
+  : "w-[72px] shadow-none"
       ].join(" ")}
     >
       {/* Logo */}
-      <div className="flex items-center px-5 py-7 mb-2">
-        <Link href="/admin" className="flex items-center gap-2 no-underline">
-          <div className="flex items-center justify-center rounded-lg shrink-0 w-8 h-8">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="32"
-              height="32"
-              viewBox="0 0 24 24"
-              className="text-[#E8541C]"
-            >
-              <path d="M0 0h24v24H0z" fill="none" />
-              <path
-                fill="currentColor"
-                fillRule="evenodd"
-                d="M16.84 19.16..."
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
+<div className="flex items-center px-5 py-7 mb-2">
+  <Link
+    href="/admin"
+    className="flex items-center gap-2 no-underline overflow-hidden"
+  >
+    <div className="flex items-center justify-center shrink-0 w-8 h-8">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="32"
+        height="32"
+        viewBox="0 0 24 24"
+        className="text-[#E8541C]"
+      >
+        <path d="M0 0h24v24H0z" fill="none" />
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M16.84 19.16..."
+          clipRule="evenodd"
+        />
+      </svg>
+    </div>
 
-          <span
-            className={[
-              textCls,
-              "inline-flex items-center gap-1.5",
-              "font-extrabold text-[1.15rem] tracking-[-0.02em] text-[#1a0e08]",
-              expanded ? "max-w-[200px]" : "max-w-0",
-            ].join(" ")}
-          >
-            Lapor<span className="text-[#E8541C]">Gas</span>
-            <span
-              className={[
-                "text-[0.55rem] font-bold uppercase tracking-[0.08em]",
-                "px-[7px] py-[2px] rounded-full",
-                "bg-[#FFF5EE] text-[#E8541C]",
-              ].join(" ")}
-            >
-              {role === "superadmin" ? "Super Admin" : "Admin"}
-            </span>
-          </span>
-        </Link>
-      </div>
+    <div
+      className={[
+        "flex items-center gap-2 transition-all duration-300 overflow-hidden",
+        expanded
+          ? "max-w-[220px] opacity-100 ml-1"
+          : "max-w-0 opacity-0",
+      ].join(" ")}
+    >
+      <span className="font-extrabold text-[1.15rem] tracking-[-0.02em] text-[#1a0e08] whitespace-nowrap">
+        Lapor<span className="text-[#E8541C]">Gas</span>
+      </span>
+
+      <span className="text-[0.55rem] font-bold uppercase tracking-[0.08em] px-[7px] py-[2px] rounded-full bg-[#FFF5EE] text-[#E8541C] whitespace-nowrap">
+        {role === "superadmin" ? "Super Admin" : "Admin"}
+      </span>
+    </div>
+  </Link>
+</div>
 
       {/* Menu */}
       <nav className="flex-1 px-3 space-y-1">
