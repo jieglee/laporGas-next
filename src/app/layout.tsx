@@ -25,20 +25,20 @@ export default function RootLayout({
       <body className={`${poppins.className} font-sans antialiased`}>
         <Providers>{children}</Providers>
           <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              fontSize: "0.82rem",
-              fontWeight: 500,
-              borderRadius: "10px",
-              border: "0.5px solid #f0e6dc",
-            },
-            success: {
-              iconTheme: { primary: "#E8541C", secondary: "white" },
-            },
-          }}
-        />
+  position="top-center"
+  toastOptions={{
+    duration: 3000,
+    style: {
+      fontSize: "0.82rem",
+      fontWeight: 500,
+      borderRadius: "10px",
+      border: "0.5px solid #f0e6dc",
+    },
+    success: {
+      iconTheme: { primary: "#E8541C", secondary: "white" },
+    },
+  }}
+/>
       </body>
     </html>
   );

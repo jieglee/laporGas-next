@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
 import HeroSection from "@/components/user/Home/HeroSection";
 import CategorySection from "@/components/user/Home/CategorySection";
 import TrendingSection from "@/components/user/Home/Trendingsection";
@@ -10,6 +11,7 @@ import CtaSection from "@/components/user/Home/Ctasection";
 import { getReports, type Report } from "@/lib/reports";
 
 export default function UserHomePage() {
+    const { data: session } = useSession();
     const [reports, setReports] = useState<Report[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -39,7 +41,7 @@ export default function UserHomePage() {
 
     return (
         <div className="space-y-10 px-4 py-6 md:px-8 md:py-10">
-            <HeroSection />
+            <HeroSection userName={session?.user?.name ?? ""} />
 
             {loading ? (
                 <div className="text-center py-10 text-sm text-neutral-500">

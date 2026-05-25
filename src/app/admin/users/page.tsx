@@ -4,6 +4,53 @@ import { useEffect, useState, useMemo } from "react"
 import { getUsers, deleteUser, updateUserRole, createUser, updateUserById, type User, type UserRole } from "@/lib/users"
 import { Users, Shield, Trash2, Loader2, Plus, Search, X, Eye, EyeOff, Pencil, Crown } from "lucide-react"
 import { cn } from "@/lib/utils"
+import toast from "react-hot-toast"
+import * as AlertDialog from "@radix-ui/react-alert-dialog";
+
+
+
+function ConfirmDelete({ open, onConfirm, onCancel, loading, message }: {
+    open: boolean;
+    onConfirm: () => void;
+    onCancel: () => void;
+    loading?: boolean;
+    message: string;
+}) {
+    return (
+        <AlertDialog.Root open={open} onOpenChange={(v) => !v && onCancel()}>
+            <AlertDialog.Portal>
+                <AlertDialog.Overlay className="fixed inset-0 z-[200] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+                <AlertDialog.Content className="fixed left-1/2 top-1/2 z-[201] w-full max-w-[380px] -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white shadow-2xl data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                    <div className="px-6 pt-6 pb-4">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center mb-4">
+                            <Trash2 size={18} className="text-red-500" />
+                        </div>
+                        <AlertDialog.Title className="text-[0.95rem] font-bold text-[#1a0e08] mb-1">
+                            Konfirmasi Hapus
+                        </AlertDialog.Title>
+                        <AlertDialog.Description className="text-[0.82rem] text-[#a8856b] leading-[1.6]">
+                            {message}
+                        </AlertDialog.Description>
+                    </div>
+                    <div className="flex gap-2 px-6 pb-5">
+                        <AlertDialog.Cancel asChild>
+                            <button className="flex-1 rounded-xl border border-[#f0e6dc] bg-white py-2.5 text-[0.82rem] font-semibold text-[#3d2817] transition hover:bg-[#fafaf8] cursor-pointer">
+                                Batal
+                            </button>
+                        </AlertDialog.Cancel>
+                        <AlertDialog.Action asChild>
+                            <button onClick={onConfirm} disabled={loading}
+                                    className="flex-1 rounded-xl bg-red-500 py-2.5 text-[0.82rem] font-bold text-white transition hover:bg-red-600 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+                                {loading && <Loader2 size={13} className="animate-spin" />}
+                                Hapus
+                            </button>
+                        </AlertDialog.Action>
+                    </div>
+                </AlertDialog.Content>
+            </AlertDialog.Portal>
+        </AlertDialog.Root>
+    );
+}
 
 // ── Add User Modal ─────────────────────────────────────
 function AddUserModal({ open, onClose, onAdded, defaultRole }: {
@@ -308,14 +355,18 @@ export default function UsersPage() {
     useEffect(() => { fetchUsers(); }, []);
 
     async function handleDelete(id: number) {
-        if (!confirm("Yakin ingin menghapus user ini?")) return;
-        try {
-            setDeletingId(id);
-            await deleteUser(id);
-            setUsers((prev) => prev.filter((u) => u.id !== id));
-        } catch { alert("Gagal menghapus user"); }
-        finally { setDeletingId(null); }
+    if (!confirm("Yakin ingin menghapus user ini?")) return;
+    try {
+        setDeletingId(id);
+        await deleteUser(id);
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+        toast.success("User berhasil dihapus");
+    } catch {
+        toast.error("Gagal menghapus user");
+    } finally {
+        setDeletingId(null);
     }
+}
 
     const filtered = useMemo(() => {
         const q = search.toLowerCase().trim();

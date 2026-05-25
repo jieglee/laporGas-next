@@ -10,6 +10,7 @@ export interface User {
     email: string
     role: UserRole
     created_at: string
+    avatar_url?: File
 }
 
 // == FETCHING FUNCTIONS ==
@@ -98,8 +99,37 @@ export async function updateProfile(data: {
     name?: string
     email?: string
     password?: string
-}): Promise<{ id: number; name: string; email: string; role: string }> {
-    const response = await api.patch("/users/me/profile", data)
+    avatar?: File
+}): Promise<User> {
+
+    const formData = new FormData()
+
+    if (data.name) {
+        formData.append("name", data.name)
+    }
+
+    if (data.email) {
+        formData.append("email", data.email)
+    }
+
+    if (data.password) {
+        formData.append("password", data.password)
+    }
+
+    if (data.avatar) {
+        formData.append("avatar", data.avatar)
+    }
+
+    const response = await api.patch(
+        "/users/me/profile",
+        formData,
+        {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }
+    )
+
     return response.data
 }
 

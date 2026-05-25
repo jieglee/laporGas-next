@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { ArrowBigUp } from "lucide-react";
-import { getReportById, getUpvoteStatus, toggleUpvote, type Report } from "@/lib/reports";
+import { Pencil } from "lucide-react";
+import { getReportById, type Report } from "@/lib/reports";
 import { getComments, createComment, deleteComment, type Comment } from "@/lib/comments";
 import { STATUS_CFG, PRIORITY_CFG } from "@/constants/report-config";
 import { cn } from "@/lib/utils";
+import EditLaporanModal from "@/components/admin/Users/profile/EditLaporanModal";
 
 interface LaporanDetailProps { reportId: number; }
 
@@ -14,18 +15,14 @@ function fmtDate(dateStr: string) {
     return new Date(dateStr).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-function fmt(n: number) { return n >= 1000 ? (n / 1000).toFixed(1) + "K" : String(n); }
-
 function Inisial({ name, size = 36, official = false }: { name: string; size?: number; official?: boolean }) {
     const txt = (name ?? "?").split(" ").slice(0, 2).map((n: string) => n[0]).join("").toUpperCase();
     return (
-        <div
-            className={cn(
-                "rounded-full shrink-0 flex items-center justify-center font-bold text-white",
-                official ? "bg-linear-to-br from-blue-500 to-blue-800" : "bg-linear-to-br from-[#FF6B35] to-[#E8541C]",
-                size === 22 ? "w-5.5 h-5.5 text-[7px]" : "w-9 h-9 text-xs"
-            )}
-        >
+        <div className={cn(
+            "rounded-full shrink-0 flex items-center justify-center font-bold text-white",
+            official ? "bg-gradient-to-br from-blue-500 to-blue-800" : "bg-gradient-to-br from-[#FF6B35] to-[#E8541C]",
+            size === 22 ? "w-[22px] h-[22px] text-[7px]" : "w-9 h-9 text-xs"
+        )}>
             {txt}
         </div>
     );
@@ -42,37 +39,22 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     const [error, setError] = useState<string | null>(null);
     const [newComment, setNewComment] = useState("");
     const [submitting, setSubmitting] = useState(false);
-    const [upvoteCount, setUpvoteCount] = useState(0);
-    const [upvoted, setUpvoted] = useState(false);
-    const [upvoting, setUpvoting] = useState(false);
+    const [editOpen, setEditOpen] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
             try {
                 setLoading(true);
-                const [reportData, commentsData, upvoteData] = await Promise.all([
-                    getReportById(reportId), getComments(reportId), getUpvoteStatus(reportId),
+                const [reportData, commentsData] = await Promise.all([
+                    getReportById(reportId), getComments(reportId),
                 ]);
                 setReport(reportData);
                 setComments(commentsData);
-                setUpvoteCount(upvoteData.upvote_count);
-                setUpvoted(upvoteData.upvoted);
             } catch { setError("Laporan tidak ditemukan"); }
             finally { setLoading(false); }
         }
         fetchData();
     }, [reportId]);
-
-    const handleUpvote = async () => {
-        if (!session) { window.location.href = "/auth/login"; return; }
-        try {
-            setUpvoting(true);
-            const result = await toggleUpvote(reportId);
-            setUpvoteCount(result.upvote_count);
-            setUpvoted(result.upvoted);
-        } catch (err) { console.error("Gagal upvote:", err); }
-        finally { setUpvoting(false); }
-    };
 
     const handleSubmitComment = async () => {
         if (!newComment.trim() || !report) return;
@@ -92,8 +74,18 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
         } catch (err) { console.error("Gagal hapus komentar:", err); }
     };
 
+    const handleLaporanSaved = (updated: Report) => {
+        setReport((prev) => prev ? {
+            ...prev,
+            title: updated.title,
+            description: updated.description,
+            priority: updated.priority,
+            edit_count: updated.edit_count,
+        } : prev);
+    };
+
     if (loading) return (
-        <div className="flex items-center justify-center min-h-75">
+        <div className="flex items-center justify-center min-h-[300px]">
             <div className="text-center">
                 <div className="w-8 h-8 border-2 border-[#f0e6dc] border-t-[#E8541C] rounded-full animate-spin mx-auto mb-3" />
                 <p className="text-[0.82rem] text-[#a8856b]">Memuat laporan...</p>
@@ -102,7 +94,7 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     );
 
     if (error || !report) return (
-        <div className="flex items-center justify-center min-h-75">
+        <div className="flex items-center justify-center min-h-[300px]">
             <p className="text-[0.85rem] text-[#BE123C]">{error ?? "Terjadi kesalahan"}</p>
         </div>
     );
@@ -113,37 +105,49 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     const publicComments = comments.filter((c) => c.type === "public");
 
     const imgs = Array.isArray(report.images)
-    ? report.images
-    : typeof report.images === "string"
-        ? [report.images]
-        : report.image_url
-            ? [report.image_url]
-            : [];
+        ? report.images
+        : typeof report.images === "string"
+            ? [report.images]
+            : report.image_url ? [report.image_url] : [];
 
-            console.log(report.images)
-console.log(report.image_url)
+    // Tampilkan tombol edit kalau laporan milik user, status pending, belum pernah diedit
+    const isOwner = session?.user?.id === String(report.user_id);
+    const canEdit = isOwner && report.status === "pending" && (report.edit_count ?? 0) < 1;
 
     return (
-        <div className="max-w-195 mx-auto px-5 pt-8 pb-20">
+        <div className="max-w-[780px] mx-auto px-5 pt-8 pb-20">
 
             {/* ── HEADER CARD ── */}
             <div className="bg-white rounded-[20px] border border-[#F3F0ED] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.03)] px-8 py-7 mb-4">
-                {/* Badges */}
-                <div className="flex items-center gap-2 mb-4.5 flex-wrap">
-                    <span className="text-[0.68rem] font-semibold tracking-[0.06em] uppercase text-[#9CA3AF] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-2.5 py-0.75">
-                        #{report.id}
-                    </span>
-                    <span className={cn("inline-flex items-center gap-[5px] text-[0.72rem] font-semibold rounded-full px-3 py-1", statusCfg.badge)}>
-                        <span className={cn("w-[6px] h-[6px] rounded-full", statusCfg.dot)} />
-                        {statusCfg.label}
-                    </span>
-                    <span className={cn("text-[0.68rem] font-semibold rounded-[6px] px-[10px] py-[3px]", priorityCfg.soft)}>
-                        ↑ {priorityCfg.label}
-                    </span>
-                    {report.category_name && (
-                        <span className="text-[0.68rem] text-[#6B7280] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-[10px] py-[3px]">
-                            {report.category_name}
+                {/* Badges + edit button */}
+                <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[0.68rem] font-semibold tracking-[0.06em] uppercase text-[#9CA3AF] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-2.5 py-[3px]">
+                            #{report.id}
                         </span>
+                        <span className={cn("inline-flex items-center gap-[5px] text-[0.72rem] font-semibold rounded-full px-3 py-1", statusCfg.badge)}>
+                            <span className={cn("w-[6px] h-[6px] rounded-full", statusCfg.dot)} />
+                            {statusCfg.label}
+                        </span>
+                        <span className={cn("text-[0.68rem] font-semibold rounded-[6px] px-[10px] py-[3px]", priorityCfg.soft)}>
+                            ↑ {priorityCfg.label}
+                        </span>
+                        {report.category_name && (
+                            <span className="text-[0.68rem] text-[#6B7280] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-[10px] py-[3px]">
+                                {report.category_name}
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Tombol edit */}
+                    {canEdit && (
+                        <button
+                            onClick={() => setEditOpen(true)}
+                            className="inline-flex items-center gap-[6px] px-4 py-[7px] rounded-xl text-[0.75rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border border-[rgba(232,84,28,0.2)] hover:bg-[#FFE8DC] transition-colors cursor-pointer shrink-0"
+                        >
+                            <Pencil size={13} strokeWidth={2} />
+                            Edit Laporan
+                        </button>
                     )}
                 </div>
 
@@ -172,30 +176,21 @@ console.log(report.image_url)
                 <p className="text-[0.9rem] text-[#374151] leading-[1.75] m-0">{report.description}</p>
 
                 {report.status === "rejected" && report.reject_reason && (
-    <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-5 py-4">
-        <p className="text-[0.68rem] font-bold text-red-400 uppercase tracking-[0.08em] m-0 mb-2">
-            ✕ Alasan penolakan
-        </p>
-        <p className="text-[0.85rem] text-red-800 m-0 leading-[1.65]">
-            {report.reject_reason}
-        </p>
-    </div>
-)}
+                    <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-5 py-4">
+                        <p className="text-[0.68rem] font-bold text-red-400 uppercase tracking-[0.08em] m-0 mb-2">✕ Alasan penolakan</p>
+                        <p className="text-[0.85rem] text-red-800 m-0 leading-[1.65]">{report.reject_reason}</p>
+                    </div>
+                )}
 
-{report.latitude && report.longitude && (
-    <div className="mt-5 overflow-hidden rounded-[14px] border border-[#F3F4F6]">
-        <iframe
-            src={`https://maps.google.com/maps?q=${report.latitude},${report.longitude}&z=15&output=embed`}
-            width="100%"
-            height="260"
-            loading="lazy"
-            className="border-0 w-full"
-        />
-    </div>
-)}
+                {report.latitude && report.longitude && (
+                    <div className="mt-5 overflow-hidden rounded-[14px] border border-[#F3F4F6]">
+                        <iframe
+                            src={`https://maps.google.com/maps?q=${report.latitude},${report.longitude}&z=15&output=embed`}
+                            width="100%" height="260" loading="lazy" className="border-0 w-full block"
+                        />
+                    </div>
+                )}
 
-
-                {/* Images */}
                 {imgs.length > 0 && (
                     <div className="mt-5">
                         <img src={imgs[0]} alt="Bukti laporan" className="w-full max-h-[360px] object-cover rounded-[14px] border border-[#F3F4F6] block" />
@@ -210,40 +205,6 @@ console.log(report.image_url)
                         )}
                     </div>
                 )}
-
-                {/* Upvote */}
-                <div className="mt-5 pt-5 border-t border-[#F9FAFB] flex items-center gap-4">
-                    <button
-                        onClick={handleUpvote}
-                        disabled={upvoting}
-                        className={cn(
-                            "inline-flex items-center gap-2 px-5 py-[10px] rounded-full text-[0.85rem] font-bold transition-all duration-200 border-[1.5px]",
-                            upvoted
-                                ? "border-[#E8541C] bg-[#FFF5EE] text-[#E8541C]"
-                                : "border-[#F0E6DC] bg-white text-gray-500 hover:border-[#E8541C] hover:text-[#E8541C] hover:bg-[#FFF5EE]",
-                            upvoting && "opacity-60 cursor-not-allowed"
-                        )}
-                    >
-                        <ArrowBigUp
-                            size={18}
-                            strokeWidth={upvoted ? 2.5 : 1.8}
-                            fill={upvoted ? "#E8541C" : "none"}
-                            className={cn("transition-all duration-200", upvoted ? "text-[#E8541C]" : "text-gray-400")}
-                        />
-                        {upvoted ? "Didukung" : "Dukung Laporan"}
-                        <span
-                            className={cn(
-                                "rounded-full px-2 py-px text-[0.75rem] font-bold transition-all duration-200",
-                                upvoted ? "bg-[#E8541C] text-white" : "bg-gray-100 text-gray-500"
-                            )}
-                        >
-                            {fmt(upvoteCount)}
-                        </span>
-                    </button>
-                    <span className="text-[0.75rem] text-[#D1D5DB]">
-                        {upvoteCount > 0 ? `${fmt(upvoteCount)} warga mendukung laporan ini` : "Jadilah yang pertama mendukung!"}
-                    </span>
-                </div>
             </div>
 
             {/* ── TINDAK LANJUT ── */}
@@ -306,9 +267,7 @@ console.log(report.image_url)
                                     placeholder={isAdmin ? "Tulis tindak lanjut resmi..." : "Tulis komentar..."}
                                     className={cn(
                                         "flex-1 rounded-xl px-4 py-[10px] text-[0.85rem] text-[#111827] outline-none border transition-colors",
-                                        isAdmin
-                                            ? "border-blue-200 bg-blue-50 focus:border-blue-500"
-                                            : "border-[#F0E6DC] bg-[#FAFAF8] focus:border-[#E8541C]"
+                                        isAdmin ? "border-blue-200 bg-blue-50 focus:border-blue-500" : "border-[#F0E6DC] bg-[#FAFAF8] focus:border-[#E8541C]"
                                     )}
                                     onKeyDown={(e) => e.key === "Enter" && handleSubmitComment()}
                                 />
@@ -316,13 +275,10 @@ console.log(report.image_url)
                                     onClick={handleSubmitComment}
                                     disabled={submitting || !newComment.trim()}
                                     className={cn(
-                                        "text-white border-0 rounded-xl px-[18px] py-[10px] text-[0.82rem] font-semibold whitespace-nowrap",
-                                        isAdmin
-                                            ? "bg-gradient-to-br from-blue-500 to-blue-800"
-                                            : "bg-gradient-to-br from-[#FF6B35] to-[#E8541C]",
+                                        "text-white border-0 rounded-xl px-[18px] py-[10px] text-[0.82rem] font-semibold whitespace-nowrap cursor-pointer",
+                                        isAdmin ? "bg-gradient-to-br from-blue-500 to-blue-800" : "bg-gradient-to-br from-[#FF6B35] to-[#E8541C]",
                                         (submitting || !newComment.trim()) && "opacity-45 cursor-not-allowed"
                                     )}
-                                    disabled={submitting || !newComment.trim()}
                                 >
                                     {submitting ? "..." : "Kirim"}
                                 </button>
@@ -347,14 +303,7 @@ console.log(report.image_url)
                         {publicComments.map((c, idx) => {
                             const isOwner = session?.user?.id === String(c.user_id);
                             return (
-                                <div
-                                    key={c.id}
-                                    className={cn(
-                                        "flex gap-3 pb-4",
-                                        idx === 0 ? "pt-0" : "pt-4",
-                                        idx < publicComments.length - 1 && "border-b border-gray-50"
-                                    )}
-                                >
+                                <div key={c.id} className={cn("flex gap-3 pb-4", idx === 0 ? "pt-0" : "pt-4", idx < publicComments.length - 1 && "border-b border-gray-50")}>
                                     <Inisial name={c.name ?? "U"} size={36} />
                                     <div className="flex-1">
                                         <div className="flex items-center justify-between mb-1">
@@ -363,10 +312,8 @@ console.log(report.image_url)
                                                 <span className="text-[0.72rem] text-[#D1D5DB]">{fmtDate(c.created_at)}</span>
                                             </div>
                                             {isOwner && (
-                                                <button
-                                                    onClick={() => handleDeleteComment(c.id)}
-                                                    className="text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 transition-colors duration-150 hover:text-[#EF4444]"
-                                                >
+                                                <button onClick={() => handleDeleteComment(c.id)}
+                                                        className="text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors">
                                                     Hapus
                                                 </button>
                                             )}
@@ -379,6 +326,14 @@ console.log(report.image_url)
                     </div>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            <EditLaporanModal
+                open={editOpen}
+                onClose={() => setEditOpen(false)}
+                report={report}
+                onSaved={handleLaporanSaved}
+            />
         </div>
     );
 }

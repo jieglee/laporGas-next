@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { motion } from "framer-motion";
 import { FileText, Loader2 } from "lucide-react";
 import ProfileHeader from "@/components/user/Profile/ProfileHeader";
 import EditProfileModal from "@/components/user/Profile/EditProfileModal";
@@ -10,7 +9,6 @@ import ReportCard from "@/components/common-ui/ReportCard";
 import { getReports, type Report } from "@/lib/reports";
 import { updateProfile } from "@/lib/users";
 import { logout } from "@/lib/auth-api";
-import EditLaporanModal from "@/components/admin/Users/profile/EditLaporanModal";
 
 export default function ProfilPage() {
     const { data: session, update: updateSession } = useSession();
@@ -21,16 +19,6 @@ export default function ProfilPage() {
     const nama = session?.user?.name ?? "Pengguna";
     const email = session?.user?.email ?? "-";
     const inisial = (nama ?? "U").split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
-
-    const [editLaporan, setEditLaporan] = useState<Report | null>(null);
-
-    const handleLaporanSaved = (updated: Report) => {
-    setReports((prev) => prev.map((r) =>
-        r.id === updated.id
-            ? { ...r, title: updated.title, description: updated.description, priority: updated.priority, edit_count: updated.edit_count }
-            : r
-    ));
-};
 
     useEffect(() => {
         async function fetchReports() {
@@ -56,7 +44,7 @@ export default function ProfilPage() {
         nama: string;
         email: string;
         password?: string;
-        avatar?: File;
+        avatar_url?: string;
     }) => {
         const updatedUser = await updateProfile({
             name: data.nama,
@@ -64,7 +52,7 @@ export default function ProfilPage() {
             ...(data.password ? { password: data.password } : {}),
         });
         await updateSession({
-            user: { ...session?.user, name: updatedUser.name, email: updatedUser.email },
+            user: { ...session?.user, name: updatedUser.name, email: updatedUser.email, image: updatedUser.avatar_url ?? session?.user?.image },
         });
     };
 
@@ -74,7 +62,7 @@ export default function ProfilPage() {
 
     return (
         <div className="px-8 pt-7 pb-[72px] max-w-[1100px] mx-auto">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="animate-fade-slide-up opacity-0 [animation-delay:0ms]">
                 <ProfileHeader
                     nama={nama}
                     email={email}
@@ -84,9 +72,9 @@ export default function ProfilPage() {
                     onEdit={() => setEditOpen(true)}
                     onLogout={async () => { await logout(); }}
                 />
-            </motion.div>
+            </div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="animate-fade-slide-up opacity-0 [animation-delay:80ms]">
                 <div className="flex items-center gap-[10px] mb-4">
                     <div className="w-8 h-8 rounded-[9px] bg-[rgba(255,107,53,0.08)] flex items-center justify-center text-[#E8541C]">
                         <FileText size={15} strokeWidth={2} />
@@ -117,21 +105,11 @@ export default function ProfilPage() {
                 ) : (
                     <div className="grid gap-[14px] grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
                         {reports.map((r, i) => (
-                            <div key={r.id} className="relative group">
-                                <ReportCard report={r} index={i} />
-                                {r.edit_count < 1 && r.status === "pending" && (
-                                    <button
-                                        onClick={() => setEditLaporan(r)}
-                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-[#f0e6dc] rounded-lg px-3 py-1.5 text-[0.7rem] font-semibold text-[#E8541C] hover:bg-[#FFF5EE] cursor-pointer z-10"
-                                    >
-                                        Edit
-                                    </button>
-                                )}
-                            </div>
+                            <ReportCard key={r.id} report={r} index={i} />
                         ))}
                     </div>
                 )}
-            </motion.div>
+            </div>
 
             <EditProfileModal
                 open={editOpen}
@@ -139,14 +117,6 @@ export default function ProfilPage() {
                 initial={{ nama, email, avatarUrl: session?.user?.image ?? null, inisial }}
                 onSave={handleSave}
             />
-
-            <EditLaporanModal
-                open={!!editLaporan}
-                onClose={() => setEditLaporan(null)}
-                report={editLaporan!}
-                onSaved={handleLaporanSaved}
-            />
-
         </div>
     );
 }
