@@ -10,6 +10,7 @@ export async function proxy(request: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     });
 
+
     const isAuth = !!token;
     const role = token?.role as string | undefined;
 
@@ -20,7 +21,7 @@ export async function proxy(request: NextRequest) {
     const dashboard: Record<string, string> = {
         user:       "/user",
         admin:      "/admin",
-        superadmin: "/superadmin",
+        superadmin: "/admin",
     };
 
     // ─────────────────────────────────────────────────

@@ -31,6 +31,7 @@ export interface Report {
     edit_count: number
     approved_by: number | null
     approved_at: string | null
+    reject_reason: string | null 
     comment_count: number   // dari JOIN comments
     upvote_count: number    // dari JOIN report_upvotes
     created_at: string
@@ -170,8 +171,15 @@ export async function deleteReport(id: number): Promise<void> {
 //   await updateReportStatus(1, "completed")
 //   await updateReportStatus(1, "rejected")
 // --------------------------------------------------------
-export async function updateReportStatus(id: number, status: ReportStatus): Promise<Report> {
-    const response = await api.patch(`/reports/${id}/status`, { status })
+export async function updateReportStatus(
+    id: number,
+    status: ReportStatus,
+    reject_reason?: string
+): Promise<Report> {
+    const response = await api.patch(`/reports/${id}/status`, {
+        status,
+        ...(reject_reason ? { reject_reason } : {})
+    })
     return response.data
 }
 

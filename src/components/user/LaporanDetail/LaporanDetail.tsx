@@ -22,8 +22,8 @@ function Inisial({ name, size = 36, official = false }: { name: string; size?: n
         <div
             className={cn(
                 "rounded-full shrink-0 flex items-center justify-center font-bold text-white",
-                official ? "bg-gradient-to-br from-blue-500 to-blue-800" : "bg-gradient-to-br from-[#FF6B35] to-[#E8541C]",
-                size === 22 ? "w-[22px] h-[22px] text-[7px]" : "w-9 h-9 text-xs"
+                official ? "bg-linear-to-br from-blue-500 to-blue-800" : "bg-linear-to-br from-[#FF6B35] to-[#E8541C]",
+                size === 22 ? "w-5.5 h-5.5 text-[7px]" : "w-9 h-9 text-xs"
             )}
         >
             {txt}
@@ -93,7 +93,7 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     };
 
     if (loading) return (
-        <div className="flex items-center justify-center min-h-[300px]">
+        <div className="flex items-center justify-center min-h-75">
             <div className="text-center">
                 <div className="w-8 h-8 border-2 border-[#f0e6dc] border-t-[#E8541C] rounded-full animate-spin mx-auto mb-3" />
                 <p className="text-[0.82rem] text-[#a8856b]">Memuat laporan...</p>
@@ -102,7 +102,7 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
     );
 
     if (error || !report) return (
-        <div className="flex items-center justify-center min-h-[300px]">
+        <div className="flex items-center justify-center min-h-75">
             <p className="text-[0.85rem] text-[#BE123C]">{error ?? "Terjadi kesalahan"}</p>
         </div>
     );
@@ -124,13 +124,13 @@ export default function LaporanDetail({ reportId }: LaporanDetailProps) {
 console.log(report.image_url)
 
     return (
-        <div className="max-w-[780px] mx-auto px-5 pt-8 pb-[80px]">
+        <div className="max-w-195 mx-auto px-5 pt-8 pb-20">
 
             {/* ── HEADER CARD ── */}
             <div className="bg-white rounded-[20px] border border-[#F3F0ED] shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(0,0,0,0.03)] px-8 py-7 mb-4">
                 {/* Badges */}
-                <div className="flex items-center gap-2 mb-[18px] flex-wrap">
-                    <span className="text-[0.68rem] font-semibold tracking-[0.06em] uppercase text-[#9CA3AF] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-[10px] py-[3px]">
+                <div className="flex items-center gap-2 mb-4.5 flex-wrap">
+                    <span className="text-[0.68rem] font-semibold tracking-[0.06em] uppercase text-[#9CA3AF] bg-[#F9FAFB] border border-[#F3F4F6] rounded-[6px] px-2.5 py-0.75">
                         #{report.id}
                     </span>
                     <span className={cn("inline-flex items-center gap-[5px] text-[0.72rem] font-semibold rounded-full px-3 py-1", statusCfg.badge)}>
@@ -170,6 +170,17 @@ console.log(report.image_url)
 
                 <p className="text-[0.62rem] font-bold tracking-[0.12em] uppercase text-[#D1D5DB] m-0 mb-[10px]">Kronologi</p>
                 <p className="text-[0.9rem] text-[#374151] leading-[1.75] m-0">{report.description}</p>
+
+                {report.status === "rejected" && report.reject_reason && (
+    <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-5 py-4">
+        <p className="text-[0.68rem] font-bold text-red-400 uppercase tracking-[0.08em] m-0 mb-2">
+            ✕ Alasan penolakan
+        </p>
+        <p className="text-[0.85rem] text-red-800 m-0 leading-[1.65]">
+            {report.reject_reason}
+        </p>
+    </div>
+)}
 
 {report.latitude && report.longitude && (
     <div className="mt-5 overflow-hidden rounded-[14px] border border-[#F3F4F6]">

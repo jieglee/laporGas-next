@@ -52,40 +52,36 @@ export default function LaporanCard({ laporan, index, onAction }: Props) {
         staggerClass(index)
       )}
     >
-      <div className="relative w-full shrink-0 aspect-video bg-gradient-to-br from-[#e0dcd8] to-[#cac6c2]">
-        <div className="absolute inset-0 flex items-center justify-center">
-          {laporan.image && (
-    <img
-        src={laporan.image}
-        alt={laporan.judul}
-        className="w-full h-[180px] object-cover rounded-xl"
-    />
-)}
-        </div>
+      {/* Thumbnail */}
+      <div className="relative w-full shrink-0 aspect-video bg-linear-to-br from-[#e0dcd8] to-[#cac6c2] overflow-hidden">
+        {laporan.image ? (
+          <img
+            src={laporan.image}
+            alt={laporan.judul}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <ImageIcon size={28} color="rgba(255,255,255,0.4)" strokeWidth={1.5} />
+          </div>
+        )}
 
-        <div
-          className={cn(
-            "absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full",
-            s.badge
-          )}
-        >
+        {/* Status — top left */}
+        <div className={cn(
+          "absolute top-[9px] left-[9px] inline-flex items-center gap-1 text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full",
+          s.badge
+        )}>
           <span className={cn("w-[5px] h-[5px] rounded-full", s.dot)} />
           {s.label}
         </div>
 
-        <div
-          className={cn(
-            "absolute top-[9px] right-[9px] text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full",
-            p.badge
-          )}
-        >
+        {/* Priority — top right */}
+        <div className={cn(
+          "absolute top-[9px] right-[9px] text-[0.58rem] font-bold tracking-[0.05em] uppercase px-[9px] py-[3px] rounded-full",
+          p.badge
+        )}>
           {p.label}
         </div>
-
-        {/* <div className="absolute bottom-[9px] right-[9px] text-[0.6rem] font-semibold bg-black/50 text-white px-2 py-[3px] rounded-full backdrop-blur-sm inline-flex items-center gap-1">
-          <ImageIcon size={9} strokeWidth={2} />
-          {laporan.fotoCount}
-        </div> */}
       </div>
 
       <div className="px-[14px] py-[13px] flex flex-col flex-1 gap-2">

@@ -10,6 +10,7 @@ import ReportCard from "@/components/common-ui/ReportCard";
 import { getReports, type Report } from "@/lib/reports";
 import { updateProfile } from "@/lib/users";
 import { logout } from "@/lib/auth-api";
+import EditLaporanModal from "@/components/admin/Users/profile/EditLaporanModal";
 
 export default function ProfilPage() {
     const { data: session, update: updateSession } = useSession();
@@ -20,6 +21,16 @@ export default function ProfilPage() {
     const nama = session?.user?.name ?? "Pengguna";
     const email = session?.user?.email ?? "-";
     const inisial = (nama ?? "U").split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
+
+    const [editLaporan, setEditLaporan] = useState<Report | null>(null);
+
+    const handleLaporanSaved = (updated: Report) => {
+    setReports((prev) => prev.map((r) =>
+        r.id === updated.id
+            ? { ...r, title: updated.title, description: updated.description, priority: updated.priority, edit_count: updated.edit_count }
+            : r
+    ));
+};
 
     useEffect(() => {
         async function fetchReports() {
@@ -106,7 +117,17 @@ export default function ProfilPage() {
                 ) : (
                     <div className="grid gap-[14px] grid-cols-[repeat(auto-fill,minmax(260px,1fr))]">
                         {reports.map((r, i) => (
-                            <ReportCard key={r.id} report={r} index={i} />
+                            <div key={r.id} className="relative group">
+                                <ReportCard report={r} index={i} />
+                                {r.edit_count < 1 && r.status === "pending" && (
+                                    <button
+                                        onClick={() => setEditLaporan(r)}
+                                        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-[#f0e6dc] rounded-lg px-3 py-1.5 text-[0.7rem] font-semibold text-[#E8541C] hover:bg-[#FFF5EE] cursor-pointer z-10"
+                                    >
+                                        Edit
+                                    </button>
+                                )}
+                            </div>
                         ))}
                     </div>
                 )}
@@ -118,6 +139,14 @@ export default function ProfilPage() {
                 initial={{ nama, email, avatarUrl: session?.user?.image ?? null, inisial }}
                 onSave={handleSave}
             />
+
+            <EditLaporanModal
+                open={!!editLaporan}
+                onClose={() => setEditLaporan(null)}
+                report={editLaporan!}
+                onSaved={handleLaporanSaved}
+            />
+
         </div>
     );
 }

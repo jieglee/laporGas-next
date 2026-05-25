@@ -13,29 +13,55 @@ import { getReports, updateReportStatus, type Report } from "@/lib/reports";
 function toAdminLaporan(r: Report): AdminLaporan {
     const namaArr = r.user_name?.split(" ") ?? ["U"];
     const inisial = namaArr.slice(0, 2).map((n: string) => n[0]).join("").toUpperCase();
+
+    // Map dari category_name (string) ke LaporanKategori
     const kategoriMap: Record<string, LaporanKategori> = {
-        "1": "infrastruktur", "2": "fasilitas-umum", "3": "kebersihan", "4": "lalu-lintas",
+        "infrastruktur":  "infrastruktur",
+        "fasilitas umum": "fasilitas-umum",
+        "fasilitas-umum": "fasilitas-umum",
+        "kebersihan":     "kebersihan",
+        "lalu lintas":    "lalu-lintas",
+        "lalu-lintas":    "lalu-lintas",
+        // fallback by id juga
+        "1": "infrastruktur",
+        "2": "fasilitas-umum",
+        "3": "kebersihan",
+        "4": "lalu-lintas",
     };
+
+    // Normalize status — handle "on progress" (spasi) jadi "on_progress"
+    const normalizeStatus = (s: string): AdminLaporanStatus => {
+        const map: Record<string, AdminLaporanStatus> = {
+            "pending":     "pending",
+            "approved":    "approved",
+            "on_progress": "on_progress",
+            "on progress": "on_progress",
+            "completed":   "completed",
+            "rejected":    "rejected",
+        };
+        return map[s] ?? "pending";
+    };
+
+    const kategoriKey = r.category_name?.toLowerCase() ?? String(r.category_id);
+
     return {
         id: String(r.id),
         judul: r.title,
         deskripsi: r.description,
-        kategori: (kategoriMap[String(r.category_id)] ?? "infrastruktur") as LaporanKategori,
-        status: r.status as AdminLaporanStatus,
-        priority: r.priority as LaporanPriority,
+        kategori: (kategoriMap[kategoriKey] ?? "infrastruktur") as LaporanKategori,
+        status: normalizeStatus(r.status),
+        priority: (r.priority ?? "medium") as LaporanPriority,
         lokasi: r.location ?? "-",
         alamat: r.location ?? "-",
-        fotoCount: r.image_url ? 1 : 0,
-        image:
-  Array.isArray(r.images) && r.images.length > 0
-    ? r.images[0]
-    : r.image_url || null,
+        fotoCount: r.images?.length || (r.image_url ? 1 : 0),
+        image: Array.isArray(r.images) && r.images.length > 0
+            ? r.images[0]
+            : r.image_url || null,
         pelapor: { nama: r.user_name ?? "Unknown", inisial, email: "-" },
         createdAt: new Date(r.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }),
-        upvote: 0,
-        komentarCount: 0,
-        koordinat: r.latitude && r.longitude ? { lat: r.latitude, lng: r.longitude } : null,
-        
+        upvote: r.upvote_count ?? 0,
+        komentarCount: r.comment_count ?? 0,
+        koordinat: r.latitude && r.longitude ? { lat: r.latitude, lng: r.longitude } : { lat: 0, lng: 0 },
     };
 }
 
@@ -73,10 +99,10 @@ export default function AdminLaporanPage() {
         if (filter.search) {
             const q = filter.search.toLowerCase();
             result = result.filter((l) =>
-                l.judul.toLowerCase().includes(q) ||
-                l.deskripsi.toLowerCase().includes(q) ||
-                l.pelapor.nama.toLowerCase().includes(q) ||
-                l.id.toLowerCase().includes(q)
+                l.judul?.toLowerCase().includes(q) ||
+                l.deskripsi?.toLowerCase().includes(q) ||
+                l.pelapor?.nama?.toLowerCase().includes(q) ||
+                l.id?.toString().toLowerCase().includes(q)
             );
         }
         if (filter.kategori !== "all") result = result.filter((l) => l.kategori === filter.kategori);
@@ -91,10 +117,10 @@ export default function AdminLaporanPage() {
         if (filter.search) {
             const q = filter.search.toLowerCase();
             base = base.filter((l) =>
-                l.judul.toLowerCase().includes(q) ||
-                l.deskripsi.toLowerCase().includes(q) ||
-                l.pelapor.nama.toLowerCase().includes(q) ||
-                l.id.toLowerCase().includes(q)
+                l.judul?.toLowerCase().includes(q) ||
+                l.deskripsi?.toLowerCase().includes(q) ||
+                l.pelapor?.nama?.toLowerCase().includes(q) ||
+                l.id?.toString().toLowerCase().includes(q)
             );
         }
         if (filter.kategori !== "all") base = base.filter((l) => l.kategori === filter.kategori);
@@ -133,16 +159,33 @@ export default function AdminLaporanPage() {
         }
     };
 
-    const handleConfirmReject = async (alasan: string) => {
-        if (!rejectFor) return;
-        try {
-            await updateReportStatus(Number(rejectFor.id), "rejected");
-            setLaporan((prev) => prev.map((l) => l.id === rejectFor.id ? { ...l, status: "rejected", rejectReason: alasan } : l));
-            setRejectFor(null);
-        } catch (err) {
-            console.error("Gagal reject laporan:", err);
-        }
-    };
+const handleConfirmReject = async (alasan: string) => {
+    if (!rejectFor) return;
+
+    try {
+        await updateReportStatus(
+            Number(rejectFor.id),
+            "rejected",
+            alasan
+        );
+
+        setLaporan((prev) =>
+            prev.map((l) =>
+                l.id === rejectFor.id
+                    ? {
+                          ...l,
+                          status: "rejected",
+                          rejectReason: alasan,
+                      }
+                    : l
+            )
+        );
+
+        setRejectFor(null);
+    } catch (err) {
+        console.error("Gagal reject laporan:", err);
+    }
+};
 
     if (loading) return (
         <div className="flex items-center justify-center h-[300px]">

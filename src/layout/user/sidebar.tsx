@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { Home, Compass, Bell, PlusSquare, User, LogOut } from "lucide-react";
+import { useUnreadNotif } from "@/hooks/UseUnreadsNotif";
 
 interface SidebarCtx {
   expanded: boolean;
@@ -31,6 +32,7 @@ export default function UserSidebar() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { expanded, setExpanded } = useSidebar();
+  const unreadNotif = useUnreadNotif()
 
   const nama = session?.user?.name ?? "Pengguna";
   const inisial = nama
@@ -94,37 +96,54 @@ export default function UserSidebar() {
 
       <nav className="flex-1 px-3 space-y-1">
         {MENUS.map((menu) => {
-          const active = isActive(menu.path);
-          const Icon = menu.icon;
-          return (
-            <Link
-              key={menu.path}
-              href={menu.path as never}
-              className={[
-                "group flex items-center gap-4 rounded-xl px-3 py-3 no-underline transition-colors duration-200",
-                active ? "bg-[#FFF5EE]" : "hover:bg-[#FAF5EF]",
-              ].join(" ")}
-            >
-              <Icon
-                size={22}
-                strokeWidth={active ? 2.2 : 1.8}
-                className={[
-                  "shrink-0 transition-transform duration-200 group-hover:scale-110",
-                  active ? "text-[#E8541C]" : "text-[#3d2817]",
-                ].join(" ")}
-              />
-              <span
-                className={[
-                  textCls,
-                  "text-[0.92rem] tracking-[-0.01em]",
-                  active ? "font-bold text-[#E8541C]" : "font-medium text-[#3d2817]",
-                ].join(" ")}
-              >
-                {menu.name}
-              </span>
-            </Link>
-          );
-        })}
+  const active = isActive(menu.path);
+  const Icon = menu.icon;
+  const isBell = menu.name === "Notifikasi";
+
+  return (
+    <Link
+      key={menu.path}
+      href={menu.path as never}
+      className={[
+        "group flex items-center gap-4 rounded-xl px-3 py-3 no-underline transition-colors duration-200",
+        active ? "bg-[#FFF5EE]" : "hover:bg-[#FAF5EF]",
+      ].join(" ")}
+    >
+      {/* Icon wrapper — Bell punya badge */}
+      <div className="relative shrink-0">
+        <Icon
+          size={22}
+          strokeWidth={active ? 2.2 : 1.8}
+          className={[
+            "transition-transform duration-200 group-hover:scale-110",
+            active ? "text-[#E8541C]" : "text-[#3d2817]",
+          ].join(" ")}
+        />
+        {isBell && unreadNotif > 0 && (
+          <span className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 px-[3px] rounded-full bg-[#FF6B35] text-white text-[0.55rem] font-bold flex items-center justify-center leading-none">
+            {unreadNotif > 9 ? "9+" : unreadNotif}
+          </span>
+        )}
+      </div>
+
+      <span
+        className={[
+          textCls,
+          "text-[0.92rem] tracking-[-0.01em]",
+          active ? "font-bold text-[#E8541C]" : "font-medium text-[#3d2817]",
+        ].join(" ")}
+      >
+        {menu.name}
+        {/* Badge teks saat sidebar expand */}
+        {isBell && unreadNotif > 0 && (
+          <span className="ml-2 inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#FF6B35] text-white text-[0.55rem] font-bold leading-none">
+            {unreadNotif > 9 ? "9+" : unreadNotif}
+          </span>
+        )}
+      </span>
+    </Link>
+  );
+})}
       </nav>
 
       <div className="border-t border-[#f5ede3] p-3 pb-[70px]">

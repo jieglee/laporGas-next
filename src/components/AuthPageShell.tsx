@@ -4,7 +4,6 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/lib/auth-api";
 import { signIn } from "next-auth/react";
-import { cn } from "@/lib/utils";
 
 interface Props {
   defaultMode?: "login" | "register";
@@ -30,7 +29,7 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
 
   const router = useRouter();
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus(null);
     setLoading(true);
@@ -40,12 +39,11 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
         if (registerPassword !== registerConfirm) {
           throw new Error("Konfirmasi kata sandi tidak cocok.");
         }
-        const res = await registerUser({
+        await registerUser({
           name: registerName,
           email: registerEmail,
           password: registerPassword,
         });
-
         setStatus({ type: "success", message: "Registrasi berhasil. Silakan login." });
         setRegisterName("");
         setRegisterEmail("");
@@ -53,56 +51,31 @@ export default function AuthPageShell({ defaultMode = "login" }: Props) {
         setRegisterConfirm("");
         setTimeout(() => switchTo("login"), 700);
       } else {
-const res = await signIn("credentials", {
-  email: loginEmail,
-  password: loginPassword,
-  redirect: false,
-});
+        const res = await signIn("credentials", {
+          email: loginEmail,
+          password: loginPassword,
+          redirect: false,  // ← INI YANG PENTING
+        });
 
-if (res?.error) {
-  throw new Error("Email atau password salah.");
-}
+        if (!res?.ok || res?.error) {
+          throw new Error("Email atau password salah.");
+        }
 
-if (!res?.ok) {
-  throw new Error("Login gagal.");
-}
+        // Fetch session untuk dapat role
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        const role = session?.user?.role;
 
-const sessionRes = await fetch("/api/auth/session");
-const session = await sessionRes.json();
+        setStatus({ type: "success", message: "Login berhasil." });
+        setLoginEmail("");
+        setLoginPassword("");
 
-setStatus({
-  type: "success",
-  message: "Login berhasil.",
-});
-
-setLoginEmail("");
-setLoginPassword("");
-
-const role = session?.user?.role;
-
-if (role === "admin" || role === "superadmin") {
-  router.replace("/admin");
-} else {
-  router.replace("/user");
-}
-
-setStatus({ type: "success", message: "Login berhasil." });
-
-setLoginEmail("");
-setLoginPassword("");
-
-if (res?.ok) {
-   const sessionRes = await fetch("/api/auth/session");
-   const session = await sessionRes.json();
-
-   const role = session?.user?.role;
-
-   if (role === "admin" || role === "superadmin") {
-      router.replace("/admin");
-   } else {
-      router.replace("/user");
-   }
-}
+        // Redirect berdasarkan role
+        if (role === "admin" || role === "superadmin") {
+          router.replace("/admin");
+        } else {
+          router.replace("/user");
+        }
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -115,21 +88,25 @@ if (res?.ok) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
       <div
-        className="relative w-full max-w-3xl h-[500px] overflow-hidden rounded-[1.125rem] border border-slate-200 bg-white shadow-lg"
+        className="relative w-full max-w-3xl overflow-hidden rounded-[1.125rem] border border-slate-200 bg-white shadow-lg"
+        style={{ height: 500 }}
       >
+        {/* Form wrapper — isi area sebelah kiri atau kanan 50% */}
         <div
-          className={cn(
-            "absolute bottom-0 top-0 w-1/2 overflow-hidden transition-all duration-[560ms] ease-[cubic-bezier(.77,0,.18,1)]",
-            isReg ? "left-1/2" : "left-0"
-          )}
+          className="absolute bottom-0 top-0 w-1/2 overflow-hidden transition-all duration-560"
+          style={{ left: isReg ? "50%" : "0%" }}
         >
+
+          {/* Strip lebar 200% berisi dua slot berdampingan */}
           <div
-            className={cn(
-              "flex h-full w-[200%] transition-transform duration-[560ms] ease-[cubic-bezier(.77,0,.18,1)]",
-              isReg ? "-translate-x-1/2" : "translate-x-0"
-            )}
+            className="flex h-full transition-transform duration-560"
+            style={{
+              transform: isReg ? "translateX(-100%)" : "translateX(0)",
+              transitionTimingFunction: "cubic-bezier(.77,0,.18,1)",
+            }}
           >
-            <div className="flex h-full w-1/2 shrink-0 items-center justify-start p-8">
+            {/* SLOT LOGIN */}
+            <div className="flex h-full shrink-0 items-center justify-start p-8" style={{ width: "100%" }}>
               <div className="w-full max-w-65 space-y-4">
                 <Tabs mode={mode} switchTo={switchTo} />
                 <div className="space-y-2">
@@ -152,7 +129,7 @@ if (res?.ok) {
                     label="Kata Sandi"
                     type="password"
                     name="password"
-                    placeholder="•••••••••"
+                    placeholder="••••••••"
                     value={loginPassword}
                     onChange={(event) => setLoginPassword(event.target.value)}
                   />
@@ -177,7 +154,7 @@ if (res?.ok) {
             </div>
 
             {/* SLOT REGISTER */}
-            <div className="flex h-full w-1/2 shrink-0 items-center justify-end p-8">
+            <div className="flex h-full shrink-0 items-center justify-end p-8" style={{ width: "100%" }}>
               <div className="w-full max-w-65 space-y-4">
                 <Tabs mode={mode} switchTo={switchTo} />
                 <div className="space-y-2 text-right">
@@ -208,7 +185,7 @@ if (res?.ok) {
                     label="Kata Sandi"
                     type="password"
                     name="password"
-                    placeholder="•••••••••"
+                    placeholder="••••••••"
                     value={registerPassword}
                     onChange={(event) => setRegisterPassword(event.target.value)}
                   />
@@ -234,12 +211,18 @@ if (res?.ok) {
 
         {/* RED SLIDING PANEL */}
         <div
-          className={cn(
-            "absolute bottom-0 top-0 z-20 flex w-1/2 flex-col justify-between overflow-hidden bg-red-700 p-10 text-white transition-all duration-[560ms] ease-[cubic-bezier(.77,0,.18,1)]",
-            isReg ? "left-0" : "left-1/2"
-          )}
+          className="absolute bottom-0 top-0 z-20 flex w-1/2 flex-col justify-between overflow-hidden bg-red-700 p-10 text-white transition-all duration-560"
+          style={{
+            left: isReg ? "0%" : "50%",
+          }}
         >
-          <div className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_28px,rgba(255,255,255,0.03)_28px,rgba(255,255,255,0.03)_56px)]" />
+          <div
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(45deg,transparent,transparent 28px,rgba(255,255,255,.03) 28px,rgba(255,255,255,.03) 56px)",
+            }}
+          />
           <div className="relative z-10">
             <p className="mb-6 text-[9px] font-bold uppercase tracking-[.22em] text-red-200/40">
               Lapor.id
@@ -261,7 +244,7 @@ if (res?.ok) {
               onClick={() => switchTo(isReg ? "login" : "register")}
               className="w-fit rounded-full border border-white/20 bg-white/10 px-5 py-1.5 text-[11px] font-medium text-white transition hover:bg-white/20"
             >
-              {isReg ? "Masuk ?" : "Daftar ?"}
+              {isReg ? "Masuk →" : "Daftar →"}
             </button>
           </div>
         </div>
