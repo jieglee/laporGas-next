@@ -73,8 +73,6 @@ export default function CTASection() {
               </svg>
             </span>
           </Link>
-
-          <span className="text-[0.65rem] text-white/25 tracking-[0.04em]">Gratis · Tanpa perlu daftar</span>
         </div>
       </div>
     </section>

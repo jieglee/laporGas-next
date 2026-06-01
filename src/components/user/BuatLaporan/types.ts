@@ -10,10 +10,10 @@ export interface FormState {
 }
 
 export const CATEGORIES = [
-  { id: "1", label: "Infrastruktur", icon: "🏗️" },
-  { id: "2", label: "Fasilitas Umum", icon: "🏛️" },
-  { id: "3", label: "Kebersihan", icon: "🧹" },
-  { id: "4", label: "Lalu Lintas", icon: "🚦" },
+  { id: "1", label: "Infrastruktur" },
+  { id: "2", label: "Fasilitas Umum" },
+  { id: "3", label: "Kebersihan" },
+  { id: "4", label: "Lalu Lintas" },
 ];
 
 export const PRIORITIES = [

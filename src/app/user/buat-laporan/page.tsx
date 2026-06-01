@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { createReport } from "@/lib/reports";
+import toast from "react-hot-toast";
 
 import TitleField from "@/components/user/BuatLaporan/TitleField";
 import DescriptionField from "@/components/user/BuatLaporan/DescriptionField";
@@ -65,7 +66,7 @@ export default function BuatLaporanPage() {
       setForm(EMPTY_FORM);
     } catch (error) {
       console.error(error);
-      alert("Gagal membuat laporan");
+      toast.error("Gagal membuat laporan");
     } finally {
       setSubmitting(false);
     }
@@ -83,9 +84,10 @@ export default function BuatLaporanPage() {
   }
 
   return (
-    <div className="px-8 pt-6 pb-20 max-w-[740px] mx-auto">
+    <div className="px-8 pt-6 pb-20 max-w-[900px] mx-auto">
+
       {/* Back */}
-      <div className="mb-5 animate-fade-slide-up opacity-0 [animation-delay:0ms]">
+      <div className="mb-5">
         <Link
           href="/user"
           className="inline-flex items-center gap-[7px] text-[0.75rem] font-semibold text-[#8a6f5e] no-underline px-[6px] py-[6px] pr-[10px] rounded-lg transition-all duration-150 hover:bg-[#fafaf8] hover:text-[#E8541C]"
@@ -95,14 +97,13 @@ export default function BuatLaporanPage() {
       </div>
 
       {/* Header */}
-      <div className="mb-7 animate-fade-slide-up opacity-0 [animation-delay:60ms]">
+      <div className="mb-7">
         <div className="flex items-start gap-[14px]">
           <div className="w-[46px] h-[46px] rounded-[13px] bg-gradient-to-br from-[#FFF5EE] to-[#FFEDE0] border-[0.5px] border-[rgba(255,107,53,0.18)] flex items-center justify-center text-[#E8541C] shrink-0">
             <FileText size={20} strokeWidth={1.8} />
           </div>
           <div>
-            <h1 className="font-sans text-[1.65rem] font-extrabold text-[#1a0e08] tracking-[-0.03em] m-0 mb-1"
-                style={{ fontFamily: "'Syne', sans-serif" }}>
+            <h1 className="font-sans text-[1.75rem] font-extrabold text-[#111827] tracking-[-0.03em] m-0 mb-1">
               Buat Laporan
             </h1>
             <p className="text-[0.82rem] text-[#a8856b] m-0">
@@ -112,39 +113,121 @@ export default function BuatLaporanPage() {
         </div>
       </div>
 
-      {/* Form card */}
-      <div className="bg-white border-[0.5px] border-[#f0e6dc] rounded-2xl overflow-hidden animate-fade-slide-up opacity-0 [animation-delay:120ms]">
-        {/* Progress bar */}
-        <div className="h-[3px] bg-[#f5ede3]">
-          <div
-            className="h-full bg-gradient-to-r from-[#FF6B35] to-[#E8541C] rounded-[3px] transition-[width] duration-400 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+      {/* ── MAIN GRID ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
+
+        {/* ── KIRI ── */}
+        <div className="flex flex-col gap-5">
+
+          {/* Card: Info laporan */}
+          <div className="bg-[#FFFCFA] border border-[#e8d5c4] rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(232,84,28,0.06)] transition-all duration-200 hover:shadow-[0_4px_24px_rgba(232,84,28,0.14)] hover:border-[#d4b8a8]">
+            <div className="h-[3px] bg-[#f5ede3]">
+              <div
+                className="h-full bg-gradient-to-r from-[#FF6B35] to-[#E8541C] rounded-[3px] transition-[width] duration-500 ease-out"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <div className="p-6 flex flex-col gap-6">
+              <div>
+                <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#c9a892] mb-4">Informasi Laporan</p>
+                <div className="flex flex-col gap-6">
+                  <TitleField value={form.title} onChange={(v) => set("title", v)} />
+                  <DescriptionField value={form.description} onChange={(v) => set("description", v)} />
+                </div>
+              </div>
+              <div className="h-px bg-[#f0e6dc]" />
+              <div>
+                <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#c9a892] mb-4">Klasifikasi</p>
+                <div className="flex flex-col gap-6">
+                  <CategoryField value={form.category_id} onChange={(v) => set("category_id", v)} />
+                  <PriorityField value={form.priority} onChange={(v) => set("priority", v)} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card: Lokasi */}
+          <div className="bg-[#FAFCFF] border border-[#dde8f5] rounded-2xl p-6 shadow-[0_2px_12px_rgba(59,130,246,0.06)] transition-all duration-200 hover:shadow-[0_4px_24px_rgba(59,130,246,0.14)] hover:border-[#b8d0eb]">
+            <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#93b4d4] mb-4">Lokasi Kejadian</p>
+            <LocationPicker
+              lat={form.latitude}
+              lng={form.longitude}
+              address={form.location}
+              onChange={(lat, lng, addr) =>
+                setForm((prev) => ({ ...prev, latitude: lat, longitude: lng, location: addr }))
+              }
+            />
+          </div>
+
+          {/* Card: Foto */}
+          <div className="bg-[#FAFAF8] border border-[#e8d5c4] rounded-2xl p-6 shadow-[0_2px_12px_rgba(232,84,28,0.04)] transition-all duration-200 hover:shadow-[0_4px_24px_rgba(232,84,28,0.12)] hover:border-[#d4b8a8]">
+            <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#c9a892] mb-4">Foto Bukti</p>
+            <ImageUpload files={form.images} onChange={(files) => set("images", files)} maxFiles={5} />
+          </div>
         </div>
 
-        {/* Fields */}
-        <div className="p-7 flex flex-col gap-6">
-          <TitleField value={form.title} onChange={(v) => set("title", v)} />
-          <DescriptionField value={form.description} onChange={(v) => set("description", v)} />
-          <CategoryField value={form.category_id} onChange={(v) => set("category_id", v)} />
-          <PriorityField value={form.priority} onChange={(v) => set("priority", v)} />
+        {/* ── KANAN ── */}
+        <div className="flex flex-col gap-4">
 
-          <div className="border-t-[0.5px] border-[#f5ede3]" />
+          {/* Summary card */}
+          <div className="bg-white border-[1.5px] border-[#e8d5c4] rounded-2xl p-5 sticky top-6 shadow-[0_4px_20px_rgba(232,84,28,0.08)] transition-all duration-200 hover:shadow-[0_8px_32px_rgba(232,84,28,0.16)] hover:border-[#d4b8a8]">
+            <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#c9a892] mb-4">Kelengkapan Form</p>
 
-          <LocationPicker
-            lat={form.latitude}
-            lng={form.longitude}
-            address={form.location}
-            onChange={(lat, lng, addr) =>
-              setForm((prev) => ({ ...prev, latitude: lat, longitude: lng, location: addr }))
-            }
-          />
+            <div className="flex flex-col gap-3 mb-5">
+              {[
+                { label: "Judul laporan", done: form.title.trim().length >= 5 },
+                { label: "Deskripsi", done: form.description.trim().length >= 20 },
+                { label: "Kategori", done: !!form.category_id },
+                { label: "Prioritas", done: !!form.priority },
+                { label: "Lokasi", done: !!form.latitude },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center gap-2.5">
+                  <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 ${
+                    item.done ? "bg-emerald-500" : "bg-[#f0e6dc]"
+                  }`}>
+                    {item.done && (
+                      <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
+                        <path d="M1 3l2 2 4-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    )}
+                  </div>
+                  <span className={`text-[0.78rem] transition-colors duration-200 ${
+                    item.done ? "text-[#1a0e08] font-medium" : "text-[#a8856b]"
+                  }`}>
+                    {item.label}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-          <div className="border-t-[0.5px] border-[#f5ede3]" />
+            <div className="h-1.5 bg-[#f5ede3] rounded-full mb-2">
+              <div
+                className="h-full bg-gradient-to-r from-[#FF6B35] to-[#E8541C] rounded-full transition-[width] duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="text-[0.7rem] text-[#a8856b] mb-5">{progress}% lengkap</p>
 
-          <ImageUpload files={form.images} onChange={(files) => set("images", files)} maxFiles={5} />
+            <SubmitButton form={form} submitting={submitting} onSubmit={handleSubmit} />
+          </div>
 
-          <SubmitButton form={form} submitting={submitting} onSubmit={handleSubmit} />
+          {/* Tips card */}
+          <div className="bg-[#FFF5EE] border border-[rgba(255,107,53,0.2)] rounded-2xl p-5 shadow-[0_2px_12px_rgba(232,84,28,0.06)] transition-all duration-200 hover:shadow-[0_4px_24px_rgba(232,84,28,0.14)] hover:border-[rgba(255,107,53,0.4)]">
+            <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#E8541C] mb-3">Tips Laporan Efektif</p>
+            <ul className="flex flex-col gap-2 m-0 p-0 list-none">
+              {[
+                "Tulis judul yang singkat dan jelas",
+                "Sertakan foto sebagai bukti kuat",
+                "Tandai lokasi kejadian di peta",
+                "Jelaskan kronologi dengan detail",
+              ].map((tip) => (
+                <li key={tip} className="flex items-start gap-2 text-[0.75rem] text-[#6b5546]">
+                  <span className="text-[#E8541C] mt-0.5 shrink-0">•</span>
+                  {tip}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </div>
