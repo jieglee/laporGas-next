@@ -109,7 +109,7 @@ export default function LaporanDetail({ reportId }: Props) {
         : report.image_url ? [report.image_url] : [];
 
     return (
-        <div className="w-full max-w-[1400px] mx-auto px-8 py-8">
+        <div className="w-full max-w-[900px] mx-auto px-8 pt-8 pb-16 overflow-x-hidden">
 
             {/* ── TOP: Judul + Badge ── */}
             <div className="mb-6">
@@ -161,7 +161,7 @@ export default function LaporanDetail({ reportId }: Props) {
             </div>
 
             {/* ── MAIN GRID: Kiri (konten) + Kanan (maps) ── */}
-            <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-5 mb-5">
 
                 {/* ── KIRI ── */}
                 <div className="flex flex-col gap-5">
@@ -169,12 +169,12 @@ export default function LaporanDetail({ reportId }: Props) {
                     {/* Foto */}
                     {imgs.length > 0 && (
                         <div className="bg-white rounded-2xl border border-[#f0e6dc] overflow-hidden">
-                            <div className="relative w-full aspect-[16/9] bg-[#f5f0eb]">
+                            <div className="relative w-full aspect-video bg-[#f5f0eb] overflow-hidden">
                                 <img
                                     src={imgs[activeImg]}
                                     alt="Foto laporan"
-                                    className="w-full h-full object-cover"
-                                />
+                                    className="absolute inset-0 w-full h-full object-cover"
+                                />  
                                 {imgs.length > 1 && (
                                     <div className="absolute bottom-3 left-3 right-3 flex gap-2 justify-center">
                                         {imgs.map((_, i) => (
@@ -205,8 +205,8 @@ export default function LaporanDetail({ reportId }: Props) {
 
                     {/* Deskripsi */}
                     <div className="bg-white rounded-2xl border border-[#f0e6dc] px-6 py-5">
-                        <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#D1D5DB] m-0 mb-3">Kronologi</p>
-                        <p className="text-[0.9rem] text-[#374151] leading-[1.8] m-0">{report.description}</p>
+                        <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-3">Kronologi</p>
+                        <p className="text-[0.9rem] text-[#374151] leading-[1.8] m-0 break-all">{report.description}</p>
 
                         {report.status === "rejected" && report.reject_reason && (
                             <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-5 py-4">
@@ -228,7 +228,7 @@ export default function LaporanDetail({ reportId }: Props) {
                             <iframe
                                 src={`https://maps.google.com/maps?q=${report.latitude},${report.longitude}&z=15&output=embed`}
                                 width="100%"
-                                height="260"
+                                height="240"
                                 loading="lazy"
                                 className="border-0 w-full block"
                             />
@@ -252,7 +252,7 @@ export default function LaporanDetail({ reportId }: Props) {
 
                     {/* Stats card */}
                     <div className="bg-white rounded-2xl border border-[#f0e6dc] px-5 py-4">
-                        <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#D1D5DB] m-0 mb-3">Statistik</p>
+                        <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-3">Statistik</p>
                         <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
                                 <span className="flex items-center gap-2 text-[0.8rem] text-[#6b5546]">
@@ -307,7 +307,7 @@ export default function LaporanDetail({ reportId }: Props) {
 
             {/* ── KOMENTAR PUBLIK ── */}
             <div className="bg-white rounded-2xl border border-[#f0e6dc] px-6 py-5">
-                <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#D1D5DB] m-0 mb-1">Diskusi</p>
+                <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-1">Diskusi</p>
                 <p className="text-[0.88rem] font-bold text-[#111827] m-0 mb-5">
                     Komentar Publik <span className="text-[#9CA3AF] font-normal">({publicComments.length})</span>
                 </p>
