@@ -1,90 +1,170 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { getReports } from "@/lib/reports";
 
 export default function HeroSection() {
+  const [stats, setStats] = useState({ total: 0, rate: 0 });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const reports = await getReports();
+        const total = reports.length;
+        const completed = reports.filter((r) => r.status === "completed").length;
+        const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+        setStats({ total, rate });
+      } catch { }
+    }
+    fetchStats();
+  }, []);
+
   return (
-    <section
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[100px] pb-[100px] bg-[#FFFCFA] font-sans"
-    >
-      <div
-        className="absolute inset-0 pointer-events-none bg-[length:64px_64px] [background-image:linear-gradient(rgba(255,107,53,0.045)_1px,transparent_1px),linear-gradient(90deg,rgba(255,107,53,0.045)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]"
-      />
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-[#FFFCFA] font-sans px-8 md:px-16">
+      {/* Background grid */}
+      <div className="absolute inset-0 pointer-events-none bg-[length:64px_64px] [background-image:linear-gradient(rgba(255,107,53,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(255,107,53,0.035)_1px,transparent_1px)] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black_20%,transparent_75%)]" />
 
-      {[460, 700].map((size) => (
-        <div
-          key={size}
-          className={[
-            "absolute pointer-events-none rounded-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2",
-            size === 460 ? "w-[460px] h-[460px] border border-[rgba(255,107,53,0.08)]" : "w-[700px] h-[700px] border border-[rgba(255,107,53,0.05)]",
-          ].join(" ")}
-        />
-      ))}
+      {/* Glow kiri */}
+      <div className="absolute pointer-events-none left-0 top-1/3 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(255,107,53,0.1)_0%,transparent_70%)] -translate-x-1/2" />
+      {/* Glow kanan */}
+      <div className="absolute pointer-events-none right-0 top-1/4 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(232,84,28,0.08)_0%,transparent_70%)] translate-x-1/3" />
 
-      <div className="absolute pointer-events-none rounded-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 w-[1000px] h-[1000px] bg-[radial-gradient(circle,rgba(255,107,53,0.14)_0%,rgba(255,107,53,0.05)_35%,transparent_70%)]" />
+      {/* Floating dots */}
+      <div className="absolute rounded-full top-[20%] left-[8%] w-2 h-2 bg-[#FF6B35] opacity-40 animate-float-y" />
+      <div className="absolute rounded-full top-[35%] left-[42%] w-[5px] h-[5px] bg-[#E8541C] opacity-30 animate-float-xy [animation-duration:11s]" />
+      <div className="absolute rounded-full bottom-[28%] left-[15%] w-[6px] h-[6px] bg-[#FF8C42] opacity-35 animate-float-y-rev" />
+      <div className="absolute rounded-full top-[25%] right-[8%] w-[5px] h-[5px] border border-[#FF6B35] opacity-40 animate-float-xy-rev" />
 
-      <div className="absolute pointer-events-none rounded-full blur-[20px] top-[20%] right-[8%] w-[360px] h-[360px] bg-[radial-gradient(circle,rgba(232,84,28,0.12)_0%,transparent_70%)]" />
-      <div className="absolute pointer-events-none rounded-full blur-[20px] bottom-[12%] left-[6%] w-[320px] h-[320px] bg-[radial-gradient(circle,rgba(255,140,66,0.10)_0%,transparent_70%)]" />
+      <div className="relative w-full max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center py-24">
 
-      <div className="absolute rounded-full pointer-events-none top-[16%] left-[14%] w-[7px] h-[7px] bg-[#FF6B35] opacity-40 shadow-[0_0_12px_rgba(255,107,53,0.5)] animate-float-y" />
-      <div className="absolute rounded-full pointer-events-none top-[28%] right-[16%] w-[5px] h-[5px] bg-[#E8541C] opacity-55 shadow-[0_0_8px_rgba(232,84,28,0.4)] animate-float-xy [animation-duration:11s]" />
-      <div className="absolute rounded-full pointer-events-none bottom-[24%] left-[20%] w-[6px] h-[6px] bg-[#FF8C42] opacity-45 shadow-[0_0_10px_rgba(255,140,66,0.4)] animate-float-y-rev" />
-      <div className="absolute rounded-full pointer-events-none bottom-[30%] right-[22%] w-[9px] h-[9px] border-[1.5px] border-[#FF6B35] bg-transparent opacity-55 animate-float-xy-rev" />
-      <div className="absolute rounded-full pointer-events-none top-1/2 left-[8%] w-1 h-1 bg-[#FF6B35] opacity-40 animate-float-y [animation-duration:14s]" />
-      <div className="absolute rounded-full pointer-events-none top-[60%] right-[10%] w-[3px] h-[3px] bg-[#E8541C] opacity-50 animate-float-xy [animation-duration:12s]" />
+        {/* ── KIRI ── */}
+        <div className="flex flex-col gap-6 animate-fade-slide-up-hero">
 
-      <div className="relative text-center max-w-[800px] px-6 animate-fade-slide-up-hero">
-        <h1 className="font-bold leading-none tracking-[-0.04em] text-[#140804] m-0 text-[clamp(2.8rem,8vw,5.5rem)]">
-          Suara warga,
-          <br />
-          <span className="relative inline-block italic font-medium bg-gradient-to-br from-[#FF6B35] via-[#E8541C] to-[#C0392B] bg-clip-text text-transparent">
-            didengar
-            <span
-              aria-hidden
-              className="absolute rounded-full -z-10 blur-[2px] left-[4%] right-[4%] bottom-1 h-2 bg-gradient-to-r from-[rgba(255,107,53,0.15)] to-[rgba(232,84,28,0.1)]"
-            />
-          </span>{" "}
-          seketika.
-        </h1>
-
-        <div className="flex items-center justify-center gap-[14px] my-10">
-          <span className="h-px w-12 opacity-40 bg-gradient-to-r from-transparent to-[#FF6B35]" />
-          <span className="w-[6px] h-[6px] rotate-45 bg-gradient-to-br from-[#FF6B35] to-[#E8541C]" />
-          <span className="h-px w-12 opacity-40 bg-gradient-to-l from-transparent to-[#FF6B35]" />
-        </div>
-
-        <p className="text-[16px] font-normal leading-[1.75] text-[#6b5546] mx-auto max-w-[560px] m-0">
-          Laporkan masalah di sekitarmu, pantau prosesnya, dan lihat hasilnya.{" "}
-          <strong className="text-[#140804] font-semibold">Tanpa birokrasi, tanpa drama.</strong>
-        </p>
-
-        <div className="inline-flex items-center gap-7 mt-[52px] flex-wrap justify-center">
-          <Link
-            href="/auth/login"
-            className="relative inline-flex items-center gap-[14px] py-4 pl-8 pr-[18px] text-white text-[14px] font-medium rounded-full no-underline transition-all duration-[250ms] hover:-translate-y-[2px] bg-gradient-to-br from-[#FF6B35] to-[#E8541C] shadow-[0_10px_30px_rgba(255,107,53,0.28),0_4px_10px_rgba(232,84,28,0.18),inset_0_1px_0_rgba(255,255,255,0.2)] hover:shadow-[0_14px_36px_rgba(255,107,53,0.36),0_6px_14px_rgba(232,84,28,0.22),inset_0_1px_0_rgba(255,255,255,0.2)]"
-          >
-            Mulai melapor
-            <span className="w-[30px] h-[30px] rounded-full bg-white/20 inline-flex items-center justify-center">
-              <svg width="12" height="12" viewBox="0 0 10 10" fill="none">
-                <path
-                  d="M1 5h7M5.5 1.5L9 5l-3.5 3.5"
-                  stroke="white"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+          {/* Heading */}
+          <h1 className="font-extrabold leading-[1.05] tracking-[-0.04em] text-[#140804] m-0 text-[clamp(2.4rem,5vw,3.8rem)]">
+            Suara warga,{" "}
+            <span className="bg-gradient-to-br from-[#FF6B35] via-[#E8541C] to-[#C0392B] bg-clip-text text-transparent italic font-extrabold">
+              didengar
             </span>
-          </Link>
+            <br />
+            seketika.
+          </h1>
 
-          <Link
-            href="#how-it-works"
-            className="inline-flex items-center gap-[6px] text-[14px] text-[#8a6a52] font-medium no-underline pb-1 border-b border-[rgba(255,107,53,0.3)] transition-all duration-200 hover:text-[#E8541C] hover:border-[#E8541C]"
-          >
-            Cara kerja platform →
-          </Link>
+          {/* Subtitle */}
+          <p className="text-[0.95rem] leading-[1.75] text-[#6b5546] max-w-[440px] m-0">
+            Platform integrasi layanan publik untuk menyampaikan aspirasi dan pengaduan secara langsung ke instansi terkait dengan pelacakan{" "}
+            <strong className="text-[#140804] font-semibold">real-time.</strong>
+          </p>
+
+          {/* Buttons */}
+          <div className="flex items-center gap-4 flex-wrap mt-2">
+            <Link
+              href="/user/buat-laporan"
+              className="inline-flex items-center gap-3 py-[14px] pl-7 pr-5 text-white text-[0.875rem] font-semibold rounded-full no-underline transition-all duration-[250ms] hover:-translate-y-[2px] bg-gradient-to-br from-[#FF6B35] to-[#E8201A] shadow-[0_8px_24px_rgba(255,107,53,0.3)] hover:shadow-[0_12px_32px_rgba(255,107,53,0.45)]"
+            >
+              Mulai melapor
+              <span className="w-7 h-7 rounded-full bg-white/20 inline-flex items-center justify-center">
+                <svg width="11" height="11" viewBox="0 0 10 10" fill="none">
+                  <path d="M1 5h7M5.5 1.5L9 5l-3.5 3.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </span>
+            </Link>
+
+            <Link
+              href="#stats"
+              className="inline-flex items-center gap-2 text-[0.875rem] text-[#8a6a52] font-medium no-underline pb-[2px] border-b border-[rgba(232,84,28,0.3)] transition-all duration-200 hover:text-[#E8541C] hover:border-[#E8541C]"
+            >
+              Lihat statistik →
+            </Link>
+          </div>
+
+          {/* Social proof */}
+          <div className="flex items-center gap-3 mt-1">
+            <div className="flex -space-x-2">
+              {["#FF6B35", "#E8541C", "#C0392B"].map((color, i) => (
+                <div
+                  key={i}
+                  className="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center text-white text-[0.6rem] font-bold"
+                  style={{ backgroundColor: color, zIndex: 3 - i }}
+                >
+                  {["A", "B", "C"][i]}
+                </div>
+              ))}
+            </div>
+            <p className="text-[0.78rem] text-[#a8856b] m-0">
+              <strong className="text-[#1a0e08] font-semibold">{stats.total.toLocaleString()}+</strong> laporan telah masuk
+            </p>
+          </div>
         </div>
+
+        {/* ── KANAN ── */}
+        <div className="relative flex items-center justify-center">
+          {/* Foto floating */}
+          <div
+            className="relative w-full max-w-[460px] rounded-[24px] overflow-hidden shadow-[0_32px_80px_rgba(232,84,28,0.15),0_8px_24px_rgba(0,0,0,0.08)]"
+            style={{ animation: "heroFloat 6s ease-in-out infinite" }}
+          >
+            {/* Overlay gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[rgba(26,14,8,0.3)] to-transparent z-[1] pointer-events-none" />
+
+            <img
+              src="assets/images/indonesia-street.jpg"
+              alt="Kota Indonesia"
+              className="w-full h-full object-cover"
+              style={{ aspectRatio: "4/3" }}
+            />
+
+            {/* Label di atas foto */}
+            <div className="absolute top-4 left-4 z-[2]">
+              <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-[rgba(232,84,28,0.15)] shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[0.65rem] font-semibold text-[#1a0e08]">Live · Depok & sekitar</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Floating stat card kanan bawah */}
+          <div
+            className="absolute -bottom-4 -right-4 bg-white border border-[#f0e6dc] rounded-2xl px-5 py-4 shadow-[0_8px_32px_rgba(232,84,28,0.12)] z-10 min-w-[140px]"
+            style={{ animation: "heroFloat 6s ease-in-out infinite 1.5s" }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#FF6B35] to-[#E8201A] flex items-center justify-center">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <span className="text-[0.65rem] text-[#a8856b] font-medium">Diselesaikan</span>
+            </div>
+            <p className="text-[1.6rem] font-extrabold text-transparent bg-gradient-to-br from-[#FF6B35] to-[#E8201A] bg-clip-text leading-none m-0">
+              {stats.rate}%
+            </p>
+            <p className="text-[0.65rem] text-[#a8856b] m-0 mt-1">Tingkat penyelesaian</p>
+          </div>
+
+          {/* Floating stat card kiri atas */}
+          <div
+            className="absolute -top-4 -left-4 bg-white border border-[#f0e6dc] rounded-2xl px-4 py-3 shadow-[0_8px_32px_rgba(232,84,28,0.1)] z-10"
+            style={{ animation: "heroFloat 6s ease-in-out infinite 3s" }}
+          >
+            <p className="text-[0.62rem] text-[#a8856b] font-medium m-0 mb-1">Laporan aktif</p>
+            <p className="text-[1.1rem] font-extrabold text-[#1a0e08] leading-none m-0">
+              {stats.total}
+              <span className="text-[#E8541C]">+</span>
+            </p>
+          </div>
+        </div>
+
       </div>
+
+      {/* CSS untuk float animation */}
+      <style>{`
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-16px); }
+        }
+      `}</style>
     </section>
   );
 }

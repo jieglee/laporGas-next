@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { getReports } from "@/lib/reports";
 import { getComments } from "@/lib/comments";
 
@@ -16,8 +17,12 @@ const STATUS_NOTIF = ["approved", "on_progress", "completed", "rejected"];
 
 export function useUnreadNotif() {
     const { data: session } = useSession();
+    const pathname = usePathname();
     const [unread, setUnread] = useState(0);
     const userId = session?.user?.id ?? "";
+
+    // Kalau lagi di halaman notifikasi, badge langsung hilang
+    const isOnNotifPage = pathname === "/user/notifikasi";
 
     useEffect(() => {
         if (!userId) return;
@@ -57,5 +62,6 @@ export function useUnreadNotif() {
         count();
     }, [userId]);
 
-    return unread;
+    // Sembunyiin badge saat di halaman notifikasi
+    return isOnNotifPage ? 0 : unread;
 }

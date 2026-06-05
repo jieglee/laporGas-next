@@ -170,7 +170,7 @@ export default function BuatLaporanPage() {
         <div className="flex flex-col gap-4">
 
           {/* Summary card */}
-          <div className="bg-white border-[1.5px] border-[#e8d5c4] rounded-2xl p-5 sticky top-6 shadow-[0_4px_20px_rgba(232,84,28,0.08)] transition-all duration-200 hover:shadow-[0_8px_32px_rgba(232,84,28,0.16)] hover:border-[#d4b8a8]">
+          <div className="bg-white border-[1.5px] border-[#e8d5c4] rounded-2xl p-5 y  shadow-[0_4px_20px_rgba(232,84,28,0.08)] transition-all duration-200 hover:shadow-[0_8px_32px_rgba(232,84,28,0.16)] hover:border-[#d4b8a8]">
             <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#c9a892] mb-4">Kelengkapan Form</p>
 
             <div className="flex flex-col gap-3 mb-5">
