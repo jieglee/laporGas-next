@@ -44,11 +44,11 @@ function MapBounds({ reports }: { reports: Report[] }) {
         const valid = reports.filter((r) => r.latitude && r.longitude);
         if (valid.length === 0) return;
         if (valid.length === 1) {
-            map.setView([valid[0].latitude!, valid[0].longitude!], 13);
+            map.setView([valid[0].latitude!, valid[0].longitude!], 14);
             return;
         }
         const bounds = L.latLngBounds(valid.map((r) => [r.latitude!, r.longitude!]));
-        map.fitBounds(bounds, { padding: [40, 40] });
+        map.fitBounds(bounds, { padding: [60, 60], maxZoom: 13 });
     }, [reports]);
     return null;
 }
@@ -58,8 +58,8 @@ interface Props { reports: Report[]; }
 export default function ExploreMap({ reports }: Props) {
     const validReports = reports.filter((r) => r.latitude && r.longitude);
     const center: [number, number] = validReports.length > 0
-        ? [validReports[0].latitude!, validReports[0].longitude!]
-        : [-6.2, 106.8];
+    ? [validReports[0].latitude!, validReports[0].longitude!]
+    : [-6.4, 106.8];
 
     return (
         <div className="relative rounded-2xl overflow-hidden border border-[#f0e6dc] shadow-sm">

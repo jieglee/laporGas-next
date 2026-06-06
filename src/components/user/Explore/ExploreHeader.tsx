@@ -40,7 +40,7 @@ export default function ExploreHeader({ search, onSearch, kategori, onKategori, 
         </div>
         <input
           type="text"
-          placeholder="Cari laporan, lokasi, atau pelapor..."
+          placeholder="Filter laporan di peta..."
           value={search}
           onChange={(e) => onSearch(e.target.value)}
           className="w-full h-[46px] bg-white border-[0.5px] border-[#f0e6dc] rounded-xl pl-[42px] pr-[42px] text-[0.88rem] text-[#1a0e08] outline-none transition-all duration-200 focus:border-[rgba(255,107,53,0.5)] focus:shadow-[0_0_0_3px_rgba(255,107,53,0.06)] placeholder:text-[#c9a892] font-[inherit]"
