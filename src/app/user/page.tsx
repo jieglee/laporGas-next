@@ -7,7 +7,6 @@ import CategorySection from "@/components/user/Home/CategorySection";
 import TrendingSection from "@/components/user/Home/Trendingsection";
 import NearbySection from "@/components/user/Home/NearbySection";
 import LaporanSelesaiSection from "@/components/landing/Laporanselesaisection";
-import CtaSection from "@/components/user/Home/Ctasection";
 import { getReports, type Report } from "@/lib/reports";
 
 export default function UserHomePage() {
@@ -54,9 +53,7 @@ export default function UserHomePage() {
                     <TrendingSection reports={trendingReports} />
                 </>
             )}
-
             <LaporanSelesaiSection />
-            <CtaSection />
         </div>
     );
 }
