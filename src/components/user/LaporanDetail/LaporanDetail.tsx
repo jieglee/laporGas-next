@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import { Pencil, MapPin, Calendar, User, Tag, ArrowBigUp, MessageCircle, Trash2, Building2 } from "lucide-react";
-import { getReportById, type Report } from "@/lib/reports";
+import { Pencil, MapPin, Calendar, User, ArrowBigUp, MessageCircle, Trash2, Building2 } from "lucide-react";
+import { getReportById, getUpvoteStatus, toggleUpvote, type Report } from "@/lib/reports";
 import { getComments, createComment, deleteComment, type Comment } from "@/lib/comments";
 import { STATUS_CFG, PRIORITY_CFG } from "@/constants/report-config";
 import { cn } from "@/lib/utils";
@@ -44,6 +44,10 @@ export default function LaporanDetail({ reportId }: Props) {
     const [submitting, setSubmitting] = useState(false);
     const [editOpen, setEditOpen] = useState(false);
     const [activeImg, setActiveImg] = useState(0);
+    const [upvoted, setUpvoted] = useState(false);
+    const [upvoteCount, setUpvoteCount] = useState(0);
+    const [upvoteLoading, setUpvoteLoading] = useState(false);
+    const commentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -59,6 +63,38 @@ export default function LaporanDetail({ reportId }: Props) {
         }
         fetchData();
     }, [reportId]);
+
+    useEffect(() => {
+        if (!report) return;
+        getUpvoteStatus(report.id)
+            .then(({ upvote_count, upvoted: isUpvoted }) => {
+                setUpvoteCount(upvote_count);
+                setUpvoted(isUpvoted);
+            })
+            .catch(() => {});
+    }, [report?.id]);
+
+    const handleUpvote = async () => {
+        if (!session) { window.location.href = "/auth/login"; return; }
+        if (upvoteLoading || !report) return;
+        try {
+            setUpvoteLoading(true);
+            setUpvoted((prev) => !prev);
+            setUpvoteCount((prev) => upvoted ? prev - 1 : prev + 1);
+            const result = await toggleUpvote(report.id);
+            setUpvoted(result.upvoted);
+            setUpvoteCount(result.upvote_count);
+        } catch {
+            setUpvoted((prev) => !prev);
+            setUpvoteCount((prev) => upvoted ? prev + 1 : prev - 1);
+        } finally {
+            setUpvoteLoading(false);
+        }
+    };
+
+    const scrollToComment = () => {
+        commentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    };
 
     const handleSubmitComment = async () => {
         if (!newComment.trim() || !report) return;
@@ -103,15 +139,12 @@ export default function LaporanDetail({ reportId }: Props) {
     const publicComments = comments.filter((c) => c.type === "public");
     const isOwner = session?.user?.id === String(report.user_id);
     const canEdit = isOwner && report.status === "pending" && (report.edit_count ?? 0) < 1;
-
-    const imgs = Array.isArray(report.images)
-        ? report.images
-        : report.image_url ? [report.image_url] : [];
+    const imgs = Array.isArray(report.images) ? report.images : report.image_url ? [report.image_url] : [];
 
     return (
         <div className="w-full max-w-[900px] mx-auto px-8 pt-8 pb-16 overflow-x-hidden">
 
-            {/* ── TOP: Judul + Badge ── */}
+            {/* TOP */}
             <div className="mb-6">
                 <div className="flex items-center gap-2 flex-wrap mb-3">
                     <span className="text-[0.65rem] font-semibold tracking-[0.06em] uppercase text-[#9CA3AF] bg-[#F9FAFB] border border-[#F3F4F6] rounded-md px-2 py-[3px]">
@@ -141,48 +174,30 @@ export default function LaporanDetail({ reportId }: Props) {
                     {report.title}
                 </h1>
 
-                {/* Meta row */}
                 <div className="flex items-center gap-4 flex-wrap text-[0.78rem] text-[#9CA3AF]">
-                    <span className="flex items-center gap-1.5">
-                        <User size={13} strokeWidth={1.8} />
-                        {report.user_name ?? "Anonim"}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                        <Calendar size={13} strokeWidth={1.8} />
-                        {fmtDate(report.created_at)}
-                    </span>
+                    <span className="flex items-center gap-1.5"><User size={13} strokeWidth={1.8} />{report.user_name ?? "Anonim"}</span>
+                    <span className="flex items-center gap-1.5"><Calendar size={13} strokeWidth={1.8} />{fmtDate(report.created_at)}</span>
                     {report.location && (
-                        <span className="flex items-center gap-1.5">
-                            <MapPin size={13} strokeWidth={1.8} />
-                            {report.location}
-                        </span>
+                        <span className="flex items-center gap-1.5"><MapPin size={13} strokeWidth={1.8} />{report.location}</span>
                     )}
                 </div>
             </div>
 
-            {/* ── MAIN GRID: Kiri (konten) + Kanan (maps) ── */}
+            {/* MAIN GRID */}
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-5 mb-5">
 
-                {/* ── KIRI ── */}
+                {/* KIRI */}
                 <div className="flex flex-col gap-5">
-
-                    {/* Foto */}
                     {imgs.length > 0 && (
                         <div className="bg-white rounded-2xl border border-[#f0e6dc] overflow-hidden">
                             <div className="relative w-full aspect-video bg-[#f5f0eb] overflow-hidden">
-                                <img
-                                    src={imgs[activeImg]}
-                                    alt="Foto laporan"
-                                    className="absolute inset-0 w-full h-full object-cover"
-                                />  
+                                <img src={imgs[activeImg]} alt="Foto laporan" className="absolute inset-0 w-full h-full object-cover" />
                                 {imgs.length > 1 && (
                                     <div className="absolute bottom-3 left-3 right-3 flex gap-2 justify-center">
                                         {imgs.map((_, i) => (
                                             <button key={i} onClick={() => setActiveImg(i)}
-                                                className={cn(
-                                                    "w-2 h-2 rounded-full transition-all border-0 cursor-pointer",
-                                                    i === activeImg ? "bg-white scale-125" : "bg-white/50"
-                                                )} />
+                                                className={cn("w-2 h-2 rounded-full transition-all border-0 cursor-pointer",
+                                                    i === activeImg ? "bg-white scale-125" : "bg-white/50")} />
                                         ))}
                                     </div>
                                 )}
@@ -191,10 +206,8 @@ export default function LaporanDetail({ reportId }: Props) {
                                 <div className="flex gap-2 p-3 overflow-x-auto">
                                     {imgs.map((url, i) => (
                                         <button key={i} onClick={() => setActiveImg(i)}
-                                            className={cn(
-                                                "w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 cursor-pointer transition-all p-0",
-                                                i === activeImg ? "border-[#E8541C]" : "border-transparent opacity-60 hover:opacity-100"
-                                            )}>
+                                            className={cn("w-16 h-16 shrink-0 rounded-lg overflow-hidden border-2 cursor-pointer transition-all p-0",
+                                                i === activeImg ? "border-[#E8541C]" : "border-transparent opacity-60 hover:opacity-100")}>
                                             <img src={url} alt="" className="w-full h-full object-cover" />
                                         </button>
                                     ))}
@@ -203,11 +216,9 @@ export default function LaporanDetail({ reportId }: Props) {
                         </div>
                     )}
 
-                    {/* Deskripsi */}
                     <div className="bg-white rounded-2xl border border-[#f0e6dc] px-6 py-5">
                         <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-3">Kronologi</p>
                         <p className="text-[0.9rem] text-[#374151] leading-[1.8] m-0 break-all">{report.description}</p>
-
                         {report.status === "rejected" && report.reject_reason && (
                             <div className="mt-4 bg-red-50 border border-red-100 rounded-xl px-5 py-4">
                                 <p className="text-[0.65rem] font-bold text-red-400 uppercase tracking-[0.08em] m-0 mb-2">✕ Alasan penolakan</p>
@@ -217,7 +228,7 @@ export default function LaporanDetail({ reportId }: Props) {
                     </div>
                 </div>
 
-                {/* ── KANAN: Maps ── */}
+                {/* KANAN */}
                 <div className="flex flex-col gap-4">
                     {report.latitude && report.longitude ? (
                         <div className="bg-white rounded-2xl border border-[#f0e6dc] overflow-hidden">
@@ -227,9 +238,7 @@ export default function LaporanDetail({ reportId }: Props) {
                             </div>
                             <iframe
                                 src={`https://maps.google.com/maps?q=${report.latitude},${report.longitude}&z=15&output=embed`}
-                                width="100%"
-                                height="240"
-                                loading="lazy"
+                                width="100%" height="240" loading="lazy"
                                 className="border-0 w-full block"
                             />
                             {report.location && (
@@ -253,25 +262,48 @@ export default function LaporanDetail({ reportId }: Props) {
                     {/* Stats card */}
                     <div className="bg-white rounded-2xl border border-[#f0e6dc] px-5 py-4">
                         <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-3">Statistik</p>
-                        <div className="flex flex-col gap-3">
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-[0.8rem] text-[#6b5546]">
-                                    <ArrowBigUp size={15} strokeWidth={1.8} /> Dukungan
+                        <div className="flex flex-col gap-2">
+                            <button
+                                onClick={handleUpvote}
+                                disabled={upvoteLoading}
+                                className={cn(
+                                    "flex items-center justify-between w-full px-3 py-2.5 rounded-xl border transition-all duration-200 cursor-pointer",
+                                    upvoted
+                                        ? "bg-gradient-to-br from-[#FF6B35] to-[#E8201A] border-transparent text-white shadow-[0_4px_12px_rgba(232,84,28,0.3)]"
+                                        : "bg-[#fafaf8] border-[#f0e6dc] text-[#6b5546] hover:border-[rgba(232,84,28,0.3)] hover:bg-[#FFF5EE]",
+                                    upvoteLoading && "opacity-60 cursor-not-allowed"
+                                )}
+                            >
+                                <span className="flex items-center gap-2 text-[0.8rem] font-semibold">
+                                    <ArrowBigUp size={17} strokeWidth={1.8} className={upvoted ? "fill-white" : ""} />
+                                    {upvoted ? "Didukung" : "Dukung"}
                                 </span>
-                                <span className="text-[0.8rem] font-bold text-[#1a0e08]">{report.upvote_count ?? 0}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="flex items-center gap-2 text-[0.8rem] text-[#6b5546]">
-                                    <MessageCircle size={14} strokeWidth={1.8} /> Komentar
+                                <span className={cn(
+                                    "text-[0.8rem] font-bold px-2 py-0.5 rounded-lg",
+                                    upvoted ? "bg-white/20 text-white" : "bg-[#f0e6dc] text-[#1a0e08]"
+                                )}>
+                                    {upvoteCount}
                                 </span>
-                                <span className="text-[0.8rem] font-bold text-[#1a0e08]">{comments.length}</span>
-                            </div>
+                            </button>
+
+                            <button
+                                onClick={scrollToComment}
+                                className="flex items-center justify-between w-full px-3 py-2.5 rounded-xl border border-[#f0e6dc] bg-[#fafaf8] text-[#6b5546] hover:border-[rgba(232,84,28,0.3)] hover:bg-[#FFF5EE] transition-all duration-200 cursor-pointer"
+                            >
+                                <span className="flex items-center gap-2 text-[0.8rem] font-semibold">
+                                    <MessageCircle size={15} strokeWidth={1.8} />
+                                    Komentar
+                                </span>
+                                <span className="text-[0.8rem] font-bold bg-[#f0e6dc] text-[#1a0e08] px-2 py-0.5 rounded-lg">
+                                    {comments.length}
+                                </span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* ── TINDAK LANJUT ── */}
+            {/* TINDAK LANJUT */}
             {officialComments.length > 0 && (
                 <div className="bg-white rounded-2xl border border-[#DBEAFE] px-6 py-5 mb-5">
                     <div className="flex items-center gap-3 mb-4">
@@ -305,8 +337,8 @@ export default function LaporanDetail({ reportId }: Props) {
                 </div>
             )}
 
-            {/* ── KOMENTAR PUBLIK ── */}
-            <div className="bg-white rounded-2xl border border-[#f0e6dc] px-6 py-5">
+            {/* KOMENTAR PUBLIK */}
+            <div ref={commentRef} className="bg-white rounded-2xl border border-[#f0e6dc] px-6 py-5">
                 <p className="text-[0.6rem] font-bold tracking-[0.12em] uppercase text-[#fa6d1b] m-0 mb-1">Diskusi</p>
                 <p className="text-[0.88rem] font-bold text-[#111827] m-0 mb-5">
                     Komentar Publik <span className="text-[#9CA3AF] font-normal">({publicComments.length})</span>
@@ -328,7 +360,7 @@ export default function LaporanDetail({ reportId }: Props) {
                                     placeholder={isAdmin ? "Tulis tindak lanjut resmi..." : "Tulis komentar..."}
                                     onKeyDown={(e) => e.key === "Enter" && handleSubmitComment()}
                                     className={cn(
-                                        "flex-1 rounded-xl px-4 py-[10px] text-[0.85rem] text-[#111827] outline-none border transition-colors",
+                                        "flex-1 rounded-xl px-4 py-[10px] text-[0.85rem] text-[#111827] outline-none border transition-colors font-[inherit]",
                                         isAdmin
                                             ? "border-blue-200 bg-blue-50 focus:border-blue-500"
                                             : "border-[#f0e6dc] bg-[#fafaf8] focus:border-[#E8541C]"
