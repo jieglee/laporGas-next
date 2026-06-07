@@ -114,14 +114,6 @@ export default function HeroSection() {
               className="w-full h-full object-cover"
               style={{ aspectRatio: "4/3" }}
             />
-
-            {/* Label di atas foto */}
-            <div className="absolute top-4 left-4 z-[2]">
-              <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full border border-[rgba(232,84,28,0.15)] shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[0.65rem] font-semibold text-[#1a0e08]">Live · Depok & sekitar</span>
-              </div>
-            </div>
           </div>
 
           {/* Floating stat card kanan bawah */}
