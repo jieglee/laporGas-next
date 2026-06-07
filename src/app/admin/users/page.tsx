@@ -40,7 +40,7 @@ function ConfirmDelete({ open, onConfirm, onCancel, loading, message }: {
                         </AlertDialog.Cancel>
                         <AlertDialog.Action asChild>
                             <button onClick={onConfirm} disabled={loading}
-                                    className="flex-1 rounded-xl bg-red-500 py-2.5 text-[0.82rem] font-bold text-white transition hover:bg-red-600 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
+                                className="flex-1 rounded-xl bg-red-500 py-2.5 text-[0.82rem] font-bold text-white transition hover:bg-red-600 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2">
                                 {loading && <Loader2 size={13} className="animate-spin" />}
                                 Hapus
                             </button>
@@ -95,10 +95,10 @@ function AddUserModal({ open, onClose, onAdded, defaultRole }: {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-5 backdrop-blur-sm transition-all duration-200"
-             style={{ background: visible ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0)" }} onClick={onClose}>
+            style={{ background: visible ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0)" }} onClick={onClose}>
             <div className="w-full max-w-[440px] overflow-hidden rounded-[20px] bg-white shadow-2xl transition-all duration-[250ms]"
-                 style={{ opacity: visible ? 1 : 0, transform: visible ? "scale(1) translateY(0)" : "scale(0.96) translateY(12px)", transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
-                 onClick={(e) => e.stopPropagation()}>
+                style={{ opacity: visible ? 1 : 0, transform: visible ? "scale(1) translateY(0)" : "scale(0.96) translateY(12px)", transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+                onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between border-b border-[#f5ede3] px-6 py-5">
                     <div>
                         <h2 className="text-[1.05rem] font-extrabold text-[#1a0e08] tracking-[-0.02em] m-0">
@@ -114,20 +114,20 @@ function AddUserModal({ open, onClose, onAdded, defaultRole }: {
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Nama lengkap</label>
                         <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nama lengkap"
-                               className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                     </div>
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Email</label>
                         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@domain.com"
-                               className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                     </div>
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Password</label>
                         <div className="relative">
                             <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Min. 6 karakter"
-                                   className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 pr-11 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                                className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 pr-11 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                             <button type="button" onClick={() => setShowPw(!showPw)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8856b] bg-transparent border-0 cursor-pointer">
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8856b] bg-transparent border-0 cursor-pointer">
                                 {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                             </button>
                         </div>
@@ -138,7 +138,7 @@ function AddUserModal({ open, onClose, onAdded, defaultRole }: {
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Role</label>
                         <select value={role} onChange={(e) => setRole(e.target.value as UserRole)}
-                                className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35] cursor-pointer">
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35] cursor-pointer">
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
                             <option value="superadmin">Superadmin</option>
@@ -151,7 +151,7 @@ function AddUserModal({ open, onClose, onAdded, defaultRole }: {
                         Batal
                     </button>
                     <button onClick={handleSubmit} disabled={loading || !name.trim() || !email.trim() || password.length < 6}
-                            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#E8541C] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#E8541C] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         {loading && <Loader2 size={14} className="animate-spin" />}
                         {loading ? "Menyimpan..." : "Tambah"}
                     </button>
@@ -220,10 +220,10 @@ function EditUserModal({ user, onClose, onSaved }: {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-5 backdrop-blur-sm transition-all duration-200"
-             style={{ background: visible ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0)" }} onClick={onClose}>
+            style={{ background: visible ? "rgba(0,0,0,0.5)" : "rgba(0,0,0,0)" }} onClick={onClose}>
             <div className="w-full max-w-[440px] overflow-hidden rounded-[20px] bg-white shadow-2xl transition-all duration-[250ms]"
-                 style={{ opacity: visible ? 1 : 0, transform: visible ? "scale(1) translateY(0)" : "scale(0.96) translateY(12px)", transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
-                 onClick={(e) => e.stopPropagation()}>
+                style={{ opacity: visible ? 1 : 0, transform: visible ? "scale(1) translateY(0)" : "scale(0.96) translateY(12px)", transitionTimingFunction: "cubic-bezier(0.22,1,0.36,1)" }}
+                onClick={(e) => e.stopPropagation()}>
                 <div className="flex items-center justify-between border-b border-[#f5ede3] px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-[#FFF5EE] flex items-center justify-center">
@@ -242,17 +242,17 @@ function EditUserModal({ user, onClose, onSaved }: {
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Nama lengkap</label>
                         <input type="text" value={name} onChange={(e) => setName(e.target.value)}
-                               className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                     </div>
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Email</label>
                         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
-                               className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                     </div>
                     <div>
                         <label className="mb-[6px] block text-[0.72rem] font-bold text-[#3d2817]">Role</label>
                         <select value={role} onChange={(e) => setRole(e.target.value as UserRole)}
-                                className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35] cursor-pointer">
+                            className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35] cursor-pointer">
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
                             <option value="superadmin">Superadmin</option>
@@ -265,9 +265,9 @@ function EditUserModal({ user, onClose, onSaved }: {
                         </label>
                         <div className="relative">
                             <input type={showPw ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••"
-                                   className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 pr-11 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
+                                className="w-full rounded-[10px] border border-[#f0e6dc] bg-[#fafaf8] px-4 py-3 pr-11 text-[0.85rem] text-[#1a0e08] outline-none transition focus:border-[#FF6B35]" />
                             <button type="button" onClick={() => setShowPw(!showPw)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8856b] bg-transparent border-0 cursor-pointer">
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#a8856b] bg-transparent border-0 cursor-pointer">
                                 {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
                             </button>
                         </div>
@@ -282,7 +282,7 @@ function EditUserModal({ user, onClose, onSaved }: {
                         Batal
                     </button>
                     <button onClick={handleSubmit} disabled={loading || !name.trim() || !email.trim()}
-                            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#E8541C] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                        className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#FF6B35] to-[#E8541C] px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:-translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
                         {loading && <Loader2 size={14} className="animate-spin" />}
                         {loading ? "Menyimpan..." : "Simpan"}
                     </button>
@@ -298,8 +298,8 @@ function UserRow({ user, onDelete, onEdit, deletingId }: {
 }) {
     const inisial = user.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
     const roleColor = {
-        user:       "from-slate-400 to-slate-500",
-        admin:      "from-orange-400 to-orange-500",
+        user: "from-slate-400 to-slate-500",
+        admin: "from-orange-400 to-orange-500",
         superadmin: "from-red-400 to-red-600",
     }[user.role];
 
@@ -319,17 +319,17 @@ function UserRow({ user, onDelete, onEdit, deletingId }: {
                 <span className={cn(
                     "text-[0.6rem] font-bold uppercase tracking-[0.06em] px-2 py-[3px] rounded-full border",
                     user.role === "superadmin" ? "bg-red-50 text-red-600 border-red-200" :
-                    user.role === "admin" ? "bg-orange-50 text-orange-500 border-orange-200" :
-                    "bg-slate-50 text-slate-500 border-slate-200"
+                        user.role === "admin" ? "bg-orange-50 text-orange-500 border-orange-200" :
+                            "bg-slate-50 text-slate-500 border-slate-200"
                 )}>
                     {user.role}
                 </span>
                 <button onClick={() => onEdit(user)}
-                        className="w-7 h-7 rounded-lg bg-transparent border-0 flex items-center justify-center text-[#d4b89e] hover:text-[#E8541C] hover:bg-[#FFF5EE] transition-all cursor-pointer opacity-0 group-hover:opacity-100">
+                    className="w-7 h-7 rounded-lg bg-transparent border-0 flex items-center justify-center text-[#d4b89e] hover:text-[#E8541C] hover:bg-[#FFF5EE] transition-all cursor-pointer opacity-0 group-hover:opacity-100">
                     <Pencil size={12} />
                 </button>
                 <button onClick={() => onDelete(user.id)} disabled={deletingId === user.id}
-                        className="w-7 h-7 rounded-lg bg-transparent border-0 flex items-center justify-center text-[#d4b89e] hover:text-red-500 hover:bg-red-50 transition-all cursor-pointer disabled:opacity-50 opacity-0 group-hover:opacity-100">
+                    className="w-7 h-7 rounded-lg bg-transparent border-0 flex items-center justify-center text-[#d4b89e] hover:text-red-500 hover:bg-red-50 transition-all cursor-pointer disabled:opacity-50 opacity-0 group-hover:opacity-100">
                     {deletingId === user.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
                 </button>
             </div>
@@ -355,18 +355,22 @@ export default function UsersPage() {
     useEffect(() => { fetchUsers(); }, []);
 
     async function handleDelete(id: number) {
-    if (!confirm("Yakin ingin menghapus user ini?")) return;
-    try {
-        setDeletingId(id);
-        await deleteUser(id);
-        setUsers((prev) => prev.filter((u) => u.id !== id));
-        toast.success("User berhasil dihapus");
-    } catch {
-        toast.error("Gagal menghapus user");
-    } finally {
-        setDeletingId(null);
+        const target = users.find((u) => u.id === id);
+        const label = target?.role === "user" ? "user" : "admin";
+
+        if (!confirm(`Yakin ingin menghapus ${label} ini?`)) return;
+        try {
+            setDeletingId(id);
+            await deleteUser(id);
+            setUsers((prev) => prev.filter((u) => u.id !== id));
+            toast.success(`${label.charAt(0).toUpperCase() + label.slice(1)} berhasil dihapus`);
+        } catch {
+            toast.error(`Gagal menghapus ${label}`);
+        } finally {
+            setDeletingId(null);
+        }
     }
-}
+
 
     const filtered = useMemo(() => {
         const q = search.toLowerCase().trim();
@@ -410,7 +414,7 @@ export default function UsersPage() {
             <div className="flex items-center gap-3 bg-white border-[0.5px] border-[#f0e6dc] rounded-[10px] px-4 h-[42px] mb-6">
                 <Search size={15} className="text-[#a8856b] shrink-0" />
                 <input type="text" placeholder="Cari nama atau email..." value={search} onChange={(e) => setSearch(e.target.value)}
-                       className="flex-1 border-0 outline-none text-[0.85rem] text-[#1a0e08] bg-transparent" />
+                    className="flex-1 border-0 outline-none text-[0.85rem] text-[#1a0e08] bg-transparent" />
                 {search && (
                     <button onClick={() => setSearch("")} className="text-[#a8856b] bg-transparent border-0 cursor-pointer p-0">
                         <X size={14} />
@@ -438,7 +442,7 @@ export default function UsersPage() {
                                 </span>
                             </div>
                             <button onClick={() => setAddModal("user")}
-                                    className="inline-flex items-center gap-1 text-[0.72rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border border-[rgba(255,107,53,0.2)] rounded-lg px-3 py-[6px] cursor-pointer hover:bg-[#FFE8DC] transition-colors">
+                                className="inline-flex items-center gap-1 text-[0.72rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border border-[rgba(255,107,53,0.2)] rounded-lg px-3 py-[6px] cursor-pointer hover:bg-[#FFE8DC] transition-colors">
                                 <Plus size={12} /> Tambah
                             </button>
                         </div>
@@ -464,7 +468,7 @@ export default function UsersPage() {
                                 </span>
                             </div>
                             <button onClick={() => setAddModal("admin")}
-                                    className="inline-flex items-center gap-1 text-[0.72rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border border-[rgba(255,107,53,0.2)] rounded-lg px-3 py-[6px] cursor-pointer hover:bg-[#FFE8DC] transition-colors">
+                                className="inline-flex items-center gap-1 text-[0.72rem] font-semibold text-[#E8541C] bg-[#FFF5EE] border border-[rgba(255,107,53,0.2)] rounded-lg px-3 py-[6px] cursor-pointer hover:bg-[#FFE8DC] transition-colors">
                                 <Plus size={12} /> Tambah
                             </button>
                         </div>
@@ -482,10 +486,10 @@ export default function UsersPage() {
             )}
 
             <AddUserModal open={!!addModal} onClose={() => setAddModal(null)}
-                          onAdded={(user) => setUsers((prev) => [...prev, user])} defaultRole={addModal ?? "user"} />
+                onAdded={(user) => setUsers((prev) => [...prev, user])} defaultRole={addModal ?? "user"} />
 
             <EditUserModal user={editUser} onClose={() => setEditUser(null)}
-                           onSaved={(updated) => setUsers((prev) => prev.map((u) => u.id === updated.id ? updated : u))} />
+                onSaved={(updated) => setUsers((prev) => prev.map((u) => u.id === updated.id ? updated : u))} />
         </div>
     );
 }

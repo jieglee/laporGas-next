@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -25,11 +25,11 @@ function createCustomIcon(color: string) {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-    pending:     "#F59E0B",
-    approved:    "#3B82F6",
+    pending: "#F59E0B",
+    approved: "#3B82F6",
     on_progress: "#8B5CF6",
-    completed:   "#10B981",
-    rejected:    "#EF4444",
+    completed: "#10B981",
+    rejected: "#EF4444",
 };
 
 function fmtDate(dateStr: string) {
@@ -53,13 +53,16 @@ function MapBounds({ reports }: { reports: Report[] }) {
     return null;
 }
 
+
+
 interface Props { reports: Report[]; }
 
 export default function ExploreMap({ reports }: Props) {
     const validReports = reports.filter((r) => r.latitude && r.longitude);
     const center: [number, number] = validReports.length > 0
-    ? [validReports[0].latitude!, validReports[0].longitude!]
-    : [-6.4, 106.8];
+        ? [validReports[0].latitude!, validReports[0].longitude!]
+        : [-6.4, 106.8];
+        const mapRef = useRef<L.Map | null>(null);
 
     return (
         <div className="relative rounded-2xl overflow-hidden border border-[#f0e6dc] shadow-sm">
@@ -96,6 +99,10 @@ export default function ExploreMap({ reports }: Props) {
                 zoom={11}
                 style={{ height: "600px", width: "100%" }}
                 zoomControl={false}
+                ref={mapRef}
+                whenReady={() => {
+                    // pastiin map ready sebelum interaksi
+                }}
             >
                 <TileLayer
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
