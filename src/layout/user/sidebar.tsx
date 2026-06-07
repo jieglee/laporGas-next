@@ -22,7 +22,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 
 const MENUS = [
   { name: "Beranda", icon: Home, path: "/user" },
-  { name: "Explore Maps", icon: Compass, path: "/user/explore" },
+  { name: "Explore", icon: Compass, path: "/user/explore" },
   { name: "Notifikasi", icon: Bell, path: "/user/notifikasi" },
   { name: "Buat Laporan", icon: PlusSquare, path: "/user/buat-laporan" },
   { name: "Profil", icon: User, path: "/user/profil" },
