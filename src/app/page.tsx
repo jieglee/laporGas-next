@@ -8,7 +8,7 @@ import StatsBar from "../components/landing/StatsBar";
 import HowItWorks from "../components/landing/HowItWorks";
 import LaporanSelesaiSection from "../components/landing/Laporanselesaisection";
 import Footer from "../components/landing/Footer";
-import GeoMapSection from "@/components/landing/GeoMapSection";
+import GeoMapSection from "../components/landing/GeoMapSection";
 
 export default function Home() {
     const [showSplash, setShowSplash] = useState(true);
