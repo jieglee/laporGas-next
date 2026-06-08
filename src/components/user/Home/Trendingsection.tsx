@@ -41,7 +41,7 @@ export default function TrendingSection({ reports }: TrendingSectionProps) {
             </header>
 
             <div className="overflow-hidden rounded-2xl border border-[#f0e6dc] bg-white">
-                {reports.map((report, idx) => {
+                {reports.slice(0, 3).map((report, idx) => {
                     const s = STATUS_CFG[report.status] ?? { label: report.status, bg: "bg-[#fafaf8]", text: "text-[#a8856b]" };
                     return (
                         <Link
