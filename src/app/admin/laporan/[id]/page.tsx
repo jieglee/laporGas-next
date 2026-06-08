@@ -51,6 +51,9 @@ export default function AdminLaporanDetailPage() {
     const [newComment, setNewComment] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [activeImg, setActiveImg] = useState(0);
+    const [replyTo, setReplyTo] = useState<{ id: number; name: string } | null>(null);
+    const [replyText, setReplyText] = useState("");
+    const [submittingReply, setSubmittingReply] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -101,6 +104,28 @@ export default function AdminLaporanDetailPage() {
             await deleteComment(commentId);
             setComments((prev) => prev.filter((c) => c.id !== commentId));
         } catch (err) { console.error(err); }
+    };
+
+    const handleSubmitReply = async (parentId: number) => {
+        if (!replyText.trim() || !report) return;
+        try {
+            setSubmittingReply(true);
+            const comment = await createComment({
+                report_id: report.id,
+                comment: replyText,
+                parent_id: parentId,
+            });
+            setComments((prev) =>
+                prev.map((c) =>
+                    c.id === parentId
+                        ? { ...c, replies: [...(c.replies ?? []), comment] }
+                        : c
+                )
+            );
+            setReplyText("");
+            setReplyTo(null);
+        } catch (err) { console.error(err); }
+        finally { setSubmittingReply(false); }
     };
 
     if (loading) return (
@@ -419,21 +444,82 @@ export default function AdminLaporanDetailPage() {
                 ) : (
                     <div className="flex flex-col divide-y divide-[#f5f5f5]">
                         {publicComments.map((c) => (
-                            <div key={c.id} className="flex gap-3 py-4 first:pt-0">
-                                <Avatar name={c.name ?? "U"} />
-                                <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-[0.82rem] font-bold text-[#111827]">{c.name ?? "Anonim"}</span>
-                                            <span className="text-[0.7rem] text-[#D1D5DB]">{fmtDate(c.created_at)}</span>
+                            <div key={c.id} className="py-4 first:pt-0">
+                                {/* Komentar utama */}
+                                <div className="flex gap-3">
+                                    <Avatar name={c.name ?? "U"} />
+                                    <div className="flex-1">
+                                        <div className="flex items-center justify-between mb-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[0.82rem] font-bold text-[#111827]">{c.name ?? "Anonim"}</span>
+                                                <span className="text-[0.7rem] text-[#D1D5DB]">{fmtDate(c.created_at)}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    onClick={() => setReplyTo(replyTo?.id === c.id ? null : { id: c.id, name: c.name })}
+                                                    className="text-[0.7rem] font-semibold text-[#a8856b] bg-transparent border-0 cursor-pointer p-0 hover:text-[#E8541C] transition-colors"
+                                                >
+                                                    {replyTo?.id === c.id ? "Batal" : "Balas"}
+                                                </button>
+                                                <button onClick={() => handleDeleteComment(c.id)}
+                                                    className="text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors">
+                                                    Hapus
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button onClick={() => handleDeleteComment(c.id)}
-                                            className="text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors">
-                                            Hapus
-                                        </button>
+                                        <p className="text-[0.85rem] text-[#374151] leading-[1.65] m-0">{c.comment}</p>
+
+                                        {/* Input Reply */}
+                                        {replyTo?.id === c.id && (
+                                            <div className="flex gap-2 mt-3">
+                                                <input
+                                                    value={replyText}
+                                                    onChange={(e) => setReplyText(e.target.value)}
+                                                    placeholder={`Balas ${c.name} sebagai admin...`}
+                                                    onKeyDown={(e) => e.key === "Enter" && handleSubmitReply(c.id)}
+                                                    autoFocus
+                                                    className="flex-1 rounded-xl px-3 py-[8px] text-[0.82rem] text-[#111827] outline-none border border-[#BFDBFE] bg-[#F0F9FF] focus:border-blue-400 font-[inherit]"
+                                                />
+                                                <button
+                                                    onClick={() => handleSubmitReply(c.id)}
+                                                    disabled={submittingReply || !replyText.trim()}
+                                                    className="bg-gradient-to-br from-blue-500 to-blue-700 text-white border-0 rounded-xl px-4 py-[8px] text-[0.78rem] font-semibold cursor-pointer disabled:opacity-40"
+                                                >
+                                                    {submittingReply ? "..." : "Kirim"}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
-                                    <p className="text-[0.85rem] text-[#374151] leading-[1.65] m-0">{c.comment}</p>
                                 </div>
+
+                                {/* Replies */}
+                                {(c.replies ?? []).length > 0 && (
+                                    <div className="ml-12 mt-3 flex flex-col gap-3 border-l-2 border-[#f0e6dc] pl-4">
+                                        {(c.replies ?? []).map((reply) => (
+                                            <div key={reply.id} className="flex gap-2.5">
+                                                <Avatar name={reply.name ?? "U"} size="sm" official={reply.type === "official"} />
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between mb-0.5">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[0.78rem] font-bold text-[#111827]">{reply.name ?? "Anonim"}</span>
+                                                            {reply.type === "official" && (
+                                                                <span className="text-[0.6rem] font-bold bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE] px-2 py-[1px] rounded-full">INSTANSI</span>
+                                                            )}
+                                                            <span className="text-[0.65rem] text-[#D1D5DB]">{fmtDate(reply.created_at)}</span>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => handleDeleteComment(reply.id)}
+                                                            className="text-[0.65rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors"
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                    </div>
+                                                    <p className="text-[0.82rem] text-[#374151] leading-[1.65] m-0">{reply.comment}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

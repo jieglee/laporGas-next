@@ -48,6 +48,9 @@ export default function LaporanDetail({ reportId }: Props) {
     const [upvoteCount, setUpvoteCount] = useState(0);
     const [upvoteLoading, setUpvoteLoading] = useState(false);
     const commentRef = useRef<HTMLDivElement>(null);
+    const [replyTo, setReplyTo] = useState<{ id: number; name: string } | null>(null);
+    const [replyText, setReplyText] = useState("");
+    const [submittingReply, setSubmittingReply] = useState(false);
 
     useEffect(() => {
         async function fetchData() {
@@ -71,7 +74,7 @@ export default function LaporanDetail({ reportId }: Props) {
                 setUpvoteCount(upvote_count);
                 setUpvoted(isUpvoted);
             })
-            .catch(() => {});
+            .catch(() => { });
     }, [report?.id]);
 
     const handleUpvote = async () => {
@@ -113,6 +116,29 @@ export default function LaporanDetail({ reportId }: Props) {
             setComments((prev) => prev.filter((c) => c.id !== commentId));
         } catch (err) { console.error(err); }
     };
+
+    const handleSubmitReply = async (parentId: number) => {
+    if (!replyText.trim() || !report) return;
+    try {
+        setSubmittingReply(true);
+        const comment = await createComment({
+            report_id: report.id,
+            comment: replyText,
+            parent_id: parentId,
+        });
+        // Tambah reply ke parent comment
+        setComments((prev) =>
+            prev.map((c) =>
+                c.id === parentId
+                    ? { ...c, replies: [...(c.replies ?? []), comment] }
+                    : c
+            )
+        );
+        setReplyText("");
+        setReplyTo(null);
+    } catch (err) { console.error(err); }
+    finally { setSubmittingReply(false); }
+};
 
     const handleLaporanSaved = (updated: Report) => {
         setReport((prev) => prev ? { ...prev, ...updated } : prev);
@@ -389,33 +415,98 @@ export default function LaporanDetail({ reportId }: Props) {
                 )}
 
                 {publicComments.length === 0 ? (
-                    <div className="text-center py-10">
-                        <p className="text-[0.82rem] text-[#D1D5DB] m-0">Belum ada komentar. Jadilah yang pertama!</p>
+    <div className="text-center py-10">
+        <p className="text-[0.82rem] text-[#D1D5DB] m-0">Belum ada komentar. Jadilah yang pertama!</p>
+    </div>
+) : (
+    <div className="flex flex-col divide-y divide-[#f5f5f5]">
+        {publicComments.map((c) => (
+            <div key={c.id} className="py-4 first:pt-0">
+                {/* Komentar utama */}
+                <div className="flex gap-3">
+                    <Avatar name={c.name ?? "U"} />
+                    <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[0.82rem] font-bold text-[#111827]">{c.name ?? "Anonim"}</span>
+                                <span className="text-[0.7rem] text-[#D1D5DB]">{fmtDate(c.created_at)}</span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                                {session && (
+                                    <button
+                                        onClick={() => setReplyTo(replyTo?.id === c.id ? null : { id: c.id, name: c.name })}
+                                        className="text-[0.7rem] font-semibold text-[#a8856b] bg-transparent border-0 cursor-pointer p-0 hover:text-[#E8541C] transition-colors"
+                                    >
+                                        {replyTo?.id === c.id ? "Batal" : "Balas"}
+                                    </button>
+                                )}
+                                {session?.user?.id === String(c.user_id) && (
+                                    <button onClick={() => handleDeleteComment(c.id)}
+                                        className="flex items-center gap-1 text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors">
+                                        <Trash2 size={11} strokeWidth={1.8} /> Hapus
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                        <p className="text-[0.85rem] text-[#374151] leading-[1.65] m-0">{c.comment}</p>
+
+                        {/* Input Reply */}
+                        {replyTo?.id === c.id && (
+                            <div className="flex gap-2 mt-3">
+                                <input
+                                    value={replyText}
+                                    onChange={(e) => setReplyText(e.target.value)}
+                                    placeholder={`Balas ${c.name}...`}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSubmitReply(c.id)}
+                                    autoFocus
+                                    className="flex-1 rounded-xl px-3 py-[8px] text-[0.82rem] text-[#111827] outline-none border border-[#f0e6dc] bg-[#fafaf8] focus:border-[#E8541C] font-[inherit]"
+                                />
+                                <button
+                                    onClick={() => handleSubmitReply(c.id)}
+                                    disabled={submittingReply || !replyText.trim()}
+                                    className="bg-gradient-to-br from-[#FF6B35] to-[#E8541C] text-white border-0 rounded-xl px-4 py-[8px] text-[0.78rem] font-semibold cursor-pointer disabled:opacity-40"
+                                >
+                                    {submittingReply ? "..." : "Kirim"}
+                                </button>
+                            </div>
+                        )}
                     </div>
-                ) : (
-                    <div className="flex flex-col divide-y divide-[#f5f5f5]">
-                        {publicComments.map((c) => (
-                            <div key={c.id} className="flex gap-3 py-4 first:pt-0">
-                                <Avatar name={c.name ?? "U"} />
+                </div>
+
+                {/* Replies */}
+                {(c.replies ?? []).length > 0 && (
+                    <div className="ml-12 mt-3 flex flex-col gap-3 border-l-2 border-[#f0e6dc] pl-4">
+                        {(c.replies ?? []).map((reply) => (
+                            <div key={reply.id} className="flex gap-2.5">
+                                <Avatar name={reply.name ?? "U"} size="sm" official={reply.type === "official"} />
                                 <div className="flex-1">
-                                    <div className="flex items-center justify-between mb-1">
+                                    <div className="flex items-center justify-between mb-0.5">
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[0.82rem] font-bold text-[#111827]">{c.name ?? "Anonim"}</span>
-                                            <span className="text-[0.7rem] text-[#D1D5DB]">{fmtDate(c.created_at)}</span>
+                                            <span className="text-[0.78rem] font-bold text-[#111827]">{reply.name ?? "Anonim"}</span>
+                                            {reply.type === "official" && (
+                                                <span className="text-[0.6rem] font-bold bg-[#DBEAFE] text-[#1D4ED8] border border-[#BFDBFE] px-2 py-[1px] rounded-full">INSTANSI</span>
+                                            )}
+                                            <span className="text-[0.65rem] text-[#D1D5DB]">{fmtDate(reply.created_at)}</span>
                                         </div>
-                                        {session?.user?.id === String(c.user_id) && (
-                                            <button onClick={() => handleDeleteComment(c.id)}
-                                                className="flex items-center gap-1 text-[0.7rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors">
-                                                <Trash2 size={11} strokeWidth={1.8} /> Hapus
+                                        {session?.user?.id === String(reply.user_id) && (
+                                            <button
+                                                onClick={() => handleDeleteComment(reply.id)}
+                                                className="flex items-center gap-1 text-[0.65rem] text-[#FCA5A5] bg-transparent border-0 cursor-pointer p-0 hover:text-[#EF4444] transition-colors"
+                                            >
+                                                <Trash2 size={10} strokeWidth={1.8} /> Hapus
                                             </button>
                                         )}
                                     </div>
-                                    <p className="text-[0.85rem] text-[#374151] leading-[1.65] m-0">{c.comment}</p>
+                                    <p className="text-[0.82rem] text-[#374151] leading-[1.65] m-0">{reply.comment}</p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 )}
+            </div>
+        ))}
+    </div>
+)}
             </div>
 
             <EditLaporanModal
