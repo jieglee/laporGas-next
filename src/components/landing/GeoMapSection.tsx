@@ -3,14 +3,14 @@ import SectionTag from "@/components/landing/SectionTag";
 import MapPin from "@/components/landing/MapPin";
 
 const mapPoints = [
-    { x: 22, y: 35, label: "Jalan Rusak",      color: "#E8541C" },
-    { x: 45, y: 20, label: "Sampah Menumpuk",   color: "#F59E0B" },
-    { x: 68, y: 55, label: "Lampu Mati",        color: "#E8541C" },
-    { x: 30, y: 65, label: "Banjir Lokal",      color: "#10B981" },
-    { x: 75, y: 30, label: "Pohon Tumbang",     color: "#3B82F6" },
-    { x: 55, y: 75, label: "Drainase Mampet",   color: "#10B981" },
-    { x: 15, y: 55, label: "Trotoar Rusak",     color: "#E8541C" },
-    { x: 85, y: 65, label: "Vandalisme",        color: "#EF4444" },
+    { x: 22, y: 35, label: "Jalan Rusak",    color: "#E8541C" },
+    { x: 58, y: 22, label: "Sampah Menumpuk", color: "#F59E0B" },
+    { x: 76, y: 38, label: "Lampu Mati",     color: "#3B82F6" },
+    { x: 42, y: 62, label: "Banjir Lokal",   color: "#10B981" },
+    { x: 18, y: 68, label: "Trotoar Rusak",  color: "#E8541C" },
+    { x: 65, y: 60, label: "Drainase Mampet",color: "#10B981" },
+    { x: 82, y: 58, label: "Pohon Tumbang",  color: "#F59E0B" },
+    { x: 50, y: 80, label: "Vandalisme",     color: "#EF4444" },
 ];
 
 const categories = [
@@ -20,98 +20,135 @@ const categories = [
     { dot: "#EF4444", label: "Keamanan",      count: "312 laporan" },
 ];
 
+// 2x2 grid cells — warna pastel sesuai screenshot
+const CELLS = [
+    { bg: "#D5F0E8" }, // hijau muda kiri atas
+    { bg: "#E8F4F8" }, // biru muda kanan atas
+    { bg: "#FEF9D7" }, // kuning muda kiri bawah
+    { bg: "#E8F4F8" }, // biru muda kanan bawah
+];
+
 export default function GeoMapSection() {
     return (
-        <section id="peta" className="px-[5%] py-24" style={{ background: "#F8F6F0" }}>
-            <div className="mx-auto max-w-6xl">
-                <div className="flex flex-col md:flex-row items-center gap-12">
+        <section id="peta" style={{ padding: "90px 5%" }}>
+            <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+                <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 80 }}>
 
                     {/* ── Kiri ── */}
-                    <div className="w-full md:w-[360px] shrink-0">
-                        <div className="mb-4 inline-flex items-center gap-1.5">
+                    <div style={{ width: 360, flexShrink: 0 }}>
+                        <div style={{ marginBottom: 16 }}>
                             <SectionTag text="Geo Complaint Map" />
                         </div>
 
-                        <h2 className="mb-4 text-[36px] font-extrabold leading-tight tracking-tight text-[#1a0e08] md:text-[40px]">
+                        <h2 style={{
+                            fontSize: 40,
+                            fontWeight: 900,
+                            lineHeight: 1.1,
+                            letterSpacing: "-0.03em",
+                            color: "#111827",
+                            margin: "0 0 16px",
+                        }}>
                             Setiap Masalah
                             <br />
-                            <span className="bg-gradient-to-r from-[#FF6B35] to-[#E8201A] bg-clip-text text-transparent">
-                                Punya Koordinatnya
-                            </span>
+                            <span style={{ background: "linear-gradient(to right, #FF6B35, #E8201A)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Punya Koordinatnya</span>
                         </h2>
 
-                        <p className="mb-7 text-base leading-relaxed text-[#6b5546]">
-                            Laporan dipetakan secara akurat dengan GPS. Admin dapat melihat
-                            clustering masalah dan memprioritaskan penanganan berdasarkan
-                            lokasi.
+                        <p style={{
+                            fontSize: 15,
+                            color: "#6B7280",
+                            lineHeight: 1.75,
+                            margin: "0 0 32px",
+                        }}>
+                            Laporan dipetakan secara akurat dengan GPS. Admin dapat
+                            melihat clustering masalah dan memprioritaskan
+                            penanganan berdasarkan lokasi.
                         </p>
 
-                        <div className="flex flex-col gap-2.5">
+                        {/* Kategori list — simple, tanpa border card */}
+                        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                             {categories.map((c) => (
-                                <div
-                                    key={c.label}
-                                    className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 bg-[#FFFCFA] border border-[#f0e6dc]"
-                                >
-                                    <div className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: c.dot }} />
-                                    <span className="flex-1 text-sm font-semibold text-[#1a0e08]">{c.label}</span>
-                                    <span className="text-[13px] text-[#a8856b]">{c.count}</span>
+                                <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                    <div style={{
+                                        width: 10, height: 10,
+                                        borderRadius: "50%",
+                                        backgroundColor: c.dot,
+                                        flexShrink: 0,
+                                    }} />
+                                    <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "#111827" }}>
+                                        {c.label}
+                                    </span>
+                                    <span style={{ fontSize: 13, color: "#9CA3AF" }}>{c.count}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {/* ── Map card ── */}
-                    <div
-                        className="w-full flex-1 overflow-hidden rounded-2xl"
-                        style={{
-                            border: "1px solid #f0e6dc",
-                            background: "#FFFCFA",
-                            boxShadow: "0 8px 32px rgba(232,84,28,0.08)",
-                        }}
-                    >
+                    <div style={{
+                        flex: 1,
+                        minWidth: 0,
+                        borderRadius: 20,
+                        overflow: "hidden",
+                        border: "1px solid #E8E4D9",
+                        background: "#FCFBF8",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.06)",
+                    }}>
                         {/* Browser chrome */}
-                        <div
-                            className="flex items-center gap-3 px-4 py-3"
-                            style={{ borderBottom: "1px solid #f0e6dc", background: "#FAFAF8" }}
-                        >
-                            <div className="flex gap-1.5">
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 12,
+                            padding: "10px 16px",
+                            borderBottom: "1px solid #E8E4D9",
+                            background: "#F8F6F0",
+                        }}>
+                            <div style={{ display: "flex", gap: 6 }}>
                                 {["#FF5F57", "#FFBD2E", "#28CA41"].map((c) => (
-                                    <div key={c} className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
+                                    <div key={c} style={{ width: 11, height: 11, borderRadius: "50%", background: c }} />
                                 ))}
                             </div>
-                            <div
-                                className="flex flex-1 items-center gap-1.5 rounded-lg px-3 py-1 text-xs text-[#a8856b]"
-                                style={{ background: "#f5ede3" }}
-                            >
-                                <Search size={12} /> Cari lokasi...
+                            <div style={{
+                                flex: 1,
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 6,
+                                background: "#F1EDE2",
+                                borderRadius: 8,
+                                padding: "4px 12px",
+                                fontSize: 12,
+                                color: "#9CA3AF",
+                            }}>
+                                <Search size={12} />
+                                Cari lokasi...
                             </div>
-                            <MapIcon size={16} className="text-[#E8541C]" />
+                            <MapIcon size={16} color="#10B981" />
                         </div>
 
                         {/* Map canvas */}
-                        <div
-                            className="relative h-[360px] overflow-hidden"
-                            style={{ background: "linear-gradient(135deg, #FFF8F5 0%, #FFFCFA 50%, #FFF5EE 100%)" }}
-                        >
-                            <svg className="absolute inset-0 h-full w-full">
-                                <defs>
-                                    <pattern id="grid-geo" width="40" height="40" patternUnits="userSpaceOnUse">
-                                        <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#f0e6dc" strokeOpacity="0.8" strokeWidth="0.5" />
-                                    </pattern>
-                                </defs>
-                                <rect width="100%" height="100%" fill="url(#grid-geo)" />
-                                {/* Roads */}
-                                <line x1="0" y1="180" x2="100%" y2="180" stroke="#f0e6dc" strokeWidth="8" />
-                                <line x1="200" y1="0" x2="200" y2="100%" stroke="#f0e6dc" strokeWidth="6" />
-                                <line x1="400" y1="0" x2="350" y2="100%" stroke="#f0e6dc" strokeWidth="4" />
-                                {/* Blocks */}
-                                <rect x="20"  y="20"  width="80"  height="60" rx="4" fill="#FFF5EE" fillOpacity="0.9" />
-                                <rect x="120" y="20"  width="60"  height="50" rx="4" fill="#FFF5EE" fillOpacity="0.9" />
-                                <rect x="250" y="30"  width="80"  height="70" rx="4" fill="#FFF5EE" fillOpacity="0.9" />
-                                <rect x="20"  y="210" width="70"  height="80" rx="4" fill="#FEF3C7" fillOpacity="0.6" />
-                                <rect x="250" y="220" width="100" height="60" rx="4" fill="#FFF5EE" fillOpacity="0.9" />
-                                <rect x="420" y="50"  width="60"  height="80" rx="4" fill="#FEF3C7" fillOpacity="0.6" />
-                                <rect x="420" y="200" width="70"  height="60" rx="4" fill="#FFF5EE" fillOpacity="0.9" />
+                        <div style={{ position: "relative", height: 360, overflow: "hidden", background: "#F8F6F0" }}>
+
+                            {/* 2x2 grid */}
+                            <div style={{
+                                position: "absolute", inset: 0,
+                                display: "grid",
+                                gridTemplateColumns: "1fr 1fr",
+                                gridTemplateRows: "1fr 1fr",
+                                gap: 2,
+                                padding: 2,
+                            }}>
+                                {CELLS.map((cell, i) => (
+                                    <div key={i} style={{ backgroundColor: cell.bg, borderRadius: 4, position: "relative", overflow: "hidden" }} />
+                                ))}
+                            </div>
+
+                            {/* Roads */}
+                            <svg style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}>
+                                {/* Horizontal road */}
+                                <line x1="0" y1="181" x2="100%" y2="181" stroke="#E8E4D9" strokeWidth="7" />
+                                {/* Vertical road */}
+                                <line x1="50%" y1="0" x2="50%" y2="100%" stroke="#E8E4D9" strokeWidth="6" />
+                                {/* Diagonal road */}
+                                <line x1="35%" y1="0" x2="65%" y2="100%" stroke="#E8E4D9" strokeWidth="4" />
                             </svg>
 
                             {/* Pins */}
@@ -119,31 +156,47 @@ export default function GeoMapSection() {
                                 <MapPin key={i} x={pt.x} y={pt.y} label={pt.label} color={pt.color} />
                             ))}
 
-                            {/* Heatmap */}
-                            <div
-                                className="pointer-events-none absolute h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                                style={{ left: "20%", top: "30%", background: "rgba(232,84,28,0.14)", filter: "blur(8px)" }}
-                            />
-                            <div
-                                className="pointer-events-none absolute h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full"
-                                style={{ left: "65%", top: "55%", background: "rgba(245,158,11,0.14)", filter: "blur(8px)" }}
-                            />
+                            {/* Heatmap blobs */}
+                            <div style={{
+                                position: "absolute",
+                                width: 110, height: 110,
+                                borderRadius: "50%",
+                                background: "rgba(232,84,28,0.15)",
+                                filter: "blur(20px)",
+                                left: "18%", top: "25%",
+                                transform: "translate(-50%, -50%)",
+                                pointerEvents: "none",
+                            }} />
+                            <div style={{
+                                position: "absolute",
+                                width: 90, height: 90,
+                                borderRadius: "50%",
+                                background: "rgba(16,185,129,0.15)",
+                                filter: "blur(16px)",
+                                left: "68%", top: "62%",
+                                transform: "translate(-50%, -50%)",
+                                pointerEvents: "none",
+                            }} />
 
                             {/* Zoom controls */}
-                            <div
-                                className="absolute top-3 right-3 overflow-hidden rounded-[10px]"
-                                style={{ border: "1px solid #f0e6dc", background: "#fff", boxShadow: "0 2px 8px rgba(232,84,28,0.08)" }}
-                            >
-                                <div className="flex h-8 w-8 cursor-pointer items-center justify-center border-b border-[#f0e6dc] text-[#E8541C]">
+                            <div style={{
+                                position: "absolute",
+                                top: 12, right: 12,
+                                borderRadius: 10,
+                                overflow: "hidden",
+                                border: "1px solid #E8E4D9",
+                                background: "#FCFBF8",
+                                boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                            }}>
+                                <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", borderBottom: "1px solid #E8E4D9", color: "#10B981", cursor: "pointer" }}>
                                     <Plus size={14} />
                                 </div>
-                                <div className="flex h-8 w-8 cursor-pointer items-center justify-center text-[#E8541C]">
+                                <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", color: "#10B981", cursor: "pointer" }}>
                                     <Minus size={14} />
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </section>

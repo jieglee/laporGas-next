@@ -38,7 +38,7 @@ const Logo = () => (
 
 export default function Footer() {
   return (
-    <footer className="relative overflow-hidden bg-[#fffcfa]">
+    <footer  id="kontak" className="relative overflow-hidden bg-[#fffcfa]">
       {/* Top gradient line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[rgba(232,84,28,0.2)] to-transparent" />
 

@@ -5,9 +5,10 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const links = [
-  { label: "Beranda", href: "beranda" },
   { label: "Cara Kerja", href: "how-it-works" },
+  { label: "Peta", href: "peta" },
   { label: "Kontak", href: "kontak" },
+
 ];
 
 const LaporGasIcon = ({ scrolled = false, size = 28 }: { scrolled?: boolean; size?: number }) => (
