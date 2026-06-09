@@ -1,6 +1,29 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Map as MapIcon, Search, Plus, Minus } from "lucide-react";
 import SectionTag from "@/components/landing/SectionTag";
 import MapPin from "@/components/landing/MapPin";
+import { getReports } from "@/lib/reports";
+
+const CATEGORY_META: Record<string, { dot: string; label: string }> = {
+    infrastruktur:  { dot: "#E8541C", label: "Infrastruktur" },
+    "fasilitas umum": { dot: "#3B82F6", label: "Fasilitas Umum" },
+    kebersihan:     { dot: "#10B981", label: "Kebersihan" },
+    "lalu lintas":  { dot: "#F59E0B", label: "Lalu Lintas" },
+};
+
+function mapCategoryName(name: string): string {
+    switch (name.toLowerCase()) {
+        case "infrastruktur": return "infrastruktur";
+        case "fasilitas umum":
+        case "fasilitas-umum": return "fasilitas umum";
+        case "kebersihan": return "kebersihan";
+        case "lalu lintas":
+        case "lalu-lintas": return "lalu lintas";
+        default: return "";
+    }
+}
 
 const mapPoints = [
     { x: 22, y: 35, label: "Jalan Rusak",    color: "#E8541C" },
@@ -13,13 +36,6 @@ const mapPoints = [
     { x: 50, y: 80, label: "Vandalisme",     color: "#EF4444" },
 ];
 
-const categories = [
-    { dot: "#E8541C", label: "Infrastruktur", count: "847 laporan" },
-    { dot: "#10B981", label: "Lingkungan",    count: "624 laporan" },
-    { dot: "#F59E0B", label: "Kebersihan",    count: "538 laporan" },
-    { dot: "#EF4444", label: "Keamanan",      count: "312 laporan" },
-];
-
 // 2x2 grid cells — warna pastel sesuai screenshot
 const CELLS = [
     { bg: "#D5F0E8" }, // hijau muda kiri atas
@@ -29,6 +45,28 @@ const CELLS = [
 ];
 
 export default function GeoMapSection() {
+    const [counts, setCounts] = useState<Record<string, number>>({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getReports()
+            .then((reports) => {
+                const acc: Record<string, number> = {};
+                for (const r of reports) {
+                    const key = mapCategoryName(r.category_name);
+                    if (key) acc[key] = (acc[key] ?? 0) + 1;
+                }
+                setCounts(acc);
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+    }, []);
+
+    const categories = Object.entries(CATEGORY_META).map(([key, meta]) => ({
+        ...meta,
+        count: counts[key] ?? 0,
+    }));
+
     return (
         <section id="peta" style={{ padding: "90px 5%" }}>
             <div style={{ maxWidth: 1100, margin: "0 auto" }}>
@@ -66,20 +104,31 @@ export default function GeoMapSection() {
 
                         {/* Kategori list — simple, tanpa border card */}
                         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                            {categories.map((c) => (
-                                <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                    <div style={{
-                                        width: 10, height: 10,
-                                        borderRadius: "50%",
-                                        backgroundColor: c.dot,
-                                        flexShrink: 0,
-                                    }} />
-                                    <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "#111827" }}>
-                                        {c.label}
-                                    </span>
-                                    <span style={{ fontSize: 13, color: "#9CA3AF" }}>{c.count}</span>
-                                </div>
-                            ))}
+                            {loading
+                                ? Array.from({ length: 4 }).map((_, i) => (
+                                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                        <div style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "#e5e7eb", flexShrink: 0 }} />
+                                        <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "#e5e7eb", background: "#e5e7eb", borderRadius: 4 }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <span style={{ fontSize: 13, color: "#e5e7eb", background: "#e5e7eb", borderRadius: 4 }}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                    </div>
+                                ))
+                                : categories.map((c) => (
+                                    <div key={c.label} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                        <div style={{
+                                            width: 10, height: 10,
+                                            borderRadius: "50%",
+                                            backgroundColor: c.dot,
+                                            flexShrink: 0,
+                                        }} />
+                                        <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: "#111827" }}>
+                                            {c.label}
+                                        </span>
+                                        <span style={{ fontSize: 13, color: "#9CA3AF" }}>
+                                            {c.count.toLocaleString("id-ID")} laporan
+                                        </span>
+                                    </div>
+                                ))
+                            }
                         </div>
                     </div>
 
